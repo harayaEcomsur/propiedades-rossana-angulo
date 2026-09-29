@@ -251,6 +251,7 @@ export const clientConfigSchema = z.object({
         description: z.string(),
         images: z.array(z.string()).min(1),
         // URL de YouTube (watch o youtu.be); se embebe en la ficha.
+        // Link de YouTube o de un reel de Instagram; se reproduce en la ficha.
         video: z.string().optional(),
         featured: z.boolean().default(false),
       })

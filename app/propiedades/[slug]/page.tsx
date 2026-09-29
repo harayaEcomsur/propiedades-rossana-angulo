@@ -11,14 +11,10 @@ import { ChatWidget } from "@/components/chat/ChatWidget";
 import { OPERATION_LABEL } from "@/components/properties/PropertyCard";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { getPublicProperties } from "@/lib/public-properties";
+import { videoEmbed } from "@/lib/video";
+import { PropertyVideo } from "@/components/properties/PropertyVideo";
 
 export const revalidate = 300;
-
-// Convierte URLs de YouTube (watch / youtu.be / shorts) a URL de embed.
-function toYouTubeEmbed(url: string): string | null {
-  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]{6,})/);
-  return m ? `https://www.youtube-nocookie.com/embed/${m[1]}` : null;
-}
 
 // Las fichas se generan a pedido (y quedan en caché): las propiedades nuevas
 // del panel aparecen sin redeploy.
@@ -41,7 +37,12 @@ export default async function PropiedadPage({ params }: { params: { slug: string
   if (!modules.propiedades || !property) notFound();
 
   const hasWhatsapp = modules.whatsappButton && Boolean(contact.whatsapp);
-  const embed = property.video ? toYouTubeEmbed(property.video) : null;
+  const video = property.video ? videoEmbed(property.video) : null;
+  // Un video vertical va en la columna lateral, junto al botón de contacto.
+  // Si además la única foto es la portada de ese mismo video (propiedades
+  // tomadas de un reel), el video reemplaza a la galería en vez de repetirla.
+  const sideVideo = video?.vertical ? video : null;
+  const showGallery = !(sideVideo && property.images.length === 1);
   const waHref = contact.whatsapp
     ? buildWhatsAppLink(contact.whatsapp, `Hola! Me interesa la propiedad "${property.title}" (${property.comuna}) que vi en su sitio`)
     : "#contacto";
@@ -79,29 +80,25 @@ export default async function PropiedadPage({ params }: { params: { slug: string
           </div>
 
           {/* Galería */}
-          <div className={`mt-8 grid gap-3 ${property.images.length > 1 ? "sm:grid-cols-3" : ""}`}>
-            <div className={`relative aspect-[4/3] overflow-hidden ${property.images.length > 1 ? "sm:col-span-2 sm:row-span-2" : "sm:aspect-[16/9]"}`}>
-              <Image src={property.images[0]} alt={property.title} fill priority className="object-cover" />
-            </div>
-            {property.images.slice(1, 5).map((img, i) => (
-              <div key={img} className="relative aspect-[4/3] overflow-hidden">
-                <Image src={img} alt={`${property.title} — foto ${i + 2}`} fill className="object-cover" />
+          {showGallery && (
+            <div className={`mt-8 grid gap-3 ${property.images.length > 1 ? "sm:grid-cols-3" : ""}`}>
+              <div className={`relative aspect-[4/3] overflow-hidden ${property.images.length > 1 ? "sm:col-span-2 sm:row-span-2" : "sm:aspect-[16/9]"}`}>
+                <Image src={property.images[0]} alt={property.title} fill priority className="object-cover" />
               </div>
-            ))}
-          </div>
+              {property.images.slice(1, 5).map((img, i) => (
+                <div key={img} className="relative aspect-[4/3] overflow-hidden">
+                  <Image src={img} alt={`${property.title} — foto ${i + 2}`} fill className="object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
 
-          {/* Video */}
-          {embed && (
+          {/* Video horizontal: a todo el ancho, bajo la galería */}
+          {video && !sideVideo && (
             <div className="mt-8">
               <h2 className="font-heading text-lg font-semibold text-foreground">Recorrido en video</h2>
-              <div className="relative mt-3 aspect-video overflow-hidden">
-                <iframe
-                  src={embed}
-                  title={`Video de ${property.title}`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 h-full w-full border-0"
-                />
+              <div className="mt-3">
+                <PropertyVideo video={video} title={property.title} />
               </div>
             </div>
           )}
@@ -124,20 +121,23 @@ export default async function PropiedadPage({ params }: { params: { slug: string
                 </p>
               )}
             </div>
-            <aside className="h-fit border border-foreground/15 p-6">
-              <p className="font-heading text-base font-semibold text-foreground">¿Te interesa esta propiedad?</p>
-              <p className="mt-2 text-sm text-foreground/70">
-                Coordina una visita o pregunta lo que quieras — respondemos al tiro.
-              </p>
-              <a
-                href={waHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-wider text-white hover:opacity-90"
-              >
-                Consultar por WhatsApp
-              </a>
-            </aside>
+            <div className={`flex flex-col gap-6 ${sideVideo ? "order-first lg:order-none" : ""}`}>
+              {sideVideo && <PropertyVideo video={sideVideo} title={property.title} />}
+              <aside className="h-fit border border-foreground/15 p-6">
+                <p className="font-heading text-base font-semibold text-foreground">¿Te interesa esta propiedad?</p>
+                <p className="mt-2 text-sm text-foreground/70">
+                  Coordina una visita o pregunta lo que quieras — respondemos al tiro.
+                </p>
+                <a
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex w-full items-center justify-center bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-wider text-white hover:opacity-90"
+                >
+                  Consultar por WhatsApp
+                </a>
+              </aside>
+            </div>
           </div>
         </div>
       </main>

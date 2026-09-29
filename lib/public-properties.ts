@@ -54,6 +54,8 @@ function toPublic(p: REProperty): Property {
     parking: p.parkingSpots,
     description: p.description ?? "",
     images: p.photos,
+    // Si se importó desde un reel, el mismo reel es el video de la ficha.
+    video: p.instagramUrl && /\/(reel|reels|tv)\//.test(p.instagramUrl) ? p.instagramUrl : undefined,
     // Las reservadas siguen visibles pero no se destacan en la home.
     featured: p.status === "activa",
   };
