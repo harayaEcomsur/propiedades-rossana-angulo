@@ -73,6 +73,10 @@ export interface REProperty {
   condition?: "new" | "used" | "not_specified";
   photos: string[];
   status: "activa" | "reservada" | "vendida" | "arrendada";
+  // Vínculo con Instagram: la publicación de la que se importó, o la que se
+  // creó al publicarla desde el panel (evita importarla/publicarla dos veces).
+  instagramMediaId?: string;
+  instagramUrl?: string;
   createdAt: string;
 }
 
@@ -373,6 +377,8 @@ function rowToProperty(r: Record<string, unknown>): REProperty {
     condition: (r.condition as REProperty["condition"]) ?? undefined,
     photos: (r.photos as string[]) ?? [],
     status: r.status as REProperty["status"],
+    instagramMediaId: (r.instagram_media_id as string) ?? undefined,
+    instagramUrl: (r.instagram_url as string) ?? undefined,
     createdAt: new Date(r.created_at as string).toISOString(),
   };
 }
@@ -397,14 +403,15 @@ export async function addProperty(data: Omit<REProperty, "id" | "createdAt">): P
         INSERT INTO re_properties (
           id, broker_id, title, operation, type, address, region, city, neighborhood, price, currency, description,
           bedrooms, bathrooms, covered_area, total_area, parking_spots, storage_units, maintenance_fee,
-          pets_allowed, furnished, condition, photos, status, created_at
+          pets_allowed, furnished, condition, photos, status, instagram_media_id, instagram_url, created_at
         )
         VALUES (
           ${p.id}, ${p.brokerId}, ${p.title}, ${p.operation}, ${p.type}, ${p.address ?? null}, ${p.region ?? null},
           ${p.city ?? null}, ${p.neighborhood ?? null}, ${p.price ?? null}, ${p.currency ?? null}, ${p.description ?? null},
           ${p.bedrooms ?? null}, ${p.bathrooms ?? null}, ${p.coveredArea ?? null}, ${p.totalArea ?? null},
           ${p.parkingSpots ?? null}, ${p.storageUnits ?? null}, ${p.maintenanceFee ?? null},
-          ${p.petsAllowed ?? null}, ${p.furnished ?? null}, ${p.condition ?? null}, ${jsonb(p.photos)}, ${p.status}, ${p.createdAt}
+          ${p.petsAllowed ?? null}, ${p.furnished ?? null}, ${p.condition ?? null}, ${jsonb(p.photos)}, ${p.status},
+          ${p.instagramMediaId ?? null}, ${p.instagramUrl ?? null}, ${p.createdAt}
         )
       `;
     },
@@ -424,6 +431,22 @@ export async function updatePropertyStatus(id: string, status: REProperty["statu
     () => {
       const p = store().properties.find((x) => x.id === id);
       if (p) p.status = status;
+    }
+  );
+}
+
+export async function setPropertyInstagram(id: string, link: { mediaId: string; url: string }): Promise<void> {
+  await withDb(
+    async () => {
+      const sql = db();
+      await sql`UPDATE re_properties SET instagram_media_id = ${link.mediaId}, instagram_url = ${link.url} WHERE id = ${id}`;
+    },
+    () => {
+      const p = store().properties.find((x) => x.id === id);
+      if (p) {
+        p.instagramMediaId = link.mediaId;
+        p.instagramUrl = link.url;
+      }
     }
   );
 }

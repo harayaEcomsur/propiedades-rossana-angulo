@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
 import { currentBroker } from "@/lib/realestate-auth";
@@ -26,6 +27,7 @@ import {
   DEFAULT_CHECKLIST_ITEMS,
   type Broker,
 } from "@/lib/realestate-store";
+import { instagramConfigured } from "@/lib/instagram";
 
 // API del panel /inmobiliaria/admin. Un solo endpoint con un campo `kind` para
 // no explotar en una ruta por recurso (mismo espíritu que /api/agenda). GET
@@ -37,6 +39,12 @@ export const runtime = "nodejs";
 
 function claveFromRequest(req: Request): string | null {
   return req.headers.get("x-re-key") ?? new URL(req.url).searchParams.get("clave");
+}
+
+// Home, /propiedades y fichas muestran el inventario del panel: al cambiarlo se
+// regeneran de inmediato en vez de esperar su revalidación periódica.
+function refreshPublicPages() {
+  revalidatePath("/", "layout");
 }
 
 function isAdmin(broker: Broker): boolean {
@@ -69,6 +77,7 @@ export async function GET(req: Request) {
     providers,
     contractTemplates: await listContractTemplates(),
     defaultChecklist: DEFAULT_CHECKLIST_ITEMS,
+    instagramConnected: instagramConfigured(),
   });
 }
 
@@ -116,6 +125,9 @@ const propertySchema = z.object({
   furnished: z.boolean().optional(),
   condition: z.enum(["new", "used", "not_specified"]).optional(),
   photos: z.array(z.string().url()).max(20).default([]),
+  // Presentes cuando la ficha se importó desde una publicación de Instagram.
+  instagramMediaId: z.string().max(64).optional(),
+  instagramUrl: z.string().url().optional(),
 });
 const providerSchema = z.object({
   kind: z.literal("provider"),
@@ -203,7 +215,10 @@ export async function POST(req: Request) {
       condition: data.condition,
       photos: data.photos,
       status: "activa",
+      instagramMediaId: data.instagramMediaId,
+      instagramUrl: data.instagramUrl,
     });
+    refreshPublicPages();
     return Response.json({ ok: true, property });
   }
 
@@ -269,6 +284,7 @@ export async function PATCH(req: Request) {
   if (!property) return Response.json({ error: "Propiedad no encontrada" }, { status: 404 });
   if (!isAdmin(broker) && property.brokerId !== broker.id) return Response.json({ error: "No autorizado" }, { status: 403 });
   await updatePropertyStatus(data.id, data.status);
+  refreshPublicPages();
   return Response.json({ ok: true });
 }
 
@@ -306,5 +322,6 @@ export async function DELETE(req: Request) {
   if (!p) return Response.json({ error: "No encontrado" }, { status: 404 });
   if (!isAdmin(broker) && p.brokerId !== broker.id) return Response.json({ error: "No autorizado" }, { status: 403 });
   await deleteProperty(id);
+  refreshPublicPages();
   return Response.json({ ok: true });
 }

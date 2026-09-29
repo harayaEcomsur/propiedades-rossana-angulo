@@ -1,9 +1,11 @@
 import { clientConfig } from "@/config/client.config";
+import { getPublicProperties } from "@/lib/public-properties";
 
 // System prompt compartido por todos los canales del asistente (chat del sitio
 // y WhatsApp): un solo cerebro config-driven, N canales.
-export function buildSystemPrompt(): string {
-  const { chat, meta, contact, modules, properties, store } = clientConfig;
+export async function buildSystemPrompt(): Promise<string> {
+  const { chat, meta, contact, modules, store } = clientConfig;
+  const properties = await getPublicProperties();
   const qa = chat.qaPairs.map((p, i) => `${i + 1}. P: ${p.q}\n   R: ${p.a}`).join("\n");
 
   const contactLine = [

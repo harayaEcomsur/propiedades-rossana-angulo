@@ -73,6 +73,8 @@ interface REProperty {
   condition?: "new" | "used" | "not_specified";
   photos: string[];
   status: "activa" | "reservada" | "vendida" | "arrendada";
+  instagramMediaId?: string;
+  instagramUrl?: string;
   createdAt: string;
 }
 interface REProvider {
@@ -128,6 +130,7 @@ interface Bundle {
   providers: REProvider[];
   contractTemplates: REContractTemplate[];
   defaultChecklist: string[];
+  instagramConnected: boolean;
 }
 
 const TABS = ["propiedades", "clientes", "proveedores", "entregas", "contratos", "corredoras"] as const;
@@ -358,14 +361,37 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
   const [petsAllowed, setPetsAllowed] = useState(true);
   const [description, setDescription] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  // Si la ficha se importó de Instagram, queda vinculada a esa publicación (y
+  // no se vuelve a publicar allá). Si no, se ofrece publicarla al guardar.
+  const [importedFrom, setImportedFrom] = useState<{ mediaId: string; url: string } | null>(null);
+  const [publishToInstagram, setPublishToInstagram] = useState(data.instagramConnected);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  function applyImport(imported: InstagramImport) {
+    const d = imported.draft;
+    setTitle(d.title ?? "");
+    if (d.operation) setOperation(d.operation);
+    if (d.type) setType(d.type);
+    setPrice(d.price !== undefined ? String(d.price) : "");
+    if (d.currency) setCurrency(d.currency);
+    setBedrooms(d.bedrooms !== undefined ? String(d.bedrooms) : "");
+    setBathrooms(d.bathrooms !== undefined ? String(d.bathrooms) : "");
+    setCoveredArea(d.coveredArea !== undefined ? String(d.coveredArea) : "");
+    setParkingSpots(d.parkingSpots !== undefined ? String(d.parkingSpots) : "");
+    setDescription(d.description ?? "");
+    setPhotos(imported.photos);
+    setImportedFrom({ mediaId: imported.instagramMediaId, url: imported.instagramUrl });
+    setNotice("Datos leídos desde Instagram: revisa y completa la ficha (ubicación, precio, etc.) antes de guardar.");
+  }
 
   async function add() {
     setBusy(true);
     setErr(null);
+    setNotice(null);
     try {
-      await post("/api/inmobiliaria", authHeaders, {
+      const created: { property: REProperty } = await post("/api/inmobiliaria", authHeaders, {
         kind: "property",
         title,
         operation,
@@ -388,7 +414,18 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
         petsAllowed,
         description: description || undefined,
         photos,
+        instagramMediaId: importedFrom?.mediaId,
+        instagramUrl: importedFrom?.url,
       });
+      if (!importedFrom && publishToInstagram && data.instagramConnected && photos.length > 0) {
+        try {
+          await post("/api/inmobiliaria/instagram", authHeaders, { kind: "publish", propertyId: created.property.id });
+          setNotice("Propiedad guardada y publicada en Instagram.");
+        } catch (e) {
+          setNotice(`Propiedad guardada, pero no se pudo publicar en Instagram: ${e instanceof Error ? e.message : "error"}. Puedes reintentar desde su tarjeta.`);
+        }
+      }
+      setImportedFrom(null);
       setTitle("");
       setAddress("");
       setRegion("");
@@ -417,7 +454,22 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
   return (
     <div className="flex flex-col gap-4">
       <div className={card}>
-        <h3 className="mb-3 font-semibold">Nueva propiedad</h3>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-semibold">Nueva propiedad</h3>
+          {data.instagramConnected && <InstagramImporter authHeaders={authHeaders} onImported={applyImport} />}
+        </div>
+        {importedFrom && (
+          <p className="mb-3 rounded-lg bg-primary/10 px-3 py-2 text-xs text-foreground/80">
+            Importando desde{" "}
+            <a href={importedFrom.url} target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline">
+              esta publicación de Instagram
+            </a>
+            .{" "}
+            <button className="underline" onClick={() => setImportedFrom(null)}>
+              Desvincular
+            </button>
+          </p>
+        )}
         <p className="mb-3 text-xs text-foreground/50">
           Formato recomendado del título: Operación + Tipo + Dormitorios + Barrio (ej. &quot;Venta departamento 3 dormitorios
           Reñaca&quot;) — así queda listo si más adelante se publica en portales externos.
@@ -514,10 +566,17 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
           <p className="mb-1 text-xs text-foreground/50">Mínimo recomendado para este tipo: {PROPERTY_TYPE_MIN_PHOTOS[type]} fotos.</p>
           <PhotoUploader photos={photos} onChange={setPhotos} authHeaders={authHeaders} />
         </div>
+        {data.instagramConnected && !importedFrom && (
+          <label className="mt-3 flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={publishToInstagram} onChange={(e) => setPublishToInstagram(e.target.checked)} />
+            Publicar también en Instagram (carrusel con las primeras 10 fotos)
+          </label>
+        )}
         <button className={`${btnPrimary} mt-3`} disabled={busy || !title || !type} onClick={add}>
-          Publicar propiedad
+          {busy ? "Guardando…" : "Publicar propiedad"}
         </button>
         {err && <p className="mt-2 text-sm text-red-600">{err}</p>}
+        {notice && <p className="mt-2 text-sm text-foreground/70">{notice}</p>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -565,21 +624,162 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
                 ))}
               </div>
             )}
-            <button
-              className={`${btnGhost} mt-3`}
-              onClick={async () => {
-                if (!confirm("¿Eliminar esta propiedad?")) return;
-                await del("/api/inmobiliaria", authHeaders, { kind: "property", id: p.id });
-                reload();
-              }}
-            >
-              Eliminar
-            </button>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button
+                className={btnGhost}
+                onClick={async () => {
+                  if (!confirm("¿Eliminar esta propiedad?")) return;
+                  await del("/api/inmobiliaria", authHeaders, { kind: "property", id: p.id });
+                  reload();
+                }}
+              >
+                Eliminar
+              </button>
+              {p.instagramUrl ? (
+                <a href={p.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-primary underline">
+                  Ver en Instagram
+                </a>
+              ) : (
+                data.instagramConnected && p.photos.length > 0 && <PublishToInstagramButton propertyId={p.id} authHeaders={authHeaders} reload={reload} />
+              )}
+            </div>
           </div>
         ))}
         {data.properties.length === 0 && <p className="text-sm text-foreground/50">Sin propiedades todavía.</p>}
       </div>
     </div>
+  );
+}
+
+// ---------- Instagram ----------
+
+interface InstagramImport {
+  draft: {
+    title?: string;
+    operation?: REProperty["operation"];
+    type?: PropertyType;
+    price?: number;
+    currency?: "CLP" | "UF";
+    bedrooms?: number;
+    bathrooms?: number;
+    coveredArea?: number;
+    parkingSpots?: number;
+    description?: string;
+  };
+  photos: string[];
+  instagramMediaId: string;
+  instagramUrl: string;
+}
+
+interface InstagramPostOption {
+  id: string;
+  caption: string;
+  permalink: string;
+  timestamp: string;
+  images: string[];
+  alreadyLinked: boolean;
+}
+
+function InstagramImporter({ authHeaders, onImported }: { authHeaders: Record<string, string>; onImported: (i: InstagramImport) => void }) {
+  const [open, setOpen] = useState(false);
+  const [posts, setPosts] = useState<InstagramPostOption[] | null>(null);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function toggle() {
+    const next = !open;
+    setOpen(next);
+    if (!next || posts) return;
+    setErr(null);
+    const res = await fetch("/api/inmobiliaria/instagram", { headers: authHeaders });
+    const body = await res.json();
+    if (!res.ok) setErr(body.error ?? "No se pudo leer Instagram");
+    else setPosts(body.posts);
+  }
+
+  async function pick(item: InstagramPostOption) {
+    setLoadingId(item.id);
+    setErr(null);
+    try {
+      const imported: InstagramImport = await post("/api/inmobiliaria/instagram", authHeaders, { kind: "import", mediaId: item.id });
+      onImported(imported);
+      setOpen(false);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Error al importar");
+    } finally {
+      setLoadingId(null);
+    }
+  }
+
+  return (
+    <div className="w-full sm:w-auto">
+      <button className={btnGhost} onClick={toggle}>
+        {open ? "Cerrar Instagram" : "Importar desde Instagram"}
+      </button>
+      {open && (
+        <div className="mt-3 w-full rounded-lg border border-foreground/10 p-3">
+          {err && <p className="text-sm text-red-600">{err}</p>}
+          {!posts && !err && <p className="text-sm text-foreground/60">Cargando publicaciones…</p>}
+          {posts && posts.length === 0 && <p className="text-sm text-foreground/60">No hay publicaciones con fotos.</p>}
+          {posts && posts.length > 0 && (
+            <>
+              <p className="mb-2 text-xs text-foreground/50">Elige la publicación de una propiedad: se copian sus fotos y se prellena la ficha con su texto.</p>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+                {posts.map((p) => (
+                  <button
+                    key={p.id}
+                    disabled={loadingId !== null || p.alreadyLinked}
+                    onClick={() => pick(p)}
+                    title={p.caption.slice(0, 200)}
+                    className="group relative aspect-square overflow-hidden rounded-lg disabled:cursor-not-allowed"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.images[0]} alt="" className="h-full w-full object-cover transition group-hover:scale-105" />
+                    {p.images.length > 1 && (
+                      <span className="absolute right-1 top-1 rounded bg-black/60 px-1.5 text-[10px] text-white">{p.images.length} fotos</span>
+                    )}
+                    {(p.alreadyLinked || loadingId === p.id) && (
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/55 px-1 text-center text-[11px] font-medium text-white">
+                        {loadingId === p.id ? "Importando…" : "Ya está en el sitio"}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PublishToInstagramButton({ propertyId, authHeaders, reload }: { propertyId: string; authHeaders: Record<string, string>; reload: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  return (
+    <>
+      <button
+        className={btnGhost}
+        disabled={busy}
+        onClick={async () => {
+          if (!confirm("¿Publicar esta propiedad en Instagram?")) return;
+          setBusy(true);
+          setErr(null);
+          try {
+            await post("/api/inmobiliaria/instagram", authHeaders, { kind: "publish", propertyId });
+            reload();
+          } catch (e) {
+            setErr(e instanceof Error ? e.message : "Error");
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {busy ? "Publicando…" : "Publicar en Instagram"}
+      </button>
+      {err && <span className="text-xs text-red-600">{err}</span>}
+    </>
   );
 }
 

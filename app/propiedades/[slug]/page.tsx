@@ -10,6 +10,9 @@ import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { OPERATION_LABEL } from "@/components/properties/PropertyCard";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { getPublicProperties } from "@/lib/public-properties";
+
+export const revalidate = 300;
 
 // Convierte URLs de YouTube (watch / youtu.be / shorts) a URL de embed.
 function toYouTubeEmbed(url: string): string | null {
@@ -17,13 +20,14 @@ function toYouTubeEmbed(url: string): string | null {
   return m ? `https://www.youtube-nocookie.com/embed/${m[1]}` : null;
 }
 
-export function generateStaticParams() {
-  if (!clientConfig.modules.propiedades) return [];
-  return (clientConfig.properties ?? []).map((p) => ({ slug: p.slug }));
+// Las fichas se generan a pedido (y quedan en caché): las propiedades nuevas
+// del panel aparecen sin redeploy.
+async function findProperty(slug: string) {
+  return (await getPublicProperties()).find((p) => p.slug === slug);
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const property = (clientConfig.properties ?? []).find((p) => p.slug === params.slug);
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const property = await findProperty(params.slug);
   if (!property) return {};
   return {
     title: `${property.title} — ${clientConfig.meta.businessName}`,
@@ -31,9 +35,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function PropiedadPage({ params }: { params: { slug: string } }) {
+export default async function PropiedadPage({ params }: { params: { slug: string } }) {
   const { modules, contact, syndication } = clientConfig;
-  const property = (clientConfig.properties ?? []).find((p) => p.slug === params.slug);
+  const property = await findProperty(params.slug);
   if (!modules.propiedades || !property) notFound();
 
   const hasWhatsapp = modules.whatsappButton && Boolean(contact.whatsapp);

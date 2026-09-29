@@ -196,6 +196,9 @@ export function ensureSchema(): Promise<void> {
       await sql`ALTER TABLE re_properties ADD COLUMN IF NOT EXISTS pets_allowed BOOLEAN`;
       await sql`ALTER TABLE re_properties ADD COLUMN IF NOT EXISTS furnished BOOLEAN`;
       await sql`ALTER TABLE re_properties ADD COLUMN IF NOT EXISTS condition TEXT`;
+      // Vínculo con la publicación de Instagram (importada o publicada desde el panel).
+      await sql`ALTER TABLE re_properties ADD COLUMN IF NOT EXISTS instagram_media_id TEXT`;
+      await sql`ALTER TABLE re_properties ADD COLUMN IF NOT EXISTS instagram_url TEXT`;
       await sql`
         CREATE TABLE IF NOT EXISTS re_providers (
           id TEXT PRIMARY KEY,

@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
   try {
     const result = await streamTextWithFallback(clientConfig.chat.model, {
-      system: buildSystemPrompt(),
+      system: await buildSystemPrompt(),
       messages: await convertToModelMessages(messages),
       maxOutputTokens: clientConfig.chat.maxTokensPerReply,
       // Tools conversacionales según módulos activos: agenda (reservar), leads

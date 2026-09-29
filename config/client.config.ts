@@ -119,7 +119,7 @@ export const clientConfig = defineClientConfig({
       { day: "Domingo", closed: true },
     ],
     socials: [
-      { platform: "instagram", url: "https://instagram.com/propiedadesrossanaangulo" },
+      { platform: "instagram", url: "https://instagram.com/propiedadesrossanna" },
     ],
   },
 

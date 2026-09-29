@@ -160,6 +160,33 @@ npm run demo -- --name "Corredora García" --rubro "corretaje de propiedades" \
   cacheada 1h. Mismo patrón que el aviso por WhatsApp: gratis por defecto,
   con upgrade opcional a la API real cuando el cliente la conecta.
 
+### Instagram ↔ panel inmobiliario (con las mismas variables)
+
+Con `INSTAGRAM_ACCESS_TOKEN` + `INSTAGRAM_USER_ID` configuradas, el panel
+`/inmobiliaria/admin` suma dos acciones (`app/api/inmobiliaria/instagram`):
+
+- **Importar desde Instagram**: muestra las últimas publicaciones; al elegir
+  una, copia sus fotos a Vercel Blob y prellena la ficha leyendo el texto
+  (operación, tipo, precio UF/$, dormitorios, baños, m²). La corredora revisa y
+  guarda. Las publicaciones ya importadas quedan marcadas.
+- **Publicar en Instagram**: al guardar una propiedad nueva (casilla marcada
+  por defecto) o desde su tarjeta, se publica como carrusel (hasta 10 fotos)
+  con un texto armado desde la ficha y el link a `/propiedades/<slug>`.
+
+Setup en Meta for Developers: app de tipo Business con el producto
+**Instagram API con inicio de sesión de Instagram**, cuenta Instagram
+Business/Creator, permisos `instagram_business_basic` y
+`instagram_business_content_publish`. Genera el token de larga duración desde
+el panel de la app; `INSTAGRAM_USER_ID` es el ID de la cuenta que muestra ese
+mismo panel. El token vence a los 60 días: el cron semanal
+`/api/instagram/refresh` lo renueva y lo guarda en la base (requiere
+`DATABASE_URL` y `CRON_SECRET`).
+
+El sitio público (home, `/propiedades`, fichas y asistente IA) muestra las
+propiedades **activas o reservadas con al menos una foto** del panel. Mientras
+el panel no tenga ninguna, se ve el inventario de ejemplo de
+`config.properties`.
+
 Variables de entorno (`.env.local`, ver `.env.example`):
 
 - `GEMINI_API_KEY` — requerido para el chat IA (modelo `gemini-2.5-flash-lite`, tier gratuito en Google AI Studio).
@@ -169,9 +196,9 @@ Variables de entorno (`.env.local`, ver `.env.example`):
   verdad con Webpay (requiere código de comercio validado por Transbank); sin
   ellas el módulo tienda usa el ambiente de integración.
 - `CRON_SECRET` — protege el resumen diario (`/api/resumen`); lo manda Vercel Cron.
-- `INSTAGRAM_ACCESS_TOKEN` + `INSTAGRAM_USER_ID` — opcional, solo para la grilla
-  real del feed de Instagram; sin ellas la sección igual aparece como botón de
-  seguir (si el config trae el link).
+- `INSTAGRAM_ACCESS_TOKEN` + `INSTAGRAM_USER_ID` — opcional: grilla real del feed
+  de Instagram e importar/publicar propiedades desde el panel; sin ellas la
+  sección igual aparece como botón de seguir (si el config trae el link).
 - `DATABASE_URL` — Postgres (Neon). Opcional en demos, **obligatoria en clientes
   reales**: ver abajo.
 

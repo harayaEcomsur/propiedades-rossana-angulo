@@ -6,15 +6,19 @@ import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { PropertyExplorer } from "@/components/properties/PropertyExplorer";
+import { getPublicProperties } from "@/lib/public-properties";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: `Propiedades — ${clientConfig.meta.businessName}`,
   description: `Propiedades en venta y arriendo de ${clientConfig.meta.businessName}. Busca por comuna, tipo y dormitorios.`,
 };
 
-export default function PropiedadesPage() {
-  const { modules, properties, contact, syndication } = clientConfig;
-  if (!modules.propiedades || !properties?.length) notFound();
+export default async function PropiedadesPage() {
+  const { modules, contact, syndication } = clientConfig;
+  const properties = await getPublicProperties();
+  if (!modules.propiedades || !properties.length) notFound();
   const hasWhatsapp = modules.whatsappButton && Boolean(contact.whatsapp);
   const portals = [
     syndication?.portalinmobiliario && "Portalinmobiliario",

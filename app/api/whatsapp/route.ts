@@ -117,7 +117,7 @@ export async function POST(req: Request) {
 
     const { text } = await generateTextWithFallback(clientConfig.chat.model, {
       system:
-        buildSystemPrompt() +
+        (await buildSystemPrompt()) +
         "\n\nEstás respondiendo por WhatsApp: sé especialmente breve (2-4 frases), sin markdown ni asteriscos. Si el cliente necesita atención humana, dile que alguien del equipo le responderá por este mismo chat.",
       messages: [...history, { role: "user", content: userText }],
       maxOutputTokens: clientConfig.chat.maxTokensPerReply,

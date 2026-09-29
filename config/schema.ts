@@ -240,7 +240,7 @@ export const clientConfigSchema = z.object({
         slug: z.string(),
         title: z.string(),
         operation: z.enum(["venta", "arriendo", "arriendo_temporada"]),
-        type: z.enum(["casa", "departamento", "oficina", "local", "terreno", "parcela"]),
+        type: z.enum(["casa", "departamento", "oficina", "local", "terreno", "parcela", "bodega", "estacionamiento"]),
         comuna: z.string(),
         // Texto libre para soportar UF y CLP: "UF 4.500", "$650.000/mes".
         price: z.string(),

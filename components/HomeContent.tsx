@@ -21,6 +21,7 @@ import { ContactForm } from "@/components/sections/ContactForm";
 import { MapEmbed } from "@/components/sections/MapEmbed";
 import { Container } from "@/components/ui/Container";
 import { getServicePrices } from "@/lib/booking-store";
+import { getPublicProperties } from "@/lib/public-properties";
 
 export async function HomeContent() {
   const { modules, contact, branding, meta } = clientConfig;
@@ -56,9 +57,9 @@ export async function HomeContent() {
     );
 
   // Con el módulo de propiedades activo, el inventario real reemplaza a la galería.
-  const hasProperties = modules.propiedades && (clientConfig.properties?.length ?? 0) > 0;
-  const gallerySection = hasProperties ? (
-    <FeaturedProperties properties={clientConfig.properties!} />
+  const properties = await getPublicProperties();
+  const gallerySection = properties.length > 0 ? (
+    <FeaturedProperties properties={properties} />
   ) : !gallery.length ? null : layout === "inmobiliaria" ? (
     <GalleryInmobiliaria images={gallery} />
   ) : (
