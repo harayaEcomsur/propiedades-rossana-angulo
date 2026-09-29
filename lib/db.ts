@@ -199,6 +199,8 @@ export function ensureSchema(): Promise<void> {
       // Vínculo con la publicación de Instagram (importada o publicada desde el panel).
       await sql`ALTER TABLE re_properties ADD COLUMN IF NOT EXISTS instagram_media_id TEXT`;
       await sql`ALTER TABLE re_properties ADD COLUMN IF NOT EXISTS instagram_url TEXT`;
+      // Video de la ficha (MP4 en Vercel Blob, o link de YouTube/Instagram).
+      await sql`ALTER TABLE re_properties ADD COLUMN IF NOT EXISTS video TEXT`;
       await sql`
         CREATE TABLE IF NOT EXISTS re_providers (
           id TEXT PRIMARY KEY,

@@ -122,7 +122,7 @@ export default async function PropiedadPage({ params }: { params: { slug: string
               )}
             </div>
             <div className={`flex flex-col gap-6 ${sideVideo ? "order-first lg:order-none" : ""}`}>
-              {sideVideo && <PropertyVideo video={sideVideo} title={property.title} />}
+              {sideVideo && <PropertyVideo video={sideVideo} title={property.title} poster={property.images[0]} />}
               <aside className="h-fit border border-foreground/15 p-6">
                 <p className="font-heading text-base font-semibold text-foreground">¿Te interesa esta propiedad?</p>
                 <p className="mt-2 text-sm text-foreground/70">

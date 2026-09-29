@@ -9,13 +9,40 @@ import { captionForProperty, draftFromCaption } from "@/lib/instagram-property";
 
 // Puente entre el panel /inmobiliaria/admin e Instagram:
 //  GET            → últimas publicaciones de la cuenta, para elegir cuál importar.
-//  POST import    → copia las fotos de una publicación a Vercel Blob (las URLs
-//                   de Instagram vencen en días) y devuelve un borrador de
-//                   ficha leído del texto, para prellenar el formulario.
+//  POST import    → copia las fotos (y el video, si es un reel) de una
+//                   publicación a Vercel Blob (las URLs de Instagram vencen en
+//                   días) y devuelve un borrador de ficha leído del texto,
+//                   para prellenar el formulario.
 //  POST publish   → publica una propiedad del panel en Instagram (carrusel).
 export const runtime = "nodejs";
-// Publicar un carrusel son varias llamadas a Instagram en serie.
-export const maxDuration = 60;
+// Publicar un carrusel son varias llamadas a Instagram en serie, y copiar un
+// reel a Blob puede tomar varios segundos.
+export const maxDuration = 120;
+
+// Un reel dura a lo más 90 s: unos pocos MB a decenas. Este tope solo evita
+// copiar algo anómalo.
+const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
+
+// Copia el MP4 de un reel a Vercel Blob en streaming (sin cargarlo entero en
+// memoria). Si falla, la importación sigue sin video propio: la ficha cae al
+// reproductor de Instagram usando el link del reel.
+async function copyVideo(url: string, pathname: string): Promise<string | undefined> {
+  try {
+    const res = await fetch(url);
+    const size = Number(res.headers.get("content-length") ?? 0);
+    if (!res.ok || !res.body || size > MAX_VIDEO_BYTES) return undefined;
+    const blob = await put(pathname, res.body, {
+      access: "public",
+      contentType: res.headers.get("content-type") ?? "video/mp4",
+      addRandomSuffix: true,
+      multipart: true,
+    });
+    return blob.url;
+  } catch (error) {
+    console.error("[instagram] no se pudo copiar el video:", error);
+    return undefined;
+  }
+}
 
 function claveFromRequest(req: Request): string | null {
   return req.headers.get("x-re-key") ?? new URL(req.url).searchParams.get("clave");
@@ -85,6 +112,7 @@ export async function POST(req: Request) {
       ok: true,
       draft: draftFromCaption(media.caption),
       photos,
+      video: media.videoUrl ? await copyVideo(media.videoUrl, `inmobiliaria/${clientConfig.meta.slug}/${broker.id}/ig-${media.id}.mp4`) : undefined,
       instagramMediaId: media.id,
       instagramUrl: media.permalink,
     });

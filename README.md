@@ -168,7 +168,9 @@ Con `INSTAGRAM_ACCESS_TOKEN` + `INSTAGRAM_USER_ID` configuradas, el panel
 - **Importar desde Instagram**: muestra las últimas publicaciones; al elegir
   una, copia sus fotos a Vercel Blob y prellena la ficha leyendo el texto
   (operación, tipo, precio UF/$, dormitorios, baños, m²). La corredora revisa y
-  guarda. Las publicaciones ya importadas quedan marcadas.
+  guarda. Las publicaciones ya importadas quedan marcadas. Si es un reel, el
+  MP4 también se copia a Blob y la ficha lo reproduce con el reproductor
+  nativo del sitio; si la copia falla, cae al reproductor de Instagram.
 - **Publicar en Instagram**: al guardar una propiedad nueva (casilla marcada
   por defecto) o desde su tarjeta, se publica como carrusel (hasta 10 fotos)
   con un texto armado desde la ficha y el link a `/propiedades/<slug>`.

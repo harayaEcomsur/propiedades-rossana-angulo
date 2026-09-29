@@ -77,6 +77,9 @@ export interface REProperty {
   // creó al publicarla desde el panel (evita importarla/publicarla dos veces).
   instagramMediaId?: string;
   instagramUrl?: string;
+  // Video de la ficha: MP4 propio (Vercel Blob, copiado al importar un reel) o
+  // link de YouTube/Instagram.
+  video?: string;
   createdAt: string;
 }
 
@@ -379,6 +382,7 @@ function rowToProperty(r: Record<string, unknown>): REProperty {
     status: r.status as REProperty["status"],
     instagramMediaId: (r.instagram_media_id as string) ?? undefined,
     instagramUrl: (r.instagram_url as string) ?? undefined,
+    video: (r.video as string) ?? undefined,
     createdAt: new Date(r.created_at as string).toISOString(),
   };
 }
@@ -403,7 +407,7 @@ export async function addProperty(data: Omit<REProperty, "id" | "createdAt">): P
         INSERT INTO re_properties (
           id, broker_id, title, operation, type, address, region, city, neighborhood, price, currency, description,
           bedrooms, bathrooms, covered_area, total_area, parking_spots, storage_units, maintenance_fee,
-          pets_allowed, furnished, condition, photos, status, instagram_media_id, instagram_url, created_at
+          pets_allowed, furnished, condition, photos, status, instagram_media_id, instagram_url, video, created_at
         )
         VALUES (
           ${p.id}, ${p.brokerId}, ${p.title}, ${p.operation}, ${p.type}, ${p.address ?? null}, ${p.region ?? null},
@@ -411,7 +415,7 @@ export async function addProperty(data: Omit<REProperty, "id" | "createdAt">): P
           ${p.bedrooms ?? null}, ${p.bathrooms ?? null}, ${p.coveredArea ?? null}, ${p.totalArea ?? null},
           ${p.parkingSpots ?? null}, ${p.storageUnits ?? null}, ${p.maintenanceFee ?? null},
           ${p.petsAllowed ?? null}, ${p.furnished ?? null}, ${p.condition ?? null}, ${jsonb(p.photos)}, ${p.status},
-          ${p.instagramMediaId ?? null}, ${p.instagramUrl ?? null}, ${p.createdAt}
+          ${p.instagramMediaId ?? null}, ${p.instagramUrl ?? null}, ${p.video ?? null}, ${p.createdAt}
         )
       `;
     },

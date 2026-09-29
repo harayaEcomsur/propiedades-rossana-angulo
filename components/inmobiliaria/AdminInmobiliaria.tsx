@@ -363,7 +363,7 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
   const [photos, setPhotos] = useState<string[]>([]);
   // Si la ficha se importó de Instagram, queda vinculada a esa publicación (y
   // no se vuelve a publicar allá). Si no, se ofrece publicarla al guardar.
-  const [importedFrom, setImportedFrom] = useState<{ mediaId: string; url: string } | null>(null);
+  const [importedFrom, setImportedFrom] = useState<{ mediaId: string; url: string; video?: string } | null>(null);
   const [publishToInstagram, setPublishToInstagram] = useState(data.instagramConnected);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -382,7 +382,7 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
     setParkingSpots(d.parkingSpots !== undefined ? String(d.parkingSpots) : "");
     setDescription(d.description ?? "");
     setPhotos(imported.photos);
-    setImportedFrom({ mediaId: imported.instagramMediaId, url: imported.instagramUrl });
+    setImportedFrom({ mediaId: imported.instagramMediaId, url: imported.instagramUrl, video: imported.video });
     setNotice("Datos leídos desde Instagram: revisa y completa la ficha (ubicación, precio, etc.) antes de guardar.");
   }
 
@@ -416,6 +416,7 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
         photos,
         instagramMediaId: importedFrom?.mediaId,
         instagramUrl: importedFrom?.url,
+        video: importedFrom?.video,
       });
       if (!importedFrom && publishToInstagram && data.instagramConnected && photos.length > 0) {
         try {
@@ -464,7 +465,7 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
             <a href={importedFrom.url} target="_blank" rel="noopener noreferrer" className="font-medium text-primary underline">
               esta publicación de Instagram
             </a>
-            .{" "}
+            {importedFrom.video ? " — con su video (copiado al sitio)" : ""}.{" "}
             <button className="underline" onClick={() => setImportedFrom(null)}>
               Desvincular
             </button>
@@ -667,6 +668,7 @@ interface InstagramImport {
     description?: string;
   };
   photos: string[];
+  video?: string;
   instagramMediaId: string;
   instagramUrl: string;
 }

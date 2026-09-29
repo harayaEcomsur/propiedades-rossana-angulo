@@ -30,6 +30,8 @@ export interface InstagramMedia {
   permalink: string;
   timestamp: string;
   images: string[];
+  // MP4 del reel/video (URL temporal de Instagram: hay que copiarlo para usarlo).
+  videoUrl?: string;
 }
 
 export function instagramConfigured(): boolean {
@@ -140,7 +142,8 @@ export async function getInstagramFeed(limit = 6): Promise<InstagramPost[] | nul
 }
 
 // Últimas publicaciones con todas sus fotos (los carruseles traen cada imagen;
-// de los videos solo se toma la miniatura).
+// de los videos, la miniatura como foto y el MP4 aparte en videoUrl). En un
+// carrusel se toma el primer video que traiga.
 export async function listInstagramMedia(limit = 24): Promise<InstagramMedia[]> {
   const userId = process.env.INSTAGRAM_USER_ID!;
   const data = await graphGet<{ data?: RawMedia[] }>(`${userId}/media`, {
@@ -154,12 +157,14 @@ export async function listInstagramMedia(limit = 24): Promise<InstagramMedia[]> 
       item.media_type === "CAROUSEL_ALBUM"
         ? (item.children?.data ?? []).map(pick)
         : [pick(item)];
+    const video = [item, ...(item.children?.data ?? [])].find((m) => m.media_type === "VIDEO" && m.media_url);
     return {
       id: item.id,
       caption: item.caption ?? "",
       permalink: item.permalink,
       timestamp: item.timestamp,
       images: images.filter((u): u is string => Boolean(u)),
+      videoUrl: video?.media_url,
     };
   });
 }

@@ -128,6 +128,7 @@ const propertySchema = z.object({
   // Presentes cuando la ficha se importó desde una publicación de Instagram.
   instagramMediaId: z.string().max(64).optional(),
   instagramUrl: z.string().url().optional(),
+  video: z.string().url().max(500).optional(),
 });
 const providerSchema = z.object({
   kind: z.literal("provider"),
@@ -217,6 +218,7 @@ export async function POST(req: Request) {
       status: "activa",
       instagramMediaId: data.instagramMediaId,
       instagramUrl: data.instagramUrl,
+      video: data.video,
     });
     refreshPublicPages();
     return Response.json({ ok: true, property });
