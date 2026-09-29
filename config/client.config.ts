@@ -107,8 +107,8 @@ export const clientConfig = defineClientConfig({
   ],
 
   contact: {
-    phone: "+56 9 8765 4321",
-    whatsapp: "56987654321",
+    phone: "+56 9 8207 9214",
+    whatsapp: "56982079214",
     whatsappPrefilledMessage: "Hola Rossanna! Vi tu sitio web y quiero consultar por una propiedad",
     email: "contacto@propiedadesrossanaangulo.cl",
     address: "Viña del Mar, Región de Valparaíso",
