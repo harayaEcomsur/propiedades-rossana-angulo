@@ -296,10 +296,10 @@ export const clientConfig = defineClientConfig({
     { q: "¿Cuánto cuesta una tasación?", a: "La tasación cuesta $150.000 y la realiza un arquitecto del equipo, con informe de valorización escrito y comparables del sector. Se cobra aparte de la comisión de venta." },
     { q: "¿Incluyen asesoría legal?", a: "Sí. En la venta te acompañamos con asesoría legal durante todo el proceso de escritura y hasta la inscripción de la propiedad a nombre del comprador." },
     { q: "¿Y por arrendar?", a: "El equivalente al 50% + IVA del primer mes de arriendo, que incluye evaluación del arrendatario con informe comercial y contrato de arriendo." },
-    { q: "¿Cuánto demora venderse una propiedad?", a: "Depende del sector y del precio, pero una propiedad bien tasada y con buenas fotos se vende en general entre 2 y 4 meses." },
+    { q: "¿Cuánto demora venderse una propiedad?", a: "Una propiedad bien tasada y con buenas fotos se vende en general entre 2 y 4 meses, según el sector y el precio." },
     { q: "¿Qué documentos necesito para vender?", a: "Escritura, certificado de dominio vigente, certificado de hipotecas y gravámenes, y contribuciones al día. Te ayudo a reunirlos todos." },
     { q: "¿Trabajas con compradores con crédito hipotecario?", a: "Sí, la mayoría de las ventas son con crédito. Coordino directamente con el banco y la notaría los plazos de la operación." },
-    { q: "¿En qué zonas trabajas?", a: "Mi base es Viña del Mar y la mayoría de mis propiedades están en la V Región (Viña del Mar, Reñaca y Concón), pero opero también en Santiago, el sur y todo Chile: la gestión y publicación es remota y las visitas se coordinan según la zona." },
+    { q: "¿En qué zonas trabajas?", a: "Mi base es Viña del Mar y la mayoría de mis propiedades están en la V Región (Viña del Mar, Reñaca y Concón). También opero en Santiago, el sur y todo Chile: la gestión y publicación es remota y las visitas se coordinan según la zona." },
     { q: "¿Administras arriendos por temporada?", a: "Sí — administro propiedades para arriendo temporal, especialmente departamentos de veraneo en el litoral: publicación, reservas, entrega y recepción. Las condiciones se acuerdan según cada propiedad." },
   ],
 

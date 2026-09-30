@@ -423,7 +423,7 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
           await post("/api/inmobiliaria/instagram", authHeaders, { kind: "publish", propertyId: created.property.id });
           setNotice("Propiedad guardada y publicada en Instagram.");
         } catch (e) {
-          setNotice(`Propiedad guardada, pero no se pudo publicar en Instagram: ${e instanceof Error ? e.message : "error"}. Puedes reintentar desde su tarjeta.`);
+          setNotice(`Propiedad guardada. La publicación en Instagram quedó pendiente (${e instanceof Error ? e.message : "error"}): puedes reintentarla desde su tarjeta.`);
         }
       }
       setImportedFrom(null);
