@@ -81,7 +81,7 @@ export const clientConfig = defineClientConfig({
     {
       icon: "TrendingUp",
       title: "Tasación y estudio de mercado",
-      description: "Valorización realista de tu propiedad según ventas comparables y el mercado actual de la comuna.",
+      description: "Valorización realista de tu propiedad, realizada por un arquitecto del equipo, según ventas comparables y el mercado actual de la comuna.",
     },
     {
       icon: "FileCheck",
@@ -315,8 +315,8 @@ export const clientConfig = defineClientConfig({
     },
     {
       name: "Solo tasación",
-      price: "$60.000",
-      features: ["Informe de valorización escrito", "Comparables del sector", "Se descuenta si luego vendes conmigo"],
+      price: "$150.000",
+      features: ["Realizada por un arquitecto del equipo", "Informe de valorización escrito", "Comparables del sector"],
     },
   ],
 
@@ -326,7 +326,7 @@ export const clientConfig = defineClientConfig({
     qaPairs: [
       { q: "¿Cuánto cobra por vender una propiedad?", a: "2% + IVA del valor de venta, solo si el negocio se concreta. Incluye tasación, publicación, visitas y acompañamiento hasta la firma." },
       { q: "¿Cuánto cobra por arrendar?", a: "El 50% + IVA del primer mes de arriendo, con informe comercial del arrendatario y contrato incluido." },
-      { q: "¿Hace tasaciones?", a: "Sí, la tasación con informe escrito cuesta $60.000 y se descuenta de la comisión si luego vendes con ella." },
+      { q: "¿Hace tasaciones?", a: "Sí. La tasación la realiza un arquitecto del equipo, incluye informe de valorización escrito y cuesta $150.000." },
       { q: "¿En qué zonas trabaja?", a: "Base en Viña del Mar y especialidad en la V Región; opera también en Santiago, el sur y todo Chile — la gestión es remota y las visitas se coordinan según la zona." },
       { q: "¿Administra arriendos por temporada?", a: "Sí, administra propiedades para arriendo temporal en el litoral (departamentos de veraneo): publicación, reservas, entrega y recepción. Las condiciones se conversan según cada propiedad." },
       { q: "¿Cuál es el horario de atención?", a: "Lunes a viernes de 9:30 a 19:00 y sábados de 10:00 a 14:00. Las visitas se coordinan según disponibilidad." },
