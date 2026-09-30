@@ -102,7 +102,7 @@ export const clientConfig = defineClientConfig({
 
   about: {
     title: "Quién te asesora",
-    body: "Rossanna Angulo es asesora inmobiliaria acreditada, con 9 años de experiencia y base en Viña del Mar. Trabaja principalmente en Viña del Mar, Reñaca y Concón, y opera también en Santiago, el sur y todo Chile, junto a un equipo que incluye un arquitecto para las tasaciones. Su sello es el acompañamiento personal en cada etapa del proceso — publicación, visitas, negociación, escritura e inscripción — con comunicación clara, sin letra chica y siempre con contrato por escrito.",
+    body: "Rossanna Angulo, nuestra CEO, es asesora inmobiliaria acreditada, con 9 años de experiencia y base en Viña del Mar. Trabaja principalmente en Viña del Mar, Reñaca y Concón, y opera también en Santiago, el sur y todo Chile, junto a un equipo que incluye un arquitecto para las tasaciones. Su sello es el acompañamiento personal en cada etapa del proceso — publicación, visitas, negociación, escritura e inscripción — con comunicación clara, sin letra chica y siempre con contrato por escrito.",
     imageUrl: "/clients/propiedades-rossana-angulo/nosotros.jpg",
   },
 
@@ -117,7 +117,7 @@ export const clientConfig = defineClientConfig({
     phone: "+56 9 8207 9214",
     whatsapp: "56982079214",
     whatsappPrefilledMessage: "Hola Rossanna! Vi tu sitio web y quiero consultar por una propiedad",
-    email: "contacto@propiedadesrossanaangulo.cl",
+    email: "rossanna@propiedadesrossannaangulo.cl",
     address: "Viña del Mar, Región de Valparaíso",
     mapQuery: "Viña del Mar, Chile",
     hours: [
@@ -301,9 +301,10 @@ export const clientConfig = defineClientConfig({
     {
       name: "Rossanna Angulo",
       role: "CEO · Asesora inmobiliaria",
-      bio: "Asesora acreditada con 9 años de experiencia en Viña del Mar, Reñaca y Concón. Acompaña cada operación hasta la inscripción.",
+      bio: "Nuestra CEO. Asesora acreditada con 9 años de experiencia en Viña del Mar, Reñaca y Concón.",
       phone: "+56 9 8207 9214",
       whatsapp: "56982079214",
+      email: "rossanna@propiedadesrossannaangulo.cl",
     },
     {
       name: "Carolina Llona",
@@ -372,7 +373,7 @@ export const clientConfig = defineClientConfig({
 
   chat: {
     businessDescription:
-      "Propiedades Rossanna Angulo es una corredora de propiedades independiente con base en Viña del Mar, especialista en la V Región y con operación en Santiago, el sur y todo Chile. Ofrece venta, arriendo, arriendos temporales (administración de propiedades de temporada en el litoral), tasación, estudio de títulos, marketing inmobiliario y asesoría a compradores. Atiende con acompañamiento personal en todo el proceso.",
+      "Propiedades Rossanna Angulo es una corredora de propiedades independiente con base en Viña del Mar, especialista en la V Región y con operación en Santiago, el sur y todo Chile. Ofrece venta, arriendo, arriendos temporales (administración de propiedades de temporada en el litoral), tasación, estudio de títulos, marketing inmobiliario y asesoría a compradores. Atiende con acompañamiento personal en todo el proceso. Su CEO es Rossanna Angulo, asesora inmobiliaria acreditada con 9 años de experiencia, que lidera un equipo de asesoras inmobiliarias.",
     qaPairs: [
       { q: "¿Cuánto cobra por vender una propiedad?", a: "2% + IVA del valor de venta, solo si el negocio se concreta. Incluye publicación, visitas, negociación y acompañamiento profesional con asesoría legal durante la escritura y hasta la inscripción de la propiedad. La tasación no está incluida en la comisión: se cobra aparte ($150.000)." },
       { q: "¿Cuánto cobra por arrendar?", a: "El 50% + IVA del primer mes de arriendo, con informe comercial del arrendatario y contrato incluido." },
@@ -416,6 +417,6 @@ export const clientConfig = defineClientConfig({
       "Asesoría legal inmobiliaria",
     ],
     founder: "Rossanna Angulo",
-    founderJobTitle: "Asesora inmobiliaria",
+    founderJobTitle: "CEO y asesora inmobiliaria acreditada",
   },
 });
