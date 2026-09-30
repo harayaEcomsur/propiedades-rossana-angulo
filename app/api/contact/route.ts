@@ -9,6 +9,8 @@ const contactSchema = z.object({
   message: z.string().min(1).max(2000),
 });
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = contactSchema.safeParse(body);
@@ -36,8 +38,12 @@ export async function POST(req: Request) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Sitio web <onboarding@resend.dev>",
+      // Remitente con el dominio propio (verificado en Resend). Sin EMAIL_FROM,
+      // la dirección de prueba de Resend, que solo entrega al dueño de la cuenta.
+      from: process.env.EMAIL_FROM || "Sitio web <onboarding@resend.dev>",
       to: destination,
+      // Si el visitante dejó un correo, "Responder" le contesta directo a él.
+      ...(emailPattern.test(contactInfo.trim()) ? { reply_to: contactInfo.trim() } : {}),
       subject: `Nuevo contacto de ${name} — ${clientConfig.meta.businessName}`,
       text: `Nombre: ${name}\nContacto: ${contactInfo}\n\nMensaje:\n${message}`,
     }),
