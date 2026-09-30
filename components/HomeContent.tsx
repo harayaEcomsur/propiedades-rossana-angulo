@@ -40,7 +40,13 @@ export async function HomeContent() {
   // de las secciones (nosotros, testimonios, precios, FAQ, contacto) es común.
   const hero =
     layout === "inmobiliaria" ? (
-      <HeroInmobiliaria hero={clientConfig.hero} rubro={meta.rubro} hasGallery={gallery.length > 0} />
+      <HeroInmobiliaria
+        hero={clientConfig.hero}
+        rubro={meta.rubro}
+        hasGallery={gallery.length > 0}
+        logoUrl={branding.logoUrl}
+        businessName={meta.businessName}
+      />
     ) : layout === "corporativo" ? (
       <HeroCorporativo hero={clientConfig.hero} rubro={meta.rubro} />
     ) : (

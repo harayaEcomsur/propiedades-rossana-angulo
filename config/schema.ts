@@ -80,6 +80,10 @@ export const clientConfigSchema = z.object({
     ctaLabel: z.string(),
     ctaHref: z.string(),
     backgroundImageUrl: z.string().optional(),
+    // Crédito de la foto de fondo cuando su licencia lo exige (ej. CC BY).
+    backgroundImageCredit: z.object({ text: z.string(), href: z.string().url() }).optional(),
+    // Sellos cortos bajo el subtítulo (ej. "Asesoría legal en cada operación").
+    badges: z.array(z.string()).max(4).optional(),
   }),
 
   services: z

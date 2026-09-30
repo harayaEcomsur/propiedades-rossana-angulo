@@ -52,7 +52,14 @@ export const clientConfig = defineClientConfig({
       "Corredora con base en Viña del Mar, especialista en la V Región, con operación en Santiago, el sur y todo Chile. Acompañamiento personal desde la tasación hasta la entrega de llaves.",
     ctaLabel: "Agenda una visita",
     ctaHref: "#contacto",
-    backgroundImageUrl: "/clients/propiedades-rossana-angulo/hero.jpg",
+    // Vista aérea de las dunas de Concón. Licencia CC BY 2.0: el crédito es
+    // obligatorio (se muestra en la esquina del hero).
+    backgroundImageUrl: "/clients/propiedades-rossana-angulo/hero-concon-dunas.jpg",
+    backgroundImageCredit: {
+      text: "Foto: Deensel · CC BY 2.0",
+      href: "https://commons.wikimedia.org/wiki/File:Dunas_De_Conc%C3%B3n_(40046667682).jpg",
+    },
+    badges: ["Asesoría legal en cada operación"],
   },
 
   services: [
