@@ -16,6 +16,7 @@ import { PropertyVideo } from "@/components/properties/PropertyVideo";
 import { propertyJsonLd } from "@/lib/property-schema";
 import { jsonLdString } from "@/lib/seo";
 import { shortText } from "@/lib/text";
+import { joinChannels, syndicationChannels } from "@/lib/syndication";
 
 export const revalidate = 300;
 
@@ -74,11 +75,7 @@ export default async function PropiedadPage({ params }: { params: { slug: string
   const waHref = contact.whatsapp
     ? buildWhatsAppLink(contact.whatsapp, `Hola! Me interesa la propiedad "${property.title}" (${property.comuna}) que vi en su sitio`)
     : "#contacto";
-  const portals = [
-    syndication?.portalinmobiliario && "Portalinmobiliario",
-    syndication?.instagram && "Instagram",
-    syndication?.tiktok && "TikTok",
-  ].filter(Boolean);
+  const portals = syndicationChannels(syndication);
 
   const specs = [
     property.bedrooms != null && { icon: BedDouble, label: `${property.bedrooms} dormitorios` },
@@ -152,7 +149,7 @@ export default async function PropiedadPage({ params }: { params: { slug: string
               <p className="mt-3 whitespace-pre-line leading-relaxed text-foreground/80">{property.description}</p>
               {portals.length > 0 && (
                 <p className="mt-6 text-xs font-medium uppercase tracking-wider text-foreground/50">
-                  Publicada también en {portals.join(" · ")}
+                  Publicada también en {joinChannels(portals)}
                 </p>
               )}
             </div>

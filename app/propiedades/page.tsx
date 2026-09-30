@@ -9,6 +9,7 @@ import { PropertyExplorer } from "@/components/properties/PropertyExplorer";
 import { getPublicProperties } from "@/lib/public-properties";
 import { propertyListJsonLd } from "@/lib/property-schema";
 import { jsonLdString } from "@/lib/seo";
+import { joinChannels, syndicationChannels } from "@/lib/syndication";
 
 export const revalidate = 300;
 
@@ -34,11 +35,7 @@ export default async function PropiedadesPage() {
   const properties = await getPublicProperties();
   if (!modules.propiedades || !properties.length) notFound();
   const hasWhatsapp = modules.whatsappButton && Boolean(contact.whatsapp);
-  const portals = [
-    syndication?.portalinmobiliario && "Portalinmobiliario",
-    syndication?.instagram && "Instagram",
-    syndication?.tiktok && "TikTok",
-  ].filter(Boolean);
+  const portals = syndicationChannels(syndication);
 
   return (
     <>
@@ -52,8 +49,8 @@ export default async function PropiedadesPage() {
           </h1>
           {portals.length > 0 && (
             <p className="mt-3 max-w-2xl text-sm text-foreground/60">
-              Cada propiedad se publica también en {portals.join(" y ")} — un solo lugar para
-              administrar, todos los canales al día.
+              Publicamos cada propiedad también en {joinChannels(portals)}, para que llegue a más
+              personas.
             </p>
           )}
           <div className="mt-10">

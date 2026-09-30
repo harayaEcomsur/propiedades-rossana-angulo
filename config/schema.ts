@@ -275,6 +275,8 @@ export const clientConfigSchema = z.object({
       portalinmobiliario: z.boolean().default(false),
       instagram: z.boolean().default(false),
       tiktok: z.boolean().default(false),
+      // Mención genérica "y en otros portales inmobiliarios" (sin nombrarlos).
+      otherPortals: z.boolean().default(false),
     })
     .optional(),
 

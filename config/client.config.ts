@@ -147,11 +147,12 @@ export const clientConfig = defineClientConfig({
     inmobiliariaAdmin: true,
   },
 
-  // Sindicación visible en la demo (la integración real se activa al contratar,
-  // con las cuentas de la clienta).
+  // Dónde se publica cada propiedad. Instagram tiene integración real (panel);
+  // Portal Inmobiliario no está conectado, así que no se nombra: se menciona
+  // genéricamente "otros portales" (FindHome, etc., los maneja la clienta).
   syndication: {
-    portalinmobiliario: true,
     instagram: true,
+    otherPortals: true,
   },
 
   // Inventario inicial tomado de las publicaciones de @propiedadesrossanna
@@ -294,15 +295,36 @@ export const clientConfig = defineClientConfig({
     { icon: "MapPin", title: "Viña, Reñaca y Concón", text: "Conocemos cada sector, y operamos también en Santiago." },
   ],
 
-  // Asesores (sección "Nuestros asesores"). Faltan los datos del resto del
-  // equipo y las fotos; sin foto se muestra un monograma con las iniciales.
+  // Asesores (sección "Nuestros asesores"). Las fotos están por definirse:
+  // mientras tanto cada una lleva un avatar ilustrado con sus iniciales.
   team: [
     {
       name: "Rossanna Angulo",
-      role: "Fundadora · Asesora inmobiliaria acreditada",
-      bio: "9 años de experiencia en Viña del Mar, Reñaca y Concón. Acompaña cada operación hasta la inscripción de la propiedad.",
+      role: "CEO · Asesora inmobiliaria",
+      bio: "Asesora acreditada con 9 años de experiencia en Viña del Mar, Reñaca y Concón. Acompaña cada operación hasta la inscripción.",
       phone: "+56 9 8207 9214",
       whatsapp: "56982079214",
+    },
+    {
+      name: "Carolina Llona",
+      role: "Asesora inmobiliaria",
+      phone: "+56 9 4939 2689",
+      whatsapp: "56949392689",
+      email: "caro@propiedadesrossannaangulo.cl",
+    },
+    {
+      name: "María de los Ángeles Thauby",
+      role: "Asesora inmobiliaria",
+      phone: "+56 9 4217 2399",
+      whatsapp: "56942172399",
+      email: "mary@propiedadesrossannaangulo.cl",
+    },
+    {
+      name: "Loreto Angulo",
+      role: "Asesora inmobiliaria",
+      phone: "+56 9 8479 3672",
+      whatsapp: "56984793672",
+      email: "loreto@propiedadesrossannaangulo.cl",
     },
   ],
 
