@@ -49,7 +49,7 @@ export const clientConfig = defineClientConfig({
   hero: {
     title: "Tu próxima propiedad, con asesoría de verdad",
     subtitle:
-      "Corredora con base en Viña del Mar, especialista en la V Región, con operación en Santiago, el sur y todo Chile. Acompañamiento personal desde la tasación hasta la entrega de llaves.",
+      "Corredora con base en Viña del Mar, especialista en Viña, Reñaca y Concón, con operación en Santiago y todo Chile. Acompañamiento personal desde la tasación hasta la entrega de llaves.",
     ctaLabel: "Agenda una visita",
     ctaHref: "#contacto",
     // Vista aérea de las dunas de Concón. Licencia CC BY 2.0: el crédito es
@@ -102,7 +102,7 @@ export const clientConfig = defineClientConfig({
 
   about: {
     title: "Quién te asesora",
-    body: "Rossanna Angulo es corredora de propiedades con base en Viña del Mar y años de experiencia en la V Región, con operación en Santiago, el sur y todo Chile. Su sello es el acompañamiento personal en cada etapa del proceso — publicación, visitas, negociación, escritura e inscripción — con comunicación clara, sin letra chica y siempre con contrato por escrito.",
+    body: "Rossanna Angulo es asesora inmobiliaria acreditada, con 9 años de experiencia y base en Viña del Mar. Trabaja principalmente en Viña del Mar, Reñaca y Concón, y opera también en Santiago, el sur y todo Chile, junto a un equipo que incluye un arquitecto para las tasaciones. Su sello es el acompañamiento personal en cada etapa del proceso — publicación, visitas, negociación, escritura e inscripción — con comunicación clara, sin letra chica y siempre con contrato por escrito.",
     imageUrl: "/clients/propiedades-rossana-angulo/nosotros.jpg",
   },
 
@@ -293,11 +293,13 @@ export const clientConfig = defineClientConfig({
 
   faq: [
     { q: "¿Cuánto cobra por vender mi propiedad?", a: "La comisión de venta es el 2% + IVA del valor de la propiedad, y se paga solo si el negocio se concreta. Incluye publicación, visitas, negociación y acompañamiento profesional con asesoría legal durante la escritura y hasta la inscripción de la propiedad. La tasación no está incluida: se cotiza aparte ($150.000)." },
+    { q: "¿Cuánto cuesta una tasación?", a: "La tasación cuesta $150.000 y la realiza un arquitecto del equipo, con informe de valorización escrito y comparables del sector. Se cobra aparte de la comisión de venta." },
+    { q: "¿Incluyen asesoría legal?", a: "Sí. En la venta te acompañamos con asesoría legal durante todo el proceso de escritura y hasta la inscripción de la propiedad a nombre del comprador." },
     { q: "¿Y por arrendar?", a: "El equivalente al 50% + IVA del primer mes de arriendo, que incluye evaluación del arrendatario con informe comercial y contrato de arriendo." },
     { q: "¿Cuánto demora venderse una propiedad?", a: "Depende del sector y del precio, pero una propiedad bien tasada y con buenas fotos se vende en general entre 2 y 4 meses." },
     { q: "¿Qué documentos necesito para vender?", a: "Escritura, certificado de dominio vigente, certificado de hipotecas y gravámenes, y contribuciones al día. Te ayudo a reunirlos todos." },
     { q: "¿Trabajas con compradores con crédito hipotecario?", a: "Sí, la mayoría de las ventas son con crédito. Coordino directamente con el banco y la notaría los plazos de la operación." },
-    { q: "¿En qué zonas trabajas?", a: "Mi base es Viña del Mar y la mayoría de mis propiedades están en la V Región, pero opero también en Santiago, el sur y todo Chile: la gestión y publicación es remota y las visitas se coordinan según la zona." },
+    { q: "¿En qué zonas trabajas?", a: "Mi base es Viña del Mar y la mayoría de mis propiedades están en la V Región (Viña del Mar, Reñaca y Concón), pero opero también en Santiago, el sur y todo Chile: la gestión y publicación es remota y las visitas se coordinan según la zona." },
     { q: "¿Administras arriendos por temporada?", a: "Sí — administro propiedades para arriendo temporal, especialmente departamentos de veraneo en el litoral: publicación, reservas, entrega y recepción. Las condiciones se acuerdan según cada propiedad." },
   ],
 
@@ -342,11 +344,35 @@ export const clientConfig = defineClientConfig({
   },
 
   seo: {
-    title: "Propiedades Rossanna Angulo — Corretaje de propiedades en Viña del Mar y todo Chile",
+    // ~60 caracteres: lo que Google muestra sin cortar.
+    title: "Corredora de propiedades en Viña del Mar y Concón | Rossanna Angulo",
     description:
-      "Venta, arriendo, arriendos temporales y tasación de propiedades. Base en Viña del Mar, especialista en la V Región, operación en todo Chile.",
+      "Venta y arriendo de casas y departamentos en Viña del Mar, Reñaca, Concón y Santiago. Tasación por arquitecto y asesoría legal hasta la inscripción.",
+    ogImageUrl: "/clients/propiedades-rossana-angulo/og.jpg",
     businessType: "RealEstateAgent",
     priceRange: "$$",
-    keywords: ["corredora de propiedades viña del mar", "propiedades quinta región", "arriendos temporales viña del mar", "corredora de propiedades chile", "tasación de propiedades"],
+    keywords: [
+      "corredora de propiedades viña del mar",
+      "corredora de propiedades concón",
+      "departamentos en venta reñaca",
+      "arriendo departamento viña del mar",
+      "casas en venta concón",
+      "tasación de propiedades viña del mar",
+    ],
+    postalAddress: { addressLocality: "Viña del Mar", addressRegion: "Región de Valparaíso", addressCountry: "CL" },
+    // Según el sitio y sus publicaciones: base en la V Región, operación en
+    // Santiago y todo Chile.
+    areaServed: ["Viña del Mar", "Reñaca", "Concón", "Región de Valparaíso", "Santiago", "Chile"],
+    knowsAbout: [
+      "Corretaje de propiedades",
+      "Venta de propiedades",
+      "Arriendo de propiedades",
+      "Arriendos de temporada",
+      "Tasación de propiedades",
+      "Estudio de títulos",
+      "Asesoría legal inmobiliaria",
+    ],
+    founder: "Rossanna Angulo",
+    founderJobTitle: "Asesora inmobiliaria",
   },
 });

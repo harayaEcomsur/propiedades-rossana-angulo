@@ -7,12 +7,26 @@ import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { PropertyExplorer } from "@/components/properties/PropertyExplorer";
 import { getPublicProperties } from "@/lib/public-properties";
+import { propertyListJsonLd } from "@/lib/property-schema";
+import { jsonLdString } from "@/lib/seo";
 
 export const revalidate = 300;
 
+const title = "Propiedades en venta y arriendo en Viña del Mar y Concón";
+const description =
+  "Casas y departamentos en venta y arriendo en Viña del Mar, Reñaca, Concón y Santiago. Filtra por comuna, tipo y dormitorios y consulta por WhatsApp.";
+
 export const metadata: Metadata = {
-  title: `Propiedades — ${clientConfig.meta.businessName}`,
-  description: `Propiedades en venta y arriendo de ${clientConfig.meta.businessName}. Busca por comuna, tipo y dormitorios.`,
+  title,
+  description,
+  alternates: { canonical: "/propiedades" },
+  openGraph: {
+    title,
+    description,
+    url: "/propiedades",
+    type: "website",
+    images: clientConfig.seo.ogImageUrl ? [{ url: clientConfig.seo.ogImageUrl, width: 1200, height: 630 }] : undefined,
+  },
 };
 
 export default async function PropiedadesPage() {
@@ -28,6 +42,7 @@ export default async function PropiedadesPage() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(propertyListJsonLd(properties)) }} />
       <Header config={clientConfig} />
       <main className="py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">

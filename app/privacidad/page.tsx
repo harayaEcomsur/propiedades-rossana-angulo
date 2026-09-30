@@ -6,6 +6,9 @@ import { ArcoRequestForm } from "@/components/privacy/ArcoRequestForm";
 
 export const metadata: Metadata = {
   title: `Política de privacidad — ${clientConfig.meta.businessName}`,
+  description: "Política de privacidad de Propiedades Rossanna Angulo: qué datos personales se recopilan, para qué se usan y cómo ejercer tus derechos (Ley 21.719).",
+  alternates: { canonical: "/privacidad" },
+  openGraph: { url: "/privacidad", images: clientConfig.seo.ogImageUrl ? [clientConfig.seo.ogImageUrl] : undefined },
 };
 
 // Política de privacidad dinámica (ver lib/privacy-content.ts) + el canal para

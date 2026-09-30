@@ -8,6 +8,9 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: `Proveedores de confianza — ${clientConfig.meta.businessName}`,
+  description: "Directorio de proveedores de confianza recomendados por Propiedades Rossanna Angulo para dueños y arrendatarios: mantención, reparaciones y servicios del hogar.",
+  alternates: { canonical: "/proveedores" },
+  openGraph: { url: "/proveedores", images: clientConfig.seo.ogImageUrl ? [clientConfig.seo.ogImageUrl] : undefined },
 };
 
 // Página pública, sin login: el link que se comparte a dueños y arrendatarios

@@ -13,6 +13,9 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { getPublicProperties } from "@/lib/public-properties";
 import { videoEmbed } from "@/lib/video";
 import { PropertyVideo } from "@/components/properties/PropertyVideo";
+import { propertyJsonLd } from "@/lib/property-schema";
+import { jsonLdString } from "@/lib/seo";
+import { shortText } from "@/lib/text";
 
 export const revalidate = 300;
 
@@ -25,9 +28,34 @@ async function findProperty(slug: string) {
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const property = await findProperty(params.slug);
   if (!property) return {};
+  // Título corto con lo que se busca (tipo + sector + operación + precio); la
+  // marca solo si cabe en los ~60 caracteres que muestra Google.
+  // En el título va solo el precio principal ("$670.000/mes", sin "+ GC").
+  const mainPrice = property.price.split(/\s+\+|\s+\(/)[0];
+  const base = `${property.title} | ${OPERATION_LABEL[property.operation]} ${mainPrice}`;
+  const title = base.length <= 42 ? `${base} | Rossanna Angulo` : base;
+  const specs = [
+    property.bedrooms != null && `${property.bedrooms} dormitorios`,
+    property.bathrooms != null && `${property.bathrooms} baños`,
+    property.area != null && `${property.area} m²`,
+  ].filter(Boolean);
+  const description = shortText(
+    `${OPERATION_LABEL[property.operation]} en ${property.comuna}, ${property.price}${specs.length ? ` · ${specs.join(", ")}` : ""}. ${property.description}`,
+    158
+  );
+  const path = `/propiedades/${property.slug}`;
   return {
-    title: `${property.title} — ${clientConfig.meta.businessName}`,
-    description: `${OPERATION_LABEL[property.operation]} en ${property.comuna}: ${property.description.slice(0, 140)}`,
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title,
+      description,
+      url: path,
+      type: "website",
+      images: property.images.slice(0, 1).map((url) => ({ url, alt: property.title })),
+    },
+    twitter: { card: "summary_large_image", title, description, images: property.images.slice(0, 1) },
   };
 }
 
@@ -61,6 +89,7 @@ export default async function PropiedadPage({ params }: { params: { slug: string
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(propertyJsonLd(property)) }} />
       <Header config={clientConfig} />
       <main className="py-10 sm:py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -114,7 +143,8 @@ export default async function PropiedadPage({ params }: { params: { slug: string
                   ))}
                 </div>
               )}
-              <p className="mt-6 leading-relaxed text-foreground/80">{property.description}</p>
+              <h2 className="mt-6 font-heading text-lg font-semibold text-foreground">Descripción de la propiedad</h2>
+              <p className="mt-3 whitespace-pre-line leading-relaxed text-foreground/80">{property.description}</p>
               {portals.length > 0 && (
                 <p className="mt-6 text-xs font-medium uppercase tracking-wider text-foreground/50">
                   Publicada también en {portals.join(" · ")}

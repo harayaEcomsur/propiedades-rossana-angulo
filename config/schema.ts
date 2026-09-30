@@ -365,6 +365,20 @@ export const clientConfigSchema = z.object({
     // Subtipo de schema.org (Restaurant, HairSalon, LegalService, Store, etc.)
     businessType: z.string().default("LocalBusiness"),
     priceRange: z.string().optional(),
+    // Datos para el JSON-LD del negocio (Google, Maps y buscadores con IA).
+    postalAddress: z
+      .object({
+        streetAddress: z.string().optional(),
+        addressLocality: z.string(),
+        addressRegion: z.string().optional(),
+        addressCountry: z.string().default("CL"),
+      })
+      .optional(),
+    // Comunas/ciudades donde opera — clave para búsquedas locales.
+    areaServed: z.array(z.string()).optional(),
+    knowsAbout: z.array(z.string()).optional(),
+    founder: z.string().optional(),
+    founderJobTitle: z.string().optional(),
   }),
 });
 
