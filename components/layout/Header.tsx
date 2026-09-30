@@ -1,20 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, MessageCircle, X } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import type { ClientConfig } from "@/config/schema";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export function Header({ config }: { config: ClientConfig }) {
   const [open, setOpen] = useState(false);
-  const { branding, meta, modules } = config;
+  const { branding, meta, modules, contact } = config;
+  const inmobiliaria = branding.layout === "inmobiliaria";
+  // En el layout inmobiliaria, WhatsApp va como botón destacado en el header.
+  const cta = inmobiliaria && contact.whatsapp ? buildWhatsAppLink(contact.whatsapp, contact.whatsappPrefilledMessage) : null;
 
   const links = [
     modules.propiedades && { href: "/propiedades", label: "Propiedades" },
     modules.agenda && { href: "/agenda", label: "Agendar" },
     modules.tienda && { href: "/tienda", label: "Tienda" },
     { href: "/#servicios", label: "Servicios" },
-    { href: "/#nosotros", label: "Nosotros" },
+    inmobiliaria && config.team?.length ? { href: "/#equipo", label: "Equipo" } : { href: "/#nosotros", label: "Nosotros" },
     modules.pricing && { href: "/#precios", label: "Precios" },
     { href: "/#contacto", label: "Contacto" },
   ].filter(Boolean) as { href: string; label: string }[];
@@ -26,11 +30,19 @@ export function Header({ config }: { config: ClientConfig }) {
             nombre en texto pasa a acompañarlo en chico. */}
         <a href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
           {/* eslint-disable-next-line @next/next/no-img-element -- logo is a local SVG; next/image requires dangerouslyAllowSVG for those */}
-          <img
-            src={branding.logoUrl}
-            alt={meta.businessName}
-            className="h-12 w-auto max-w-[170px] rounded-md object-contain sm:h-[4.5rem] sm:max-w-[280px]"
-          />
+          {inmobiliaria ? (
+            // Logo cuadrado con margen blanco: se recorta a una placa apaisada
+            // para que el nombre se lea (mismo tratamiento que el hero).
+            <span className="block h-12 w-28 overflow-hidden rounded-md bg-white sm:h-16 sm:w-40">
+              <img src={branding.logoUrl} alt={meta.businessName} className="h-full w-full object-cover" />
+            </span>
+          ) : (
+            <img
+              src={branding.logoUrl}
+              alt={meta.businessName}
+              className="h-12 w-auto max-w-[170px] rounded-md object-contain sm:h-[4.5rem] sm:max-w-[280px]"
+            />
+          )}
           {/* En móvil el nombre siempre acompaña al logo (el logo se achica y
               puede no leerse); en desktop se omite solo si el logo ya lo trae. */}
           <span
@@ -41,13 +53,25 @@ export function Header({ config }: { config: ClientConfig }) {
             {meta.businessName}
           </span>
         </a>
-        <nav className="hidden gap-6 text-sm font-medium text-foreground/70 sm:flex">
-          {links.map((link) => (
-            <a key={link.href} href={link.href} className="hover:text-primary">
-              {link.label}
+        <div className="hidden items-center gap-8 sm:flex">
+          <nav className="flex gap-6 text-sm font-medium text-foreground/70">
+            {links.map((link) => (
+              <a key={link.href} href={link.href} className="hover:text-primary">
+                {link.label}
+              </a>
+            ))}
+          </nav>
+          {cta && (
+            <a
+              href={cta}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden min-h-11 items-center gap-2 bg-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-opacity hover:opacity-90 lg:inline-flex"
+            >
+              <MessageCircle size={16} aria-hidden /> Escríbenos
             </a>
-          ))}
-        </nav>
+          )}
+        </div>
         <button
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Cerrar menú" : "Abrir menú"}

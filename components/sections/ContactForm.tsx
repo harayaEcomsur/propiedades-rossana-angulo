@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { ConsentCheckbox } from "@/components/privacy/ConsentCheckbox";
 
-export function ContactForm() {
+// `squared`: bordes rectos, para el layout inmobiliaria (mismo lenguaje que sus botones).
+export function ContactForm({ squared = false }: { squared?: boolean } = {}) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [consent, setConsent] = useState(false);
@@ -59,7 +60,7 @@ export function ContactForm() {
           id="name"
           name="name"
           required
-          className="w-full rounded-lg border border-black/10 px-3 py-2 focus:border-primary focus:outline-none"
+          className={`w-full ${squared ? "min-h-11 bg-white" : "rounded-lg"} border border-black/10 px-3 py-2 focus:border-primary focus:outline-none`}
         />
       </div>
       <div>
@@ -70,7 +71,7 @@ export function ContactForm() {
           id="contactInfo"
           name="contactInfo"
           required
-          className="w-full rounded-lg border border-black/10 px-3 py-2 focus:border-primary focus:outline-none"
+          className={`w-full ${squared ? "min-h-11 bg-white" : "rounded-lg"} border border-black/10 px-3 py-2 focus:border-primary focus:outline-none`}
         />
       </div>
       <div>
@@ -82,14 +83,14 @@ export function ContactForm() {
           name="message"
           required
           rows={4}
-          className="w-full rounded-lg border border-black/10 px-3 py-2 focus:border-primary focus:outline-none"
+          className={`w-full ${squared ? "min-h-11 bg-white" : "rounded-lg"} border border-black/10 px-3 py-2 focus:border-primary focus:outline-none`}
         />
       </div>
       <ConsentCheckbox checked={consent} onChange={setConsent} id="contact-consent" />
       <button
         type="submit"
         disabled={status === "sending" || !consent}
-        className="rounded-full bg-primary px-6 py-3 font-medium text-white disabled:opacity-60"
+        className={`${squared ? "min-h-11 w-full text-sm font-semibold uppercase tracking-wider" : "rounded-full font-medium"} bg-primary px-6 py-3 text-white disabled:opacity-60`}
       >
         {status === "sending" ? "Enviando…" : "Enviar mensaje"}
       </button>

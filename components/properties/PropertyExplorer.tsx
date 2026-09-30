@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PropertyCard, OPERATION_LABEL, type Property } from "@/components/properties/PropertyCard";
 
 // Búsqueda y filtrado client-side sobre el inventario. Con inventarios de pyme
@@ -10,6 +10,14 @@ export function PropertyExplorer({ properties }: { properties: Property[] }) {
   const [type, setType] = useState<string>("todos");
   const [comuna, setComuna] = useState<string>("todas");
   const [minBedrooms, setMinBedrooms] = useState<number>(0);
+  const [onlyExclusive, setOnlyExclusive] = useState(false);
+  const hasExclusives = properties.some((p) => p.exclusive);
+
+  // "Ver exclusivas" de la home llega con ?exclusivas=1. Se lee en el cliente
+  // para que la página siga siendo estática.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("exclusivas") === "1") setOnlyExclusive(true);
+  }, []);
 
   const comunas = useMemo(() => [...new Set(properties.map((p) => p.comuna))].sort(), [properties]);
   const types = useMemo(() => [...new Set(properties.map((p) => p.type))].sort(), [properties]);
@@ -19,7 +27,8 @@ export function PropertyExplorer({ properties }: { properties: Property[] }) {
       (operation === "todas" || p.operation === operation) &&
       (type === "todos" || p.type === type) &&
       (comuna === "todas" || p.comuna === comuna) &&
-      (minBedrooms === 0 || (p.bedrooms ?? 0) >= minBedrooms)
+      (minBedrooms === 0 || (p.bedrooms ?? 0) >= minBedrooms) &&
+      (!onlyExclusive || p.exclusive)
   );
 
   const selectCls =
@@ -57,6 +66,12 @@ export function PropertyExplorer({ properties }: { properties: Property[] }) {
             <option key={n} value={n}>{n}+ dormitorios</option>
           ))}
         </select>
+        {hasExclusives && (
+          <label className="col-span-2 flex min-h-11 cursor-pointer items-center gap-2 border border-foreground/20 px-3 text-sm text-foreground sm:col-span-1">
+            <input type="checkbox" checked={onlyExclusive} onChange={(e) => setOnlyExclusive(e.target.checked)} className="accent-[var(--color-primary)]" />
+            Solo en exclusiva
+          </label>
+        )}
       </div>
 
       <p className="mt-6 text-xs font-medium uppercase tracking-wider text-foreground/50">

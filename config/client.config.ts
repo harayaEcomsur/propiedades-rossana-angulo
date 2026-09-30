@@ -285,6 +285,27 @@ export const clientConfig = defineClientConfig({
     },
   ],
 
+  // Diferenciadores bajo el hero — todos confirmados por la clienta o por su
+  // Instagram ("Acreditada / 9 años de experiencia").
+  pillars: [
+    { icon: "Award", title: "9 años de experiencia", text: "Asesora inmobiliaria acreditada en la Región de Valparaíso." },
+    { icon: "Scale", title: "Asesoría legal", text: "Te acompañamos en la escritura y hasta la inscripción de la propiedad." },
+    { icon: "Ruler", title: "Tasación por arquitecto", text: "Valorización con informe escrito y comparables del sector." },
+    { icon: "MapPin", title: "Viña, Reñaca y Concón", text: "Conocemos cada sector, y operamos también en Santiago." },
+  ],
+
+  // Asesores (sección "Nuestros asesores"). Faltan los datos del resto del
+  // equipo y las fotos; sin foto se muestra un monograma con las iniciales.
+  team: [
+    {
+      name: "Rossanna Angulo",
+      role: "Fundadora · Asesora inmobiliaria acreditada",
+      bio: "9 años de experiencia en Viña del Mar, Reñaca y Concón. Acompaña cada operación hasta la inscripción de la propiedad.",
+      phone: "+56 9 8207 9214",
+      whatsapp: "56982079214",
+    },
+  ],
+
   testimonials: [
     { name: "Familia Contreras", quote: "Rossanna vendió nuestro departamento en cinco semanas y nos acompañó hasta la firma en notaría.", rating: 5 },
     { name: "Jorge M.", quote: "Me consiguió arrendatario en una semana, con informe comercial y contrato claro. Cero problemas desde entonces.", rating: 5 },

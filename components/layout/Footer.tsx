@@ -1,10 +1,12 @@
 import { Container } from "@/components/ui/Container";
 import type { ClientConfig } from "@/config/schema";
+import { FooterInmobiliaria } from "@/components/layouts/inmobiliaria/FooterInmobiliaria";
 
 export function Footer({ config }: { config: ClientConfig }) {
   const { meta, contact, branding } = config;
   // En las demos el crédito va siempre; en sitios de clientes solo si lo aprobaron.
   const mostrarCredito = branding.credit || Boolean(process.env.SITE_NOINDEX);
+  if (branding.layout === "inmobiliaria") return <FooterInmobiliaria config={config} showCredit={mostrarCredito} />;
 
   return (
     <footer className="border-t border-black/5 py-10 text-sm text-foreground/60">

@@ -99,9 +99,14 @@ export default async function PropiedadPage({ params }: { params: { slug: string
 
           <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <span className="bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
-                {OPERATION_LABEL[property.operation]}
-              </span>
+              <div className="flex flex-wrap gap-2">
+                <span className="bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">
+                  {OPERATION_LABEL[property.operation]}
+                </span>
+                {property.exclusive && (
+                  <span className="bg-accent px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white">En Exclusiva</span>
+                )}
+              </div>
               <h1 className="mt-3 font-heading text-3xl font-bold text-foreground sm:text-4xl">{property.title}</h1>
               <p className="mt-1 text-sm font-medium uppercase tracking-wider text-foreground/60">{property.comuna}</p>
             </div>

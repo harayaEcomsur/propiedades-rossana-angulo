@@ -2,10 +2,10 @@ import { Container } from "@/components/ui/Container";
 import type { ClientConfig } from "@/config/schema";
 import { jsonLdString } from "@/lib/seo";
 
-export function FAQ({ items }: { items: NonNullable<ClientConfig["faq"]> }) {
-  // FAQPage: las respuestas quedan como pares pregunta/respuesta que Google y
-  // los buscadores con IA pueden citar tal cual (el texto es el mismo visible).
-  const jsonLd = {
+// FAQPage: las respuestas quedan como pares pregunta/respuesta que Google y
+// los buscadores con IA pueden citar tal cual (el texto es el mismo visible).
+export function faqJsonLd(items: NonNullable<ClientConfig["faq"]>) {
+  return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: items.map((item) => ({
@@ -14,6 +14,10 @@ export function FAQ({ items }: { items: NonNullable<ClientConfig["faq"]> }) {
       acceptedAnswer: { "@type": "Answer", text: item.a },
     })),
   };
+}
+
+export function FAQ({ items }: { items: NonNullable<ClientConfig["faq"]> }) {
+  const jsonLd = faqJsonLd(items);
 
   return (
     <section id="preguntas-frecuentes" className="py-16 sm:py-24">

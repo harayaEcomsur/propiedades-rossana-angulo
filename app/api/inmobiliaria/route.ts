@@ -12,6 +12,7 @@ import {
   listProperties,
   addProperty,
   updatePropertyStatus,
+  setPropertyExclusive,
   deleteProperty,
   listProviders,
   addProvider,
@@ -129,6 +130,7 @@ const propertySchema = z.object({
   instagramMediaId: z.string().max(64).optional(),
   instagramUrl: z.string().url().optional(),
   video: z.string().url().max(500).optional(),
+  exclusive: z.boolean().optional(),
 });
 const providerSchema = z.object({
   kind: z.literal("provider"),
@@ -219,6 +221,7 @@ export async function POST(req: Request) {
       instagramMediaId: data.instagramMediaId,
       instagramUrl: data.instagramUrl,
       video: data.video,
+      exclusive: data.exclusive ?? false,
     });
     refreshPublicPages();
     return Response.json({ ok: true, property });
@@ -262,6 +265,7 @@ export async function POST(req: Request) {
 const patchSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("broker-active"), id: z.string(), active: z.boolean() }),
   z.object({ kind: z.literal("property-status"), id: z.string(), status: z.enum(["activa", "reservada", "vendida", "arrendada"]) }),
+  z.object({ kind: z.literal("property-exclusive"), id: z.string(), exclusive: z.boolean() }),
 ]);
 
 export async function PATCH(req: Request) {
@@ -280,12 +284,13 @@ export async function PATCH(req: Request) {
     return Response.json({ ok: true });
   }
 
-  // property-status: la corredora dueña de la propiedad, o la admin.
+  // property-status / property-exclusive: la corredora dueña de la propiedad, o la admin.
   const properties = await listProperties();
   const property = properties.find((p) => p.id === data.id);
   if (!property) return Response.json({ error: "Propiedad no encontrada" }, { status: 404 });
   if (!isAdmin(broker) && property.brokerId !== broker.id) return Response.json({ error: "No autorizado" }, { status: 403 });
-  await updatePropertyStatus(data.id, data.status);
+  if (data.kind === "property-exclusive") await setPropertyExclusive(data.id, data.exclusive);
+  else await updatePropertyStatus(data.id, data.status);
   refreshPublicPages();
   return Response.json({ ok: true });
 }

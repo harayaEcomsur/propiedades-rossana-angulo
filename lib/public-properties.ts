@@ -59,6 +59,7 @@ function toPublic(p: REProperty): Property {
     video: p.video ?? (p.instagramUrl && /\/(reel|reels|tv)\//.test(p.instagramUrl) ? p.instagramUrl : undefined),
     // Las reservadas siguen visibles pero no se destacan en la home.
     featured: p.status === "activa",
+    exclusive: Boolean(p.exclusive),
   };
 }
 

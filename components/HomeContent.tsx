@@ -20,6 +20,14 @@ import { Pricing } from "@/components/sections/Pricing";
 import { ContactForm } from "@/components/sections/ContactForm";
 import { MapEmbed } from "@/components/sections/MapEmbed";
 import { Container } from "@/components/ui/Container";
+import { PillarsInmobiliaria } from "@/components/layouts/inmobiliaria/PillarsInmobiliaria";
+import { ExclusiveInmobiliaria } from "@/components/layouts/inmobiliaria/ExclusiveInmobiliaria";
+import { AboutInmobiliaria } from "@/components/layouts/inmobiliaria/AboutInmobiliaria";
+import { TeamInmobiliaria } from "@/components/layouts/inmobiliaria/TeamInmobiliaria";
+import { TestimonialsInmobiliaria } from "@/components/layouts/inmobiliaria/TestimonialsInmobiliaria";
+import { PricingInmobiliaria } from "@/components/layouts/inmobiliaria/PricingInmobiliaria";
+import { FAQInmobiliaria } from "@/components/layouts/inmobiliaria/FAQInmobiliaria";
+import { ContactInmobiliaria } from "@/components/layouts/inmobiliaria/ContactInmobiliaria";
 import { getServicePrices } from "@/lib/booking-store";
 import { getPublicProperties } from "@/lib/public-properties";
 
@@ -71,6 +79,52 @@ export async function HomeContent() {
   ) : (
     <Gallery images={gallery} />
   );
+
+  const floating = (
+    <>
+      {hasWhatsapp && contact.whatsapp ? (
+        <WhatsAppButton phone={contact.whatsapp} message={contact.whatsappPrefilledMessage} />
+      ) : null}
+      {modules.chat ? <ChatWidget businessName={clientConfig.meta.businessName} stacked={hasWhatsapp} /> : null}
+    </>
+  );
+
+  // Layout inmobiliaria: rediseño propio de la home completa (refs: Property
+  // Partners para "En Exclusiva", Maktub para el equipo). El orden cuenta una
+  // historia: quiénes somos → qué tenemos → qué hacemos → quiénes te atienden
+  // → prueba social → precios → dudas → contacto.
+  if (layout === "inmobiliaria") {
+    return (
+      <>
+        <Header config={clientConfig} />
+        <main>
+          {hero}
+          {clientConfig.pillars?.length ? <PillarsInmobiliaria pillars={clientConfig.pillars} /> : null}
+          {gallerySection}
+          <ExclusiveInmobiliaria properties={properties} />
+          {services}
+          <AboutInmobiliaria about={clientConfig.about} />
+          {clientConfig.team?.length ? <TeamInmobiliaria team={clientConfig.team} /> : null}
+          {modules.testimonials && clientConfig.testimonials?.length ? (
+            <TestimonialsInmobiliaria testimonials={clientConfig.testimonials} />
+          ) : null}
+          {instagramUrl ? (
+            <InstagramFeed
+              instagramUrl={instagramUrl}
+              businessName={meta.businessName}
+              variant="carousel"
+              tagline="Propiedades nuevas, ventas y arriendos en @propiedadesrossanna."
+            />
+          ) : null}
+          {modules.pricing && clientConfig.pricing?.length ? <PricingInmobiliaria plans={clientConfig.pricing} /> : null}
+          {modules.faq && clientConfig.faq?.length ? <FAQInmobiliaria items={clientConfig.faq} whatsapp={contact.whatsapp} /> : null}
+          <ContactInmobiliaria contact={contact} showForm={modules.contactForm} />
+        </main>
+        <Footer config={clientConfig} />
+        {floating}
+      </>
+    );
+  }
 
   return (
     <>

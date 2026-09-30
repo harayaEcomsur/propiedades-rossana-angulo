@@ -75,6 +75,7 @@ interface REProperty {
   status: "activa" | "reservada" | "vendida" | "arrendada";
   instagramMediaId?: string;
   instagramUrl?: string;
+  exclusive?: boolean;
   createdAt: string;
 }
 interface REProvider {
@@ -359,6 +360,7 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
   const [condition, setCondition] = useState<REProperty["condition"]>("used");
   const [furnished, setFurnished] = useState(false);
   const [petsAllowed, setPetsAllowed] = useState(true);
+  const [exclusive, setExclusive] = useState(false);
   const [description, setDescription] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
   // Si la ficha se importó de Instagram, queda vinculada a esa publicación (y
@@ -417,6 +419,7 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
         instagramMediaId: importedFrom?.mediaId,
         instagramUrl: importedFrom?.url,
         video: importedFrom?.video,
+        exclusive,
       });
       if (!importedFrom && publishToInstagram && data.instagramConnected && photos.length > 0) {
         try {
@@ -442,6 +445,7 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
       setMaintenanceFee("");
       setFurnished(false);
       setPetsAllowed(true);
+      setExclusive(false);
       setDescription("");
       setPhotos([]);
       reload();
@@ -560,6 +564,10 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
             <input type="checkbox" checked={petsAllowed} onChange={(e) => setPetsAllowed(e.target.checked)} />
             Acepta mascotas
           </label>
+          <label className="flex items-center gap-2 font-medium">
+            <input type="checkbox" checked={exclusive} onChange={(e) => setExclusive(e.target.checked)} />
+            En exclusiva (aparece en la sección &quot;En Exclusiva&quot; del sitio)
+          </label>
         </div>
 
         <textarea className={`${input} mt-4`} placeholder="Descripción" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
@@ -585,7 +593,14 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
           <div key={p.id} className={card}>
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="font-semibold">{p.title}</p>
+                <p className="font-semibold">
+                  {p.title}
+                  {p.exclusive && (
+                    <span className="ml-2 rounded-full bg-primary px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wider text-white">
+                      Exclusiva
+                    </span>
+                  )}
+                </p>
                 <p className="text-xs text-foreground/50">
                   {p.operation} · {PROPERTY_TYPE_LABELS[p.type] ?? p.type}
                   {p.neighborhood ? ` · ${p.neighborhood}` : p.address ? ` · ${p.address}` : ""}
@@ -636,6 +651,17 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
               >
                 Eliminar
               </button>
+              <label className="flex items-center gap-1.5 text-xs font-medium">
+                <input
+                  type="checkbox"
+                  checked={Boolean(p.exclusive)}
+                  onChange={async (e) => {
+                    await patch("/api/inmobiliaria", authHeaders, { kind: "property-exclusive", id: p.id, exclusive: e.target.checked });
+                    reload();
+                  }}
+                />
+                En exclusiva
+              </label>
               {p.instagramUrl ? (
                 <a href={p.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-primary underline">
                   Ver en Instagram

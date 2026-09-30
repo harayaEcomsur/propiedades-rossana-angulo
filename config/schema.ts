@@ -258,6 +258,9 @@ export const clientConfigSchema = z.object({
         // Link de YouTube o de un reel de Instagram; se reproduce en la ficha.
         video: z.string().optional(),
         featured: z.boolean().default(false),
+        // Propiedad que solo gestiona esta corredora: se destaca en la sección
+        // "En Exclusiva" de la home y lleva el sello en su tarjeta y ficha.
+        exclusive: z.boolean().default(false),
       })
     )
     .max(200)
@@ -273,6 +276,27 @@ export const clientConfigSchema = z.object({
       instagram: z.boolean().default(false),
       tiktok: z.boolean().default(false),
     })
+    .optional(),
+
+  // Pilares del negocio: franja de 3-4 diferenciadores bajo el hero (layout
+  // inmobiliaria). `icon` = nombre de un ícono de lucide-react.
+  pillars: z.array(z.object({ icon: z.string(), title: z.string(), text: z.string() })).max(4).optional(),
+
+  // Asesores del equipo (sección "Nuestros asesores"). Sin foto se muestra un
+  // monograma con sus iniciales.
+  team: z
+    .array(
+      z.object({
+        name: z.string(),
+        role: z.string(),
+        photoUrl: z.string().optional(),
+        bio: z.string().optional(),
+        phone: z.string().optional(),
+        // Número en formato internacional sin "+", para el link de WhatsApp.
+        whatsapp: z.string().optional(),
+        email: z.string().optional(),
+      })
+    )
     .optional(),
 
   testimonials: z
