@@ -86,7 +86,7 @@ export const clientConfig = defineClientConfig({
     {
       icon: "FileCheck",
       title: "Estudio de títulos y escrituración",
-      description: "Coordinación con abogados, banco y notaría para que el cierre sea sin sorpresas.",
+      description: "Asesoría legal y coordinación con abogados, banco y notaría durante la escritura, hasta la inscripción de la propiedad.",
     },
     {
       icon: "Camera",
@@ -102,7 +102,7 @@ export const clientConfig = defineClientConfig({
 
   about: {
     title: "Quién te asesora",
-    body: "Rossanna Angulo es corredora de propiedades con base en Viña del Mar y años de experiencia en la V Región, con operación en Santiago, el sur y todo Chile. Su sello es el acompañamiento personal en cada etapa del proceso — tasación, publicación, visitas, negociación y firma — con comunicación clara, sin letra chica y siempre con contrato por escrito.",
+    body: "Rossanna Angulo es corredora de propiedades con base en Viña del Mar y años de experiencia en la V Región, con operación en Santiago, el sur y todo Chile. Su sello es el acompañamiento personal en cada etapa del proceso — publicación, visitas, negociación, escritura e inscripción — con comunicación clara, sin letra chica y siempre con contrato por escrito.",
     imageUrl: "/clients/propiedades-rossana-angulo/nosotros.jpg",
   },
 
@@ -292,7 +292,7 @@ export const clientConfig = defineClientConfig({
   ],
 
   faq: [
-    { q: "¿Cuánto cobra por vender mi propiedad?", a: "La comisión de venta es el 2% + IVA del valor de la propiedad, y se paga solo si el negocio se concreta. Incluye tasación, publicación, visitas y acompañamiento hasta la firma." },
+    { q: "¿Cuánto cobra por vender mi propiedad?", a: "La comisión de venta es el 2% + IVA del valor de la propiedad, y se paga solo si el negocio se concreta. Incluye publicación, visitas, negociación y acompañamiento profesional con asesoría legal durante la escritura y hasta la inscripción de la propiedad. La tasación no está incluida: se cotiza aparte ($150.000)." },
     { q: "¿Y por arrendar?", a: "El equivalente al 50% + IVA del primer mes de arriendo, que incluye evaluación del arrendatario con informe comercial y contrato de arriendo." },
     { q: "¿Cuánto demora venderse una propiedad?", a: "Depende del sector y del precio, pero una propiedad bien tasada y con buenas fotos se vende en general entre 2 y 4 meses." },
     { q: "¿Qué documentos necesito para vender?", a: "Escritura, certificado de dominio vigente, certificado de hipotecas y gravámenes, y contribuciones al día. Te ayudo a reunirlos todos." },
@@ -305,7 +305,12 @@ export const clientConfig = defineClientConfig({
     {
       name: "Venta",
       price: "2% + IVA",
-      features: ["Tasación y estudio de mercado", "Fotografía y publicación en portales", "Gestión de visitas y negociación", "Acompañamiento hasta la firma"],
+      features: [
+        "Fotografía y publicación en portales",
+        "Gestión de visitas y negociación",
+        "Acompañamiento profesional con asesoría legal en la escritura",
+        "Hasta la inscripción de la propiedad",
+      ],
       highlighted: true,
     },
     {
@@ -324,7 +329,7 @@ export const clientConfig = defineClientConfig({
     businessDescription:
       "Propiedades Rossanna Angulo es una corredora de propiedades independiente con base en Viña del Mar, especialista en la V Región y con operación en Santiago, el sur y todo Chile. Ofrece venta, arriendo, arriendos temporales (administración de propiedades de temporada en el litoral), tasación, estudio de títulos, marketing inmobiliario y asesoría a compradores. Atiende con acompañamiento personal en todo el proceso.",
     qaPairs: [
-      { q: "¿Cuánto cobra por vender una propiedad?", a: "2% + IVA del valor de venta, solo si el negocio se concreta. Incluye tasación, publicación, visitas y acompañamiento hasta la firma." },
+      { q: "¿Cuánto cobra por vender una propiedad?", a: "2% + IVA del valor de venta, solo si el negocio se concreta. Incluye publicación, visitas, negociación y acompañamiento profesional con asesoría legal durante la escritura y hasta la inscripción de la propiedad. La tasación no está incluida en la comisión: se cobra aparte ($150.000)." },
       { q: "¿Cuánto cobra por arrendar?", a: "El 50% + IVA del primer mes de arriendo, con informe comercial del arrendatario y contrato incluido." },
       { q: "¿Hace tasaciones?", a: "Sí. La tasación la realiza un arquitecto del equipo, incluye informe de valorización escrito y cuesta $150.000." },
       { q: "¿En qué zonas trabaja?", a: "Base en Viña del Mar y especialidad en la V Región; opera también en Santiago, el sur y todo Chile — la gestión es remota y las visitas se coordinan según la zona." },
