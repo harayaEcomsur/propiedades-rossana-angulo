@@ -3,10 +3,11 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/layouts/inmobiliaria/SectionHeading";
 import type { ClientConfig } from "@/config/schema";
+import type { SectionCopy } from "@/lib/section-copy";
 
 // "Quién te asesora": foto con un bloque de color desplazado detrás (detalle
 // editorial) y el texto al lado.
-export function AboutInmobiliaria({ about }: { about: ClientConfig["about"] }) {
+export function AboutInmobiliaria({ about, copy }: { about: ClientConfig["about"]; copy: SectionCopy["about"] }) {
   return (
     <section id="nosotros" className="py-20 sm:py-28">
       <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
@@ -19,7 +20,7 @@ export function AboutInmobiliaria({ about }: { about: ClientConfig["about"] }) {
           </Reveal>
         )}
         <Reveal delay={100}>
-          <SectionHeading eyebrow="Nosotros" title={about.title} />
+          <SectionHeading eyebrow={copy.eyebrow} title={about.title} />
           <p className="mt-6 whitespace-pre-line text-base leading-relaxed text-foreground/75">{about.body}</p>
         </Reveal>
       </Container>

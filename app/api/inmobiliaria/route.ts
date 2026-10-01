@@ -1,4 +1,5 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { SITE_CONTENT_TAG } from "@/lib/site-content";
 import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
 import { currentBroker } from "@/lib/realestate-auth";
@@ -6,6 +7,7 @@ import {
   listBrokers,
   addBroker,
   setBrokerActive,
+  updateBrokerProfile,
   listClients,
   addClient,
   deleteClient,
@@ -48,6 +50,33 @@ function refreshPublicPages() {
   revalidatePath("/", "layout");
 }
 
+// Los asesores son también el equipo público del sitio: al cambiarlos se
+// invalida además la caché del contenido (ver lib/site-content.ts).
+function refreshTeam() {
+  revalidateTag(SITE_CONTENT_TAG);
+  revalidatePath("/", "layout");
+}
+
+// Ficha pública que ve el propio asesor ("Mi ficha") y la administradora.
+function brokerView(b: Broker) {
+  return {
+    id: b.id,
+    name: b.name,
+    email: b.email,
+    role: b.role,
+    active: b.active,
+    superadmin: Boolean(b.superadmin),
+    title: b.title,
+    photoUrl: b.photoUrl,
+    bio: b.bio,
+    phone: b.phone,
+    whatsapp: b.whatsapp,
+    showOnSite: b.showOnSite,
+    sortOrder: b.sortOrder,
+    createdAt: b.createdAt,
+  };
+}
+
 function isAdmin(broker: Broker): boolean {
   return broker.role === "admin";
 }
@@ -69,7 +98,8 @@ export async function GET(req: Request) {
   const scoped = <T extends { brokerId: string }>(list: T[]) => (admin ? list : list.filter((x) => x.brokerId === broker.id));
 
   return Response.json({
-    broker: { id: broker.id, name: broker.name, email: broker.email, role: broker.role, superadmin: Boolean(broker.superadmin) },
+    // Desde la base (no desde la sesión) para que "Mi ficha" muestre lo último guardado.
+    broker: brokerView((await listBrokers()).find((b) => b.id === broker.id) ?? broker),
     brokers: admin ? await listBrokers() : [],
     clients: scoped(clients),
     properties: scoped(properties),
@@ -82,7 +112,24 @@ export async function GET(req: Request) {
   });
 }
 
-const brokerSchema = z.object({ kind: z.literal("broker"), email: z.string().email(), name: z.string().min(2).max(120), role: z.enum(["admin", "corredor"]) });
+const phoneField = z.string().max(30).optional();
+const whatsappField = z
+  .string()
+  .regex(/^\d{8,15}$/, "WhatsApp: solo números con código de país, ej. 56912345678")
+  .optional()
+  .or(z.literal(""));
+const brokerSchema = z.object({
+  kind: z.literal("broker"),
+  email: z.string().email(),
+  name: z.string().min(2).max(120),
+  role: z.enum(["admin", "corredor"]),
+  title: z.string().max(80).optional(),
+  phone: phoneField,
+  whatsapp: whatsappField,
+  bio: z.string().max(400).optional(),
+  photoUrl: z.string().url().optional(),
+  showOnSite: z.boolean().optional(),
+});
 const clientSchema = z.object({
   kind: z.literal("client"),
   name: z.string().min(2).max(120),
@@ -177,8 +224,20 @@ export async function POST(req: Request) {
   const data = parsed.data;
 
   if (data.kind === "broker") {
-    if (!isAdmin(broker)) return Response.json({ error: "Solo la administradora puede agregar corredoras" }, { status: 403 });
-    return Response.json({ ok: true, broker: await addBroker({ email: data.email, name: data.name, role: data.role }) });
+    if (!isAdmin(broker)) return Response.json({ error: "Solo un administrador puede agregar asesores" }, { status: 403 });
+    const created = await addBroker({
+      email: data.email,
+      name: data.name,
+      role: data.role,
+      title: data.title || undefined,
+      phone: data.phone || undefined,
+      whatsapp: data.whatsapp || undefined,
+      bio: data.bio || undefined,
+      photoUrl: data.photoUrl,
+      showOnSite: data.showOnSite,
+    });
+    refreshTeam();
+    return Response.json({ ok: true, broker: created });
   }
 
   if (data.kind === "client") {
@@ -264,6 +323,19 @@ export async function POST(req: Request) {
 
 const patchSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("broker-active"), id: z.string(), active: z.boolean() }),
+  z.object({
+    kind: z.literal("broker-profile"),
+    id: z.string(),
+    name: z.string().min(2).max(120).optional(),
+    role: z.enum(["admin", "corredor"]).optional(),
+    title: z.string().max(80).optional(),
+    photoUrl: z.string().url().optional().or(z.literal("")),
+    bio: z.string().max(400).optional(),
+    phone: phoneField,
+    whatsapp: whatsappField,
+    showOnSite: z.boolean().optional(),
+  }),
+  z.object({ kind: z.literal("broker-order"), ids: z.array(z.string()).max(100) }),
   z.object({ kind: z.literal("property-status"), id: z.string(), status: z.enum(["activa", "reservada", "vendida", "arrendada"]) }),
   z.object({ kind: z.literal("property-exclusive"), id: z.string(), exclusive: z.boolean() }),
 ]);
@@ -275,12 +347,45 @@ export async function PATCH(req: Request) {
 
   const body = await req.json().catch(() => null);
   const parsed = patchSchema.safeParse(body);
-  if (!parsed.success) return Response.json({ error: "Datos inválidos" }, { status: 400 });
+  if (!parsed.success) {
+    const first = parsed.error.issues[0];
+    return Response.json({ error: first?.message && first.message !== "Required" ? first.message : "Datos inválidos" }, { status: 400 });
+  }
   const data = parsed.data;
 
   if (data.kind === "broker-active") {
-    if (!isAdmin(broker)) return Response.json({ error: "Solo la administradora gestiona corredoras" }, { status: 403 });
+    if (!isAdmin(broker)) return Response.json({ error: "Solo un administrador gestiona asesores" }, { status: 403 });
+    if (data.id === broker.id && !data.active) return Response.json({ error: "No puedes desactivar tu propia cuenta" }, { status: 400 });
     await setBrokerActive(data.id, data.active);
+    refreshTeam();
+    return Response.json({ ok: true });
+  }
+
+  if (data.kind === "broker-order") {
+    if (!isAdmin(broker)) return Response.json({ error: "Solo un administrador ordena a los asesores" }, { status: 403 });
+    await Promise.all(data.ids.map((id, i) => updateBrokerProfile(id, { sortOrder: i + 1 })));
+    refreshTeam();
+    return Response.json({ ok: true });
+  }
+
+  if (data.kind === "broker-profile") {
+    const self = data.id === broker.id;
+    if (!isAdmin(broker) && !self) return Response.json({ error: "Solo puedes editar tu propia ficha" }, { status: 403 });
+    // Un asesor edita su foto, presentación y contacto; nombre, cargo, rol y
+    // visibilidad en el sitio los define un administrador.
+    const adminOnly = { name: data.name, role: data.role, title: data.title, showOnSite: data.showOnSite };
+    if (!isAdmin(broker) && Object.values(adminOnly).some((v) => v !== undefined)) {
+      return Response.json({ error: "Nombre, cargo y visibilidad los cambia un administrador" }, { status: 403 });
+    }
+    if (self && data.role === "corredor") return Response.json({ error: "No puedes quitarte el rol de administrador a ti mismo" }, { status: 400 });
+    await updateBrokerProfile(data.id, {
+      ...adminOnly,
+      photoUrl: data.photoUrl,
+      bio: data.bio,
+      phone: data.phone,
+      whatsapp: data.whatsapp,
+    });
+    refreshTeam();
     return Response.json({ ok: true });
   }
 

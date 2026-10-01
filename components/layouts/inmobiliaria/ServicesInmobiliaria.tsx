@@ -3,16 +3,17 @@ import { Icon } from "@/components/ui/IconResolver";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/layouts/inmobiliaria/SectionHeading";
 import type { ClientConfig } from "@/config/schema";
+import type { SectionCopy } from "@/lib/section-copy";
 
 // Servicios estilo inmobiliaria premium: sin cards — lista aireada con líneas
 // finas, número correlativo y encabezado de sección alineado a la izquierda.
-export function ServicesInmobiliaria({ services }: { services: ClientConfig["services"] }) {
+export function ServicesInmobiliaria({ services, copy }: { services: ClientConfig["services"]; copy: SectionCopy["services"] }) {
   if (!services.length) return null;
 
   return (
     <section id="servicios" aria-labelledby="servicios-titulo" className="py-20 sm:py-28">
       <Container>
-        <SectionHeading id="servicios-titulo" eyebrow="Servicios" title="Un servicio integral, de la tasación a la entrega de llaves" />
+        <SectionHeading id="servicios-titulo" eyebrow={copy.eyebrow} title={copy.title} />
         <div className="mt-14 grid grid-cols-1 gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s, i) => (
             <Reveal key={s.title} delay={(i % 3) * 80} className="group border-t border-foreground/15 pt-6">

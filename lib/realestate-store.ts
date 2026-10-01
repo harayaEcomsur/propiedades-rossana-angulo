@@ -15,6 +15,15 @@ export interface Broker {
   // Superadministrador fijo (SUPERADMIN_EMAILS, ver lib/realestate-auth.ts):
   // no vive en re_brokers, así que nadie lo puede quitar desde el panel.
   superadmin?: boolean;
+  // Ficha pública (sección "Nuestros asesores" del sitio). Cada usuario del
+  // panel es también un asesor del sitio, salvo que showOnSite sea false.
+  title?: string; // cargo visible, ej. "Asesora inmobiliaria"
+  photoUrl?: string;
+  bio?: string;
+  phone?: string;
+  whatsapp?: string; // solo dígitos, con código de país
+  showOnSite: boolean;
+  sortOrder: number;
   active: boolean;
   createdAt: string;
 }
@@ -242,6 +251,13 @@ function rowToBroker(r: Record<string, unknown>): Broker {
     name: String(r.name),
     role: r.role as Broker["role"],
     active: Boolean(r.active),
+    title: (r.title as string) ?? undefined,
+    photoUrl: (r.photo_url as string) ?? undefined,
+    bio: (r.bio as string) ?? undefined,
+    phone: (r.phone as string) ?? undefined,
+    whatsapp: (r.whatsapp as string) ?? undefined,
+    showOnSite: r.show_on_site === undefined || r.show_on_site === null ? true : Boolean(r.show_on_site),
+    sortOrder: Number(r.sort_order ?? 0),
     createdAt: new Date(r.created_at as string).toISOString(),
   };
 }
@@ -250,10 +266,39 @@ export async function listBrokers(): Promise<Broker[]> {
   return withDb(
     async () => {
       const sql = db();
-      const rows = await sql`SELECT * FROM re_brokers ORDER BY created_at ASC`;
+      const rows = await sql`SELECT * FROM re_brokers ORDER BY sort_order ASC, created_at ASC`;
       return rows.map(rowToBroker);
     },
-    () => [...store().brokers]
+    () => [...store().brokers].sort((a, b) => a.sortOrder - b.sortOrder)
+  );
+}
+
+export type BrokerProfile = Partial<Pick<Broker, "name" | "role" | "title" | "photoUrl" | "bio" | "phone" | "whatsapp" | "showOnSite" | "sortOrder">>;
+
+// Actualiza la ficha / rol. Campos `undefined` no se tocan; `null` en los
+// opcionales de texto los borra (vía string vacío desde la API).
+export async function updateBrokerProfile(id: string, p: BrokerProfile): Promise<void> {
+  const clean = (v: string | undefined) => (v === undefined ? undefined : v.trim() || null);
+  await withDb(
+    async () => {
+      const sql = db();
+      const fields: Record<string, unknown> = {};
+      if (p.name !== undefined) fields.name = p.name.trim();
+      if (p.role !== undefined) fields.role = p.role;
+      if (p.title !== undefined) fields.title = clean(p.title);
+      if (p.photoUrl !== undefined) fields.photo_url = clean(p.photoUrl);
+      if (p.bio !== undefined) fields.bio = clean(p.bio);
+      if (p.phone !== undefined) fields.phone = clean(p.phone);
+      if (p.whatsapp !== undefined) fields.whatsapp = clean(p.whatsapp);
+      if (p.showOnSite !== undefined) fields.show_on_site = p.showOnSite;
+      if (p.sortOrder !== undefined) fields.sort_order = p.sortOrder;
+      if (Object.keys(fields).length === 0) return;
+      await sql`UPDATE re_brokers SET ${sql(fields)} WHERE id = ${id}`;
+    },
+    () => {
+      const b = store().brokers.find((x) => x.id === id);
+      if (b) Object.assign(b, Object.fromEntries(Object.entries(p).filter(([, v]) => v !== undefined)));
+    }
   );
 }
 
@@ -262,15 +307,36 @@ export async function brokerByEmail(email: string): Promise<Broker | null> {
   return list.find((b) => b.email.toLowerCase() === email.toLowerCase() && b.active) ?? null;
 }
 
-export async function addBroker(data: { email: string; name: string; role: Broker["role"] }): Promise<Broker> {
-  const broker: Broker = { id: randomUUID(), email: data.email, name: data.name, role: data.role, active: true, createdAt: nowIso() };
+export async function addBroker(
+  data: { email: string; name: string; role: Broker["role"] } & Pick<Broker, "title" | "phone" | "whatsapp" | "bio" | "photoUrl"> & { showOnSite?: boolean }
+): Promise<Broker> {
+  const existing = await listBrokers();
+  const sortOrder = existing.reduce((max, b) => Math.max(max, b.sortOrder), 0) + 1;
+  const broker: Broker = {
+    id: randomUUID(),
+    email: data.email.trim().toLowerCase(),
+    name: data.name,
+    role: data.role,
+    active: true,
+    title: data.title,
+    phone: data.phone,
+    whatsapp: data.whatsapp,
+    bio: data.bio,
+    photoUrl: data.photoUrl,
+    showOnSite: data.showOnSite ?? true,
+    sortOrder,
+    createdAt: nowIso(),
+  };
   await withDb(
     async () => {
       const sql = db();
       await sql`
-        INSERT INTO re_brokers (id, email, name, role, active, created_at)
-        VALUES (${broker.id}, ${broker.email}, ${broker.name}, ${broker.role}, true, ${broker.createdAt})
-        ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, role = EXCLUDED.role, active = true
+        INSERT INTO re_brokers (id, email, name, role, active, title, phone, whatsapp, bio, photo_url, show_on_site, sort_order, created_at)
+        VALUES (${broker.id}, ${broker.email}, ${broker.name}, ${broker.role}, true, ${broker.title ?? null}, ${broker.phone ?? null},
+          ${broker.whatsapp ?? null}, ${broker.bio ?? null}, ${broker.photoUrl ?? null}, ${broker.showOnSite}, ${broker.sortOrder}, ${broker.createdAt})
+        ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, role = EXCLUDED.role, active = true,
+          title = COALESCE(EXCLUDED.title, re_brokers.title), phone = COALESCE(EXCLUDED.phone, re_brokers.phone),
+          whatsapp = COALESCE(EXCLUDED.whatsapp, re_brokers.whatsapp)
       `;
     },
     () => {

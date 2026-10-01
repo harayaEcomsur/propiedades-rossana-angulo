@@ -1,4 +1,5 @@
 import { getSiteConfig } from "@/lib/site-content";
+import { resolveSections } from "@/lib/section-copy";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
@@ -34,6 +35,8 @@ import { getPublicProperties } from "@/lib/public-properties";
 export async function HomeContent() {
   // Config con los textos e imágenes editados en el panel (pestaña "Sitio").
   const clientConfig = await getSiteConfig();
+  // Títulos y textos de cada sección (editables en el panel → Sitio → Títulos y menú).
+  const copy = resolveSections(clientConfig);
   const { modules, contact, branding, meta } = clientConfig;
   const hasWhatsapp = modules.whatsappButton && Boolean(contact.whatsapp);
   const layout = branding.layout;
@@ -65,7 +68,7 @@ export async function HomeContent() {
 
   const services =
     layout === "inmobiliaria" ? (
-      <ServicesInmobiliaria services={servicesData} />
+      <ServicesInmobiliaria services={servicesData} copy={copy.services} />
     ) : layout === "corporativo" ? (
       <ServicesCorporativo services={servicesData} />
     ) : (
@@ -75,7 +78,7 @@ export async function HomeContent() {
   // Con el módulo de propiedades activo, el inventario real reemplaza a la galería.
   const properties = await getPublicProperties();
   const gallerySection = properties.length > 0 ? (
-    <FeaturedProperties properties={properties} />
+    <FeaturedProperties properties={properties} copy={copy.properties} />
   ) : !gallery.length ? null : layout === "inmobiliaria" ? (
     <GalleryInmobiliaria images={gallery} />
   ) : (
@@ -103,24 +106,25 @@ export async function HomeContent() {
           {hero}
           {clientConfig.pillars?.length ? <PillarsInmobiliaria pillars={clientConfig.pillars} /> : null}
           {gallerySection}
-          <ExclusiveInmobiliaria properties={properties} />
+          <ExclusiveInmobiliaria properties={properties} copy={copy.exclusive} />
           {services}
-          <AboutInmobiliaria about={clientConfig.about} />
-          {clientConfig.team?.length ? <TeamInmobiliaria team={clientConfig.team} /> : null}
+          <AboutInmobiliaria about={clientConfig.about} copy={copy.about} />
+          {clientConfig.team?.length ? <TeamInmobiliaria team={clientConfig.team} copy={copy.team} /> : null}
           {modules.testimonials && clientConfig.testimonials?.length ? (
-            <TestimonialsInmobiliaria testimonials={clientConfig.testimonials} />
+            <TestimonialsInmobiliaria testimonials={clientConfig.testimonials} copy={copy.testimonials} />
           ) : null}
           {instagramUrl ? (
             <InstagramFeed
               instagramUrl={instagramUrl}
               businessName={meta.businessName}
               variant="carousel"
-              tagline="Propiedades nuevas, ventas y arriendos en @propiedadesrossanna."
+              heading={{ eyebrow: copy.instagram.eyebrow, title: copy.instagram.title }}
+              tagline={copy.instagram.subtitle || "Propiedades nuevas, ventas y arriendos en @propiedadesrossanna."}
             />
           ) : null}
-          {modules.pricing && clientConfig.pricing?.length ? <PricingInmobiliaria plans={clientConfig.pricing} label={branding.pricingLabel} /> : null}
-          {modules.faq && clientConfig.faq?.length ? <FAQInmobiliaria items={clientConfig.faq} whatsapp={contact.whatsapp} /> : null}
-          <ContactInmobiliaria contact={contact} showForm={modules.contactForm} />
+          {modules.pricing && clientConfig.pricing?.length ? <PricingInmobiliaria plans={clientConfig.pricing} label={branding.pricingLabel} copy={copy.pricing} /> : null}
+          {modules.faq && clientConfig.faq?.length ? <FAQInmobiliaria items={clientConfig.faq} whatsapp={contact.whatsapp} copy={copy.faq} /> : null}
+          <ContactInmobiliaria contact={contact} showForm={modules.contactForm} copy={copy.contact} />
         </main>
         <Footer config={clientConfig} />
         {floating}

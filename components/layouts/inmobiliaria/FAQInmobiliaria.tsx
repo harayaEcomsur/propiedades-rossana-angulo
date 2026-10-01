@@ -5,16 +5,17 @@ import { faqJsonLd } from "@/components/sections/FAQ";
 import { jsonLdString } from "@/lib/seo";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import type { ClientConfig } from "@/config/schema";
+import type { SectionCopy } from "@/lib/section-copy";
 
 // Dos columnas: encabezado fijo con salida a WhatsApp a la izquierda, acordeón
 // nativo (<details>, accesible sin JS) a la derecha. Mismo JSON-LD FAQPage.
-export function FAQInmobiliaria({ items, whatsapp }: { items: NonNullable<ClientConfig["faq"]>; whatsapp?: string }) {
+export function FAQInmobiliaria({ items, whatsapp, copy }: { items: NonNullable<ClientConfig["faq"]>; whatsapp?: string; copy: SectionCopy["faq"] }) {
   return (
     <section id="preguntas-frecuentes" aria-labelledby="faq-titulo" className="py-20 sm:py-28">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd(items)) }} />
       <Container className="grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
         <div className="lg:sticky lg:top-32 lg:self-start">
-          <SectionHeading id="faq-titulo" eyebrow="Preguntas frecuentes" title="Lo que más nos preguntan" />
+          <SectionHeading id="faq-titulo" eyebrow={copy.eyebrow} title={copy.title} />
           {whatsapp && (
             <a
               href={buildWhatsAppLink(whatsapp, "Hola! Tengo una consulta que no está en las preguntas frecuentes")}
@@ -22,7 +23,7 @@ export function FAQInmobiliaria({ items, whatsapp }: { items: NonNullable<Client
               rel="noopener noreferrer"
               className="mt-8 inline-flex min-h-11 items-center gap-2 border border-foreground/30 px-6 py-3 text-sm font-semibold uppercase tracking-wider text-foreground transition-colors hover:border-primary hover:text-primary"
             >
-              <MessageCircle size={16} aria-hidden /> ¿Otra duda? Escríbenos
+              <MessageCircle size={16} aria-hidden /> {copy.cta}
             </a>
           )}
         </div>

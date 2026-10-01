@@ -13,6 +13,11 @@ export const socialSchema = z.object({
   label: z.string().optional(),
 });
 
+// Grupo de textos opcionales (títulos de sección, etiquetas de menú).
+function copy<K extends string>(keys: readonly K[]) {
+  return z.object(Object.fromEntries(keys.map((k) => [k, z.string().max(300).optional()])) as Record<K, z.ZodOptional<z.ZodString>>);
+}
+
 export const clientConfigSchema = z.object({
   meta: z.object({
     slug: z.string(),
@@ -286,6 +291,26 @@ export const clientConfigSchema = z.object({
   // Pilares del negocio: franja de 3-4 diferenciadores bajo el hero (layout
   // inmobiliaria). `icon` = nombre de un ícono de lucide-react.
   pillars: z.array(z.object({ icon: z.string(), title: z.string(), text: z.string() })).max(4).optional(),
+
+  // Títulos y textos de cada sección de la home y del menú (layout
+  // inmobiliaria). Todo opcional: lo que falte sale de los valores por
+  // defecto de lib/section-copy.ts. Editable desde el panel (pestaña Sitio).
+  sections: z
+    .object({
+      properties: copy(["eyebrow", "title", "subtitle", "cta"]),
+      exclusive: copy(["eyebrow", "title", "subtitle", "cta"]),
+      services: copy(["eyebrow", "title"]),
+      about: copy(["eyebrow"]),
+      team: copy(["eyebrow", "title", "subtitle"]),
+      testimonials: copy(["eyebrow", "title"]),
+      instagram: copy(["eyebrow", "title", "subtitle"]),
+      pricing: copy(["eyebrow", "title", "subtitle"]),
+      faq: copy(["eyebrow", "title", "cta"]),
+      contact: copy(["eyebrow", "title", "subtitle", "formTitle", "formSubtitle"]),
+    })
+    .partial()
+    .optional(),
+  nav: copy(["properties", "services", "team", "pricing", "contact", "cta"]).optional(),
 
   // Asesores del equipo (sección "Nuestros asesores"). Sin foto se muestra un
   // monograma con sus iniciales.

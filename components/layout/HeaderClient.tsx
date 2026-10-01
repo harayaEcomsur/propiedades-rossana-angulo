@@ -13,9 +13,10 @@ export interface HeaderProps {
   inmobiliaria: boolean;
   links: { href: string; label: string }[];
   cta: string | null;
+  ctaLabel?: string;
 }
 
-export function HeaderClient({ logoUrl, businessName, logoIncludesName, inmobiliaria, links, cta }: HeaderProps) {
+export function HeaderClient({ logoUrl, businessName, logoIncludesName, inmobiliaria, links, cta, ctaLabel = "Escríbenos" }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const branding = { logoUrl, logoIncludesName };
   const meta = { businessName };
@@ -65,7 +66,7 @@ export function HeaderClient({ logoUrl, businessName, logoIncludesName, inmobili
               rel="noopener noreferrer"
               className="hidden min-h-11 items-center gap-2 bg-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-opacity hover:opacity-90 lg:inline-flex"
             >
-              <MessageCircle size={16} aria-hidden /> Escríbenos
+              <MessageCircle size={16} aria-hidden /> {ctaLabel}
             </a>
           )}
         </div>

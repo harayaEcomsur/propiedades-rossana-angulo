@@ -3,12 +3,13 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/layouts/inmobiliaria/SectionHeading";
 import type { ClientConfig } from "@/config/schema";
+import type { SectionCopy } from "@/lib/section-copy";
 
-export function TestimonialsInmobiliaria({ testimonials }: { testimonials: NonNullable<ClientConfig["testimonials"]> }) {
+export function TestimonialsInmobiliaria({ testimonials, copy }: { testimonials: NonNullable<ClientConfig["testimonials"]>; copy: SectionCopy["testimonials"] }) {
   return (
     <section aria-labelledby="testimonios-titulo" className="py-20 sm:py-28">
       <Container>
-        <SectionHeading id="testimonios-titulo" eyebrow="Testimonios" title="Lo que dicen nuestros clientes" align="center" />
+        <SectionHeading id="testimonios-titulo" eyebrow={copy.eyebrow} title={copy.title} align="center" />
         <div className="mt-14 grid gap-8 md:grid-cols-3">
           {testimonials.map((t, i) => (
             <Reveal key={t.name} delay={i * 90}>

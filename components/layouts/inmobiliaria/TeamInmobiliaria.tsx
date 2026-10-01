@@ -6,6 +6,7 @@ import { SectionHeading } from "@/components/layouts/inmobiliaria/SectionHeading
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { TeamAvatar } from "@/components/layouts/inmobiliaria/TeamAvatar";
 import type { ClientConfig } from "@/config/schema";
+import type { SectionCopy } from "@/lib/section-copy";
 
 type Member = NonNullable<ClientConfig["team"]>[number];
 
@@ -13,7 +14,7 @@ type Member = NonNullable<ClientConfig["team"]>[number];
 // "Nuestros asesores" (ref: Maktub, "Nuestros Profesionales"): foto circular,
 // nombre, cargo y contacto directo con cada asesor. Sin foto, avatar
 // ilustrado con las iniciales (ver TeamAvatar).
-export function TeamInmobiliaria({ team }: { team: Member[] }) {
+export function TeamInmobiliaria({ team, copy }: { team: Member[]; copy: SectionCopy["team"] }) {
   if (!team.length) return null;
   const single = team.length === 1;
 
@@ -22,9 +23,9 @@ export function TeamInmobiliaria({ team }: { team: Member[] }) {
       <Container>
         <SectionHeading
           id="equipo-titulo"
-          eyebrow="Equipo"
-          title="Nuestros asesores"
-          subtitle="Un equipo que te acompaña de la primera visita a la inscripción de tu propiedad. Escríbele directo a quien prefieras."
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          subtitle={copy.subtitle}
           align="center"
         />
         <ul className={`mt-14 grid gap-8 ${single ? "mx-auto max-w-sm" : "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>

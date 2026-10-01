@@ -3,11 +3,12 @@ import { Star } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { PropertyCard, type Property } from "@/components/properties/PropertyCard";
+import type { SectionCopy } from "@/lib/section-copy";
 
 // "En Exclusiva" (ref: Property Partners): franja oscura con titular grande y
 // las fichas montadas sobre el borde inferior. Solo aparece si hay al menos
 // una propiedad marcada como exclusiva en el panel o en el config.
-export function ExclusiveInmobiliaria({ properties }: { properties: Property[] }) {
+export function ExclusiveInmobiliaria({ properties, copy }: { properties: Property[]; copy: SectionCopy["exclusive"] }) {
   const exclusives = properties.filter((p) => p.exclusive).slice(0, 3);
   if (exclusives.length === 0) return null;
 
@@ -16,17 +17,17 @@ export function ExclusiveInmobiliaria({ properties }: { properties: Property[] }
       <div className="bg-accent pb-40 pt-20 text-center sm:pb-48 sm:pt-24">
         <Container>
           <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
-            <Star size={12} fill="currentColor" className="text-primary" aria-hidden /> Solo con nosotros
+            <Star size={12} fill="currentColor" className="text-primary" aria-hidden /> {copy.eyebrow}
           </p>
           <h2 id="exclusivas-titulo" className="mt-4 font-heading text-4xl font-bold text-white sm:text-6xl">
-            En Exclusiva
+            {copy.title}
           </h2>
-          <p className="mx-auto mt-4 max-w-xl font-heading text-2xl text-primary">Conoce propiedades que solo encontrarás aquí</p>
+          <p className="mx-auto mt-4 max-w-xl font-heading text-2xl text-primary">{copy.subtitle}</p>
           <Link
             href="/propiedades?exclusivas=1"
             className="mt-8 inline-flex min-h-11 items-center bg-primary px-7 py-3.5 text-sm font-semibold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
           >
-            Ver exclusivas
+            {copy.cta}
           </Link>
         </Container>
       </div>

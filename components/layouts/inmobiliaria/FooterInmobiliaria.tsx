@@ -2,6 +2,7 @@ import { Instagram, MessageCircle, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { slugify } from "@/lib/text";
+import { resolveNav } from "@/lib/section-copy";
 import type { ClientConfig } from "@/config/schema";
 import { HarayaDevCredit } from "@/components/brand/HarayaDevCredit";
 
@@ -10,13 +11,14 @@ import { HarayaDevCredit } from "@/components/brand/HarayaDevCredit";
 export function FooterInmobiliaria({ config, showCredit }: { config: ClientConfig; showCredit: boolean }) {
   const { meta, contact, branding, modules, seo } = config;
   const instagram = contact.socials?.find((s) => s.platform === "instagram")?.url;
+  const nav = resolveNav(config);
   const links = [
-    modules.propiedades && { href: "/propiedades", label: "Propiedades" },
-    { href: "/#servicios", label: "Servicios" },
-    { href: "/#equipo", label: "Equipo" },
-    modules.pricing && { href: `/#${slugify(branding.pricingLabel)}`, label: branding.pricingLabel },
+    modules.propiedades && { href: "/propiedades", label: nav.properties },
+    { href: "/#servicios", label: nav.services },
+    { href: "/#equipo", label: nav.team },
+    modules.pricing && { href: `/#${slugify(branding.pricingLabel)}`, label: nav.pricing },
     modules.faq && { href: "/#preguntas-frecuentes", label: "Preguntas frecuentes" },
-    { href: "/#contacto", label: "Contacto" },
+    { href: "/#contacto", label: nav.contact },
   ].filter(Boolean) as { href: string; label: string }[];
 
   const linkCls = "text-white/70 transition-colors hover:text-white";

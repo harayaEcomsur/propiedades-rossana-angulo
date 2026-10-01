@@ -37,6 +37,8 @@ function superadminBroker(email: string): Broker | null {
     role: "admin",
     active: true,
     superadmin: true,
+    showOnSite: false,
+    sortOrder: 0,
     createdAt: new Date(0).toISOString(),
   };
 }
@@ -115,6 +117,8 @@ function claveBroker(claveCandidate: string | null | undefined): Broker | null {
     name: "Administradora",
     role: "admin",
     active: true,
+    showOnSite: false,
+    sortOrder: 0,
     createdAt: new Date().toISOString(),
   };
 }

@@ -6,8 +6,9 @@ import { MapEmbed } from "@/components/sections/MapEmbed";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { instagramHandle } from "@/lib/instagram";
 import type { ClientConfig } from "@/config/schema";
+import type { SectionCopy } from "@/lib/section-copy";
 
-export function ContactInmobiliaria({ contact, showForm }: { contact: ClientConfig["contact"]; showForm: boolean }) {
+export function ContactInmobiliaria({ contact, showForm, copy }: { contact: ClientConfig["contact"]; showForm: boolean; copy: SectionCopy["contact"] }) {
   const instagram = contact.socials?.find((s) => s.platform === "instagram")?.url;
   const hours = contact.hours
     ?.map((h) => (h.closed ? `${h.day}: cerrado` : `${h.day}: ${h.open} a ${h.close}`))
@@ -33,9 +34,9 @@ export function ContactInmobiliaria({ contact, showForm }: { contact: ClientConf
         <div>
           <SectionHeading
             id="contacto-titulo"
-            eyebrow="Contacto"
-            title="Conversemos sobre tu propiedad"
-            subtitle="Cuéntanos qué buscas, o qué propiedad quieres vender o arrendar, y te asesoramos."
+            eyebrow={copy.eyebrow}
+            title={copy.title}
+            subtitle={copy.subtitle}
           />
           <ul className="mt-10 space-y-5">
             {items.map(({ icon: Icon, label, value, href, external }) => (
@@ -68,8 +69,8 @@ export function ContactInmobiliaria({ contact, showForm }: { contact: ClientConf
         </div>
         {showForm && (
           <div className="h-fit bg-background p-6 shadow-[0_10px_40px_-16px_rgba(0,0,0,0.3)] sm:p-10">
-            <h3 className="font-heading text-2xl font-semibold text-foreground">Escríbenos</h3>
-            <p className="mb-6 mt-2 text-sm text-foreground/65">Déjanos tus datos y te contactamos.</p>
+            <h3 className="font-heading text-2xl font-semibold text-foreground">{copy.formTitle}</h3>
+            <p className="mb-6 mt-2 text-sm text-foreground/65">{copy.formSubtitle}</p>
             <ContactForm squared />
           </div>
         )}

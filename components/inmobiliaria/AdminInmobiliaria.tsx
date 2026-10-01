@@ -3,17 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { PhotoUploader } from "@/components/inmobiliaria/PhotoUploader";
 import { SiteEditor } from "@/components/inmobiliaria/SiteEditor";
+import { AdvisorsTab, MyProfileTab, type AdvisorData } from "@/components/inmobiliaria/AdvisorsTab";
 
 type Role = "admin" | "corredor";
 
-interface Broker {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  active: boolean;
-  createdAt: string;
-}
+type Broker = AdvisorData & { createdAt: string };
 interface REClient {
   id: string;
   brokerId: string;
@@ -123,7 +117,7 @@ interface REContract {
 }
 
 interface Bundle {
-  broker: { id: string; name: string; email: string; role: Role; superadmin?: boolean };
+  broker: Broker;
   brokers: Broker[];
   clients: REClient[];
   properties: REProperty[];
@@ -135,7 +129,7 @@ interface Bundle {
   instagramConnected: boolean;
 }
 
-const TABS = ["propiedades", "clientes", "proveedores", "entregas", "contratos", "corredoras", "sitio"] as const;
+const TABS = ["ficha", "propiedades", "clientes", "proveedores", "entregas", "contratos", "corredoras", "sitio"] as const;
 type Tab = (typeof TABS)[number];
 
 const card = "rounded-xl border border-foreground/15 p-4 sm:p-5";
@@ -174,7 +168,10 @@ export function AdminInmobiliaria({ adminKey }: { adminKey?: string }) {
   if (!data) return <p className="text-foreground/60">Cargando…</p>;
 
   const isAdmin = data.broker.role === "admin";
+  // "Mi ficha" solo para quien es asesor real (no el superadmin ni el link con clave).
+  const hasProfile = !data.broker.superadmin && data.broker.id !== "_clave";
   const tabs: { id: Tab; label: string }[] = [
+    ...(hasProfile ? [{ id: "ficha" as Tab, label: "Mi ficha" }] : []),
     { id: "propiedades", label: "Propiedades" },
     { id: "clientes", label: "Clientes" },
     { id: "proveedores", label: "Proveedores" },
@@ -182,7 +179,7 @@ export function AdminInmobiliaria({ adminKey }: { adminKey?: string }) {
     { id: "contratos", label: "Contratos" },
     ...(isAdmin
       ? [
-          { id: "corredoras" as Tab, label: "Usuarios" },
+          { id: "corredoras" as Tab, label: "Asesores" },
           { id: "sitio" as Tab, label: "Sitio (textos e imágenes)" },
         ]
       : []),
@@ -213,7 +210,16 @@ export function AdminInmobiliaria({ adminKey }: { adminKey?: string }) {
       {tab === "proveedores" && <ProvidersTab data={data} authHeaders={authHeaders} reload={load} isAdmin={isAdmin} />}
       {tab === "entregas" && <DeliveriesTab data={data} authHeaders={authHeaders} reload={load} pdfSuffix={pdfSuffix} isAdmin={isAdmin} />}
       {tab === "contratos" && <ContractsTab data={data} authHeaders={authHeaders} reload={load} pdfSuffix={pdfSuffix} isAdmin={isAdmin} />}
-      {tab === "corredoras" && isAdmin && <BrokersTab data={data} authHeaders={authHeaders} reload={load} />}
+      {tab === "ficha" && hasProfile && (
+        <MyProfileTab
+          key={data.broker.id + (data.broker.photoUrl ?? "")}
+          me={data.broker}
+          index={Math.max(0, data.brokers.findIndex((b) => b.id === data.broker.id))}
+          authHeaders={authHeaders}
+          reload={load}
+        />
+      )}
+      {tab === "corredoras" && isAdmin && <AdvisorsTab advisors={data.brokers} currentId={data.broker.id} authHeaders={authHeaders} reload={load} />}
       {tab === "sitio" && isAdmin && <SiteEditor authHeaders={authHeaders} />}
     </div>
   );
@@ -241,84 +247,6 @@ async function del(path: string, headers: Record<string, string>, body: unknown)
 function brokerName(data: Bundle, id: string): string {
   if (id === data.broker.id) return data.broker.name;
   return data.brokers.find((b) => b.id === id)?.name ?? "—";
-}
-
-// ---------- Corredoras ----------
-
-function BrokersTab({ data, authHeaders, reload }: { data: Bundle; authHeaders: Record<string, string>; reload: () => void }) {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [role, setRole] = useState<Role>("corredor");
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  async function add() {
-    setBusy(true);
-    setErr(null);
-    try {
-      await post("/api/inmobiliaria", authHeaders, { kind: "broker", email, name, role });
-      setEmail("");
-      setName("");
-      setRole("corredor");
-      reload();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Error");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className={card}>
-        <h3 className="mb-1 font-semibold">Agregar usuario</h3>
-        <p className="mb-3 text-xs text-foreground/55">
-          <strong>Asesor/a</strong>: carga y gestiona sus propiedades, clientes, entregas y contratos. <strong>Administrador/a</strong>: ve
-          todo, gestiona usuarios y edita los textos e imágenes del sitio.
-        </p>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <input className={input} placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
-          <input className={input} placeholder="Correo de Google" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <select className={input} value={role} onChange={(e) => setRole(e.target.value as Role)}>
-            <option value="corredor">Asesor/a</option>
-            <option value="admin">Administrador/a</option>
-          </select>
-        </div>
-        <button className={`${btnPrimary} mt-3`} disabled={busy || !email || !name} onClick={add}>
-          Agregar
-        </button>
-        {err && <p className="mt-2 text-sm text-red-600">{err}</p>}
-        <p className="mt-2 text-xs text-foreground/50">Se autoriza a esa persona a entrar con su cuenta de Google — no se comparte ninguna clave.</p>
-      </div>
-
-      <div className={card}>
-        <h3 className="mb-3 font-semibold">Usuarios con acceso</h3>
-        <ul className="flex flex-col gap-2">
-          {data.brokers.map((b) => (
-            <li key={b.id} className="flex items-center justify-between gap-3 rounded-lg border border-foreground/10 p-3">
-              <div>
-                <p className="text-sm font-medium">
-                  {b.name} <span className="text-foreground/50">({b.role === "admin" ? "administrador/a" : "asesor/a"})</span>
-                  {!b.active && <span className="ml-1 text-xs text-red-600">desactivado</span>}
-                </p>
-                <p className="text-xs text-foreground/50">{b.email}</p>
-              </div>
-              <button
-                className={btnGhost}
-                onClick={async () => {
-                  await patch("/api/inmobiliaria", authHeaders, { kind: "broker-active", id: b.id, active: !b.active });
-                  reload();
-                }}
-              >
-                {b.active ? "Desactivar" : "Activar"}
-              </button>
-            </li>
-          ))}
-          {data.brokers.length === 0 && <p className="text-sm text-foreground/50">Todavía no hay usuarios agregados.</p>}
-        </ul>
-      </div>
-    </div>
-  );
 }
 
 // ---------- Propiedades ----------

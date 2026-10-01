@@ -14,11 +14,14 @@ export async function InstagramFeed({
   businessName,
   variant = "grid",
   tagline,
+  heading = { eyebrow: "Instagram", title: "Síguenos en Instagram" },
 }: {
   instagramUrl: string;
   businessName: string;
   variant?: "grid" | "carousel";
   tagline?: string;
+  // Encabezado editable (solo variante carrusel).
+  heading?: { eyebrow: string; title: string };
 }) {
   const posts = await getInstagramFeed(variant === "carousel" ? 12 : 6);
   const handle = instagramHandle(instagramUrl);
@@ -39,7 +42,7 @@ export async function InstagramFeed({
       <section id="instagram" className="overflow-hidden py-20 sm:py-28">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-6">
-            <SectionHeading eyebrow="Instagram" title="Síguenos en Instagram" subtitle={tagline ?? `${handle} — novedades de ${businessName}.`} />
+            <SectionHeading eyebrow={heading.eyebrow} title={heading.title} subtitle={tagline || `${handle} — novedades de ${businessName}.`} />
             {followButton}
           </div>
           {posts && posts.length > 0 && (

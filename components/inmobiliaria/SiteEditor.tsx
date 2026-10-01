@@ -37,6 +37,7 @@ interface Content {
     socials?: { platform: string; url: string }[];
   };
   seo: { title: string; description: string };
+  titles: { sections: Record<string, Record<string, string>>; nav: Record<string, string> };
 }
 type Section = keyof Content;
 
@@ -45,7 +46,7 @@ const SECTIONS: { id: Section; label: string; anchor?: string }[] = [
   { id: "pillars", label: "Pilares", anchor: "/" },
   { id: "services", label: "Servicios", anchor: "/#servicios" },
   { id: "about", label: "Nosotros", anchor: "/#nosotros" },
-  { id: "team", label: "Equipo", anchor: "/#equipo" },
+  { id: "titles", label: "Títulos y menú", anchor: "/" },
   { id: "testimonials", label: "Testimonios", anchor: "/" },
   { id: "faq", label: "Preguntas frecuentes", anchor: "/#preguntas-frecuentes" },
   { id: "pricing", label: "Valores", anchor: "/#valores" },
@@ -197,28 +198,7 @@ export function SiteEditor({ authHeaders }: { authHeaders: Record<string, string
             <ImageField label="Imagen" value={content.about.imageUrl} onChange={(imageUrl) => update("about", { ...content.about, imageUrl })} authHeaders={authHeaders} />
           </div>
         )}
-        {section === "team" && (
-          <ListEditor
-            items={content.team}
-            onChange={(v) => update("team", v)}
-            max={24}
-            empty={{ name: "", role: "Asesora inmobiliaria" }}
-            itemLabel={(m) => m.name || "Nueva persona"}
-            render={(m, set) => (
-              <>
-                <ImageField label="Foto (cuadrada, de hombros hacia arriba). Sin foto se muestra un avatar con sus iniciales." value={m.photoUrl} onChange={(photoUrl) => set({ ...m, photoUrl })} authHeaders={authHeaders} round />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Field label="Nombre" value={m.name} onChange={(name) => set({ ...m, name })} />
-                  <Field label="Cargo" value={m.role} onChange={(role) => set({ ...m, role })} />
-                  <Field label="Teléfono" value={m.phone ?? ""} onChange={(phone) => set({ ...m, phone })} placeholder="+56 9 1234 5678" />
-                  <Field label="WhatsApp (solo números, con 56)" value={m.whatsapp ?? ""} onChange={(whatsapp) => set({ ...m, whatsapp: whatsapp.replace(/\D/g, "") })} placeholder="56912345678" />
-                  <Field label="Correo" value={m.email ?? ""} onChange={(email) => set({ ...m, email })} />
-                </div>
-                <Field label="Presentación (1-2 líneas)" value={m.bio ?? ""} onChange={(bio) => set({ ...m, bio })} multiline />
-              </>
-            )}
-          />
-        )}
+        {section === "titles" && <TitlesForm value={content.titles} onChange={(v) => update("titles", v)} />}
         {section === "testimonials" && (
           <ListEditor
             items={content.testimonials}
@@ -386,7 +366,7 @@ function StringList({ label, items, onChange }: { label: string; items: string[]
   );
 }
 
-function ImageField({
+export function ImageField({
   label,
   value,
   onChange,
@@ -600,6 +580,65 @@ function ContactForm({ value, onChange }: { value: Content["contact"]; onChange:
           <Plus size={13} /> Agregar red
         </button>
       </div>
+    </div>
+  );
+}
+
+// ---------- Títulos y menú ----------
+
+// Etiquetas legibles de cada grupo y campo (las claves son las del esquema).
+const TITLE_GROUPS: { key: string; label: string; fields: [string, string, boolean?][] }[] = [
+  { key: "properties", label: "Propiedades destacadas", fields: [["eyebrow", "Antetítulo"], ["title", "Título"], ["subtitle", "Bajada", true], ["cta", "Botón"]] },
+  { key: "exclusive", label: "En Exclusiva", fields: [["eyebrow", "Antetítulo"], ["title", "Título"], ["subtitle", "Bajada"], ["cta", "Botón"]] },
+  { key: "services", label: "Servicios", fields: [["eyebrow", "Antetítulo"], ["title", "Título"]] },
+  { key: "about", label: "Nosotros (el título se edita en la sección Nosotros)", fields: [["eyebrow", "Antetítulo"]] },
+  { key: "team", label: "Asesores", fields: [["eyebrow", "Antetítulo"], ["title", "Título"], ["subtitle", "Bajada", true]] },
+  { key: "testimonials", label: "Testimonios", fields: [["eyebrow", "Antetítulo"], ["title", "Título"]] },
+  { key: "instagram", label: "Instagram", fields: [["eyebrow", "Antetítulo"], ["title", "Título"], ["subtitle", "Bajada"]] },
+  { key: "pricing", label: "Valores", fields: [["eyebrow", "Antetítulo"], ["title", "Título"], ["subtitle", "Bajada"]] },
+  { key: "faq", label: "Preguntas frecuentes", fields: [["eyebrow", "Antetítulo"], ["title", "Título"], ["cta", "Botón de WhatsApp"]] },
+  {
+    key: "contact",
+    label: "Contacto",
+    fields: [["eyebrow", "Antetítulo"], ["title", "Título"], ["subtitle", "Bajada", true], ["formTitle", "Título del formulario"], ["formSubtitle", "Bajada del formulario"]],
+  },
+];
+
+const NAV_FIELDS: [string, string][] = [
+  ["properties", "Propiedades"],
+  ["services", "Servicios"],
+  ["team", "Equipo"],
+  ["pricing", "Valores"],
+  ["contact", "Contacto"],
+  ["cta", "Botón destacado (WhatsApp)"],
+];
+
+function TitlesForm({ value, onChange }: { value: Content["titles"]; onChange: (v: Content["titles"]) => void }) {
+  const setSection = (group: string, field: string, v: string) =>
+    onChange({ ...value, sections: { ...value.sections, [group]: { ...(value.sections[group] ?? {}), [field]: v } } });
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="mb-2 text-sm font-semibold">Menú</p>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {NAV_FIELDS.map(([key, label]) => (
+            <Field key={key} label={label} value={value.nav[key] ?? ""} onChange={(v) => onChange({ ...value, nav: { ...value.nav, [key]: v } })} />
+          ))}
+        </div>
+      </div>
+      {TITLE_GROUPS.map((g) => (
+        <details key={g.key} className="rounded-lg border border-foreground/10 p-3">
+          <summary className="cursor-pointer text-sm font-semibold">{g.label}</summary>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {g.fields.map(([field, label, multiline]) => (
+              <div key={field} className={multiline ? "sm:col-span-2" : ""}>
+                <Field label={label} value={value.sections[g.key]?.[field] ?? ""} onChange={(v) => setSection(g.key, field, v)} multiline={multiline} />
+              </div>
+            ))}
+          </div>
+        </details>
+      ))}
+      <p className="text-xs text-foreground/55">Si dejas un campo vacío, se usa el texto original.</p>
     </div>
   );
 }

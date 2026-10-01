@@ -3,6 +3,8 @@ import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
 import { clientConfigSchema, type ClientConfig } from "@/config/schema";
 import { db, jsonb, withDb } from "@/lib/db";
+import { resolveNav, resolveSections } from "@/lib/section-copy";
+import { listBrokers } from "@/lib/realestate-store";
 
 // CMS del sitio: lo que la administradora edita en /inmobiliaria/admin →
 // pestaña "Sitio" se guarda en `settings` (clave site_content) y se superpone
@@ -30,6 +32,8 @@ export const siteContentSchema = z
     pricing: shape.pricing,
     contact: shape.contact,
     seo: z.object({ title: z.string().min(5).max(120), description: z.string().min(20).max(300) }),
+    // Títulos de las secciones de la home y nombres del menú.
+    titles: z.object({ sections: shape.sections, nav: shape.nav }),
   })
   .partial();
 
@@ -57,9 +61,31 @@ export async function getSiteOverrides(): Promise<SiteContent> {
   return cachedOverrides();
 }
 
+// Equipo público = usuarios del panel activos y marcados "mostrar en el sitio",
+// en el orden que define la administradora (pestaña Asesores). Cacheado con
+// el mismo tag que el contenido: se invalida al editar asesores.
+const cachedTeam = unstable_cache(
+  async (): Promise<NonNullable<ClientConfig["team"]> | null> => {
+    if (!clientConfig.modules.inmobiliariaAdmin) return null;
+    const brokers = (await listBrokers()).filter((b) => b.active && b.showOnSite);
+    if (brokers.length === 0) return null;
+    return brokers.map((b) => ({
+      name: b.name,
+      role: b.title || (b.role === "admin" ? "Administración" : "Asesor inmobiliario"),
+      photoUrl: b.photoUrl,
+      bio: b.bio,
+      phone: b.phone,
+      whatsapp: b.whatsapp,
+      email: b.email,
+    }));
+  },
+  ["site-team"],
+  { tags: [SITE_CONTENT_TAG], revalidate: 300 }
+);
+
 // Config que ve el público: el del código con las secciones editadas encima.
 export async function getSiteConfig(): Promise<ClientConfig> {
-  const o = await getSiteOverrides();
+  const [o, team] = await Promise.all([getSiteOverrides(), cachedTeam()]);
   return {
     ...clientConfig,
     ...(o.hero && { hero: o.hero }),
@@ -72,6 +98,9 @@ export async function getSiteConfig(): Promise<ClientConfig> {
     ...(o.pricing && { pricing: o.pricing }),
     ...(o.contact && { contact: o.contact }),
     ...(o.seo && { seo: { ...clientConfig.seo, ...o.seo } }),
+    ...(o.titles && { sections: o.titles.sections, nav: o.titles.nav }),
+    // Los asesores del panel mandan sobre el equipo del config/CMS.
+    ...(team && { team }),
   };
 }
 
@@ -89,6 +118,8 @@ export async function getEditableContent(): Promise<Required<SiteContent>> {
     pricing: site.pricing ?? [],
     contact: site.contact,
     seo: { title: site.seo.title, description: site.seo.description },
+    // Se edita sobre los textos vigentes (defaults + config + lo guardado).
+    titles: { sections: resolveSections(site), nav: resolveNav(site) },
   };
 }
 

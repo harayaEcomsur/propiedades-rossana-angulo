@@ -147,6 +147,14 @@ export function ensureSchema(): Promise<void> {
           created_at TIMESTAMPTZ NOT NULL DEFAULT now()
         )
       `;
+      // Ficha pública de cada asesor (sección "Nuestros asesores" del sitio).
+      await sql`ALTER TABLE re_brokers ADD COLUMN IF NOT EXISTS title TEXT`;
+      await sql`ALTER TABLE re_brokers ADD COLUMN IF NOT EXISTS photo_url TEXT`;
+      await sql`ALTER TABLE re_brokers ADD COLUMN IF NOT EXISTS bio TEXT`;
+      await sql`ALTER TABLE re_brokers ADD COLUMN IF NOT EXISTS phone TEXT`;
+      await sql`ALTER TABLE re_brokers ADD COLUMN IF NOT EXISTS whatsapp TEXT`;
+      await sql`ALTER TABLE re_brokers ADD COLUMN IF NOT EXISTS show_on_site BOOLEAN NOT NULL DEFAULT true`;
+      await sql`ALTER TABLE re_brokers ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 0`;
       await sql`
         CREATE TABLE IF NOT EXISTS re_clients (
           id TEXT PRIMARY KEY,
