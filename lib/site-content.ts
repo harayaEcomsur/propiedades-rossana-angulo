@@ -83,6 +83,13 @@ const cachedTeam = unstable_cache(
   { tags: [SITE_CONTENT_TAG], revalidate: 300 }
 );
 
+type Sections = NonNullable<ClientConfig["sections"]>;
+function mergeSections(base: ClientConfig["sections"], over: ClientConfig["sections"]): Sections {
+  const out: Record<string, Record<string, string | undefined>> = { ...(base ?? {}) };
+  for (const [group, fields] of Object.entries(over ?? {})) out[group] = { ...(out[group] ?? {}), ...(fields ?? {}) };
+  return out as Sections;
+}
+
 // Config que ve el público: el del código con las secciones editadas encima.
 export async function getSiteConfig(): Promise<ClientConfig> {
   const [o, team] = await Promise.all([getSiteOverrides(), cachedTeam()]);
@@ -98,7 +105,9 @@ export async function getSiteConfig(): Promise<ClientConfig> {
     ...(o.pricing && { pricing: o.pricing }),
     ...(o.contact && { contact: o.contact }),
     ...(o.seo && { seo: { ...clientConfig.seo, ...o.seo } }),
-    ...(o.titles && { sections: o.titles.sections, nav: o.titles.nav }),
+    // Campo por campo sobre lo del config: un texto que nunca se guardó en el
+    // panel sigue saliendo del config (y un "" guardado sí lo deja en blanco).
+    ...(o.titles && { sections: mergeSections(clientConfig.sections, o.titles.sections), nav: { ...clientConfig.nav, ...o.titles.nav } }),
     // Los asesores del panel mandan sobre el equipo del config/CMS.
     ...(team && { team }),
   };
