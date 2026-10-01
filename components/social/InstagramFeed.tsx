@@ -44,7 +44,8 @@ export async function InstagramFeed({
           </div>
           {posts && posts.length > 0 && (
             <div className="mt-12">
-              <InstagramCarousel posts={posts} />
+              {/* El carrusel muestra 3 líneas del texto: no viaja el caption entero. */}
+              <InstagramCarousel posts={posts.map((p) => ({ ...p, caption: p.caption?.slice(0, 220) }))} />
             </div>
           )}
         </Container>

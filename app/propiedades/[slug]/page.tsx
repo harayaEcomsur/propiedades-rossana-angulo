@@ -21,8 +21,14 @@ import { joinChannels, syndicationChannels } from "@/lib/syndication";
 
 export const revalidate = 300;
 
-// Las fichas se generan a pedido (y quedan en caché): las propiedades nuevas
-// del panel aparecen sin redeploy.
+// Las fichas existentes se generan en el build y las nuevas del panel a pedido
+// (dynamicParams); todas quedan en caché y se renuevan cada 5 min o al
+// guardar en el panel. Sin generateStaticParams, Next las renderizaba en cada
+// visita (sin caché).
+export async function generateStaticParams() {
+  return (await getPublicProperties()).map((p) => ({ slug: p.slug }));
+}
+
 async function findProperty(slug: string) {
   return (await getPublicProperties()).find((p) => p.slug === slug);
 }
