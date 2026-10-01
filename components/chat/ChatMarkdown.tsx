@@ -16,7 +16,9 @@ function link(href: string, label: string, key: string) {
       key={key}
       href={href}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="font-medium text-primary underline underline-offset-2"
+      // Link en el color del texto (contraste alto con cualquier paleta) y
+      // subrayado en el color de la marca para que se reconozca como link.
+      className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-2 hover:text-primary"
     >
       {label}
     </a>
