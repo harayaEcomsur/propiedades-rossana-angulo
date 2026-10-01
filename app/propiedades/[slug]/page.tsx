@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BedDouble, Bath, Ruler, Car, ArrowLeft } from "lucide-react";
-import { clientConfig } from "@/config/client.config";
+import { clientConfig as baseConfig } from "@/config/client.config";
+import { getSiteConfig } from "@/lib/site-content";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
@@ -61,6 +62,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function PropiedadPage({ params }: { params: { slug: string } }) {
+  const clientConfig = await getSiteConfig();
   const { modules, contact, syndication } = clientConfig;
   const property = await findProperty(params.slug);
   if (!modules.propiedades || !property) notFound();

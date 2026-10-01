@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { clientConfig } from "@/config/client.config";
+import { clientConfig as baseConfig } from "@/config/client.config";
+import { getSiteConfig } from "@/lib/site-content";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
@@ -26,11 +27,12 @@ export const metadata: Metadata = {
     description,
     url: "/propiedades",
     type: "website",
-    images: clientConfig.seo.ogImageUrl ? [{ url: clientConfig.seo.ogImageUrl, width: 1200, height: 630 }] : undefined,
+    images: baseConfig.seo.ogImageUrl ? [{ url: baseConfig.seo.ogImageUrl, width: 1200, height: 630 }] : undefined,
   },
 };
 
 export default async function PropiedadesPage() {
+  const clientConfig = await getSiteConfig();
   const { modules, contact, syndication } = clientConfig;
   const properties = await getPublicProperties();
   if (!modules.propiedades || !properties.length) notFound();

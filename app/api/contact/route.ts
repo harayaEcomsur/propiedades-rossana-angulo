@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { clientConfig } from "@/config/client.config";
+import { getSiteConfig } from "@/lib/site-content";
 
 export const runtime = "nodejs";
 
@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     return Response.json({ error: "Datos inválidos" }, { status: 400 });
   }
 
+  const clientConfig = await getSiteConfig();
   const destination = clientConfig.contact.email;
   const apiKey = process.env.RESEND_API_KEY;
 

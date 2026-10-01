@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PhotoUploader } from "@/components/inmobiliaria/PhotoUploader";
+import { SiteEditor } from "@/components/inmobiliaria/SiteEditor";
 
 type Role = "admin" | "corredor";
 
@@ -134,7 +135,7 @@ interface Bundle {
   instagramConnected: boolean;
 }
 
-const TABS = ["propiedades", "clientes", "proveedores", "entregas", "contratos", "corredoras"] as const;
+const TABS = ["propiedades", "clientes", "proveedores", "entregas", "contratos", "corredoras", "sitio"] as const;
 type Tab = (typeof TABS)[number];
 
 const card = "rounded-xl border border-foreground/15 p-4 sm:p-5";
@@ -179,13 +180,18 @@ export function AdminInmobiliaria({ adminKey }: { adminKey?: string }) {
     { id: "proveedores", label: "Proveedores" },
     { id: "entregas", label: "Entregas" },
     { id: "contratos", label: "Contratos" },
-    ...(isAdmin ? [{ id: "corredoras" as Tab, label: "Corredoras" }] : []),
+    ...(isAdmin
+      ? [
+          { id: "corredoras" as Tab, label: "Usuarios" },
+          { id: "sitio" as Tab, label: "Sitio (textos e imágenes)" },
+        ]
+      : []),
   ];
 
   return (
     <div className="flex flex-col gap-6">
       <p className="text-sm text-foreground/60">
-        Conectado como <strong className="text-foreground">{data.broker.name}</strong> ({isAdmin ? "administradora" : "corredora"})
+        Conectado como <strong className="text-foreground">{data.broker.name}</strong> ({isAdmin ? "administrador/a" : "asesor/a"})
       </p>
       <div className="flex flex-wrap gap-2 border-b border-foreground/10 pb-3">
         {tabs.map((t) => (
@@ -207,6 +213,7 @@ export function AdminInmobiliaria({ adminKey }: { adminKey?: string }) {
       {tab === "entregas" && <DeliveriesTab data={data} authHeaders={authHeaders} reload={load} pdfSuffix={pdfSuffix} isAdmin={isAdmin} />}
       {tab === "contratos" && <ContractsTab data={data} authHeaders={authHeaders} reload={load} pdfSuffix={pdfSuffix} isAdmin={isAdmin} />}
       {tab === "corredoras" && isAdmin && <BrokersTab data={data} authHeaders={authHeaders} reload={load} />}
+      {tab === "sitio" && isAdmin && <SiteEditor authHeaders={authHeaders} />}
     </div>
   );
 }
@@ -263,13 +270,17 @@ function BrokersTab({ data, authHeaders, reload }: { data: Bundle; authHeaders: 
   return (
     <div className="flex flex-col gap-4">
       <div className={card}>
-        <h3 className="mb-3 font-semibold">Agregar corredora</h3>
+        <h3 className="mb-1 font-semibold">Agregar usuario</h3>
+        <p className="mb-3 text-xs text-foreground/55">
+          <strong>Asesor/a</strong>: carga y gestiona sus propiedades, clientes, entregas y contratos. <strong>Administrador/a</strong>: ve
+          todo, gestiona usuarios y edita los textos e imágenes del sitio.
+        </p>
         <div className="grid gap-3 sm:grid-cols-3">
           <input className={input} placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
           <input className={input} placeholder="Correo de Google" value={email} onChange={(e) => setEmail(e.target.value)} />
           <select className={input} value={role} onChange={(e) => setRole(e.target.value as Role)}>
-            <option value="corredor">Corredora</option>
-            <option value="admin">Administradora</option>
+            <option value="corredor">Asesor/a</option>
+            <option value="admin">Administrador/a</option>
           </select>
         </div>
         <button className={`${btnPrimary} mt-3`} disabled={busy || !email || !name} onClick={add}>
@@ -280,13 +291,14 @@ function BrokersTab({ data, authHeaders, reload }: { data: Bundle; authHeaders: 
       </div>
 
       <div className={card}>
-        <h3 className="mb-3 font-semibold">Corredoras</h3>
+        <h3 className="mb-3 font-semibold">Usuarios con acceso</h3>
         <ul className="flex flex-col gap-2">
           {data.brokers.map((b) => (
             <li key={b.id} className="flex items-center justify-between gap-3 rounded-lg border border-foreground/10 p-3">
               <div>
                 <p className="text-sm font-medium">
-                  {b.name} <span className="text-foreground/50">({b.role === "admin" ? "admin" : "corredora"})</span>
+                  {b.name} <span className="text-foreground/50">({b.role === "admin" ? "administrador/a" : "asesor/a"})</span>
+                  {!b.active && <span className="ml-1 text-xs text-red-600">desactivado</span>}
                 </p>
                 <p className="text-xs text-foreground/50">{b.email}</p>
               </div>
@@ -301,7 +313,7 @@ function BrokersTab({ data, authHeaders, reload }: { data: Bundle; authHeaders: 
               </button>
             </li>
           ))}
-          {data.brokers.length === 0 && <p className="text-sm text-foreground/50">Todavía no hay corredoras agregadas.</p>}
+          {data.brokers.length === 0 && <p className="text-sm text-foreground/50">Todavía no hay usuarios agregados.</p>}
         </ul>
       </div>
     </div>

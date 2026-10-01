@@ -5,11 +5,12 @@ import { Header } from "@/components/layout/Header";
 import { AdminInmobiliaria } from "@/components/inmobiliaria/AdminInmobiliaria";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { currentBroker, googleLoginEnabledRE, claveLoginEnabledRE } from "@/lib/realestate-auth";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: `Panel inmobiliario — ${clientConfig.meta.businessName}`,
+  title: `Panel de administración — ${clientConfig.meta.businessName}`,
   robots: { index: false, follow: false },
 };
 
@@ -31,13 +32,18 @@ export default async function InmobiliariaAdminPage({ searchParams }: { searchPa
       <Header config={clientConfig} />
       <main className="py-14 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Panel inmobiliario</p>
-          <h1 className="mt-3 font-heading text-3xl font-bold text-foreground">Corredores, propiedades y clientes</h1>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Panel de administración</p>
+              <h1 className="mt-3 font-heading text-3xl font-bold text-foreground">Propiedades, clientes y sitio web</h1>
+            </div>
+            {broker && !claveMatched && <LogoutButton />}
+          </div>
           {!broker ? (
             <div className="mt-8 flex flex-col gap-6 rounded-xl border border-foreground/15 p-6">
               <p className="text-foreground/70">
-                Este panel administra corredoras, propiedades, clientes, el directorio de proveedores de confianza, informes de
-                entrega/recepción y contratos.
+                Ingresa para cargar propiedades, gestionar clientes, entregas y contratos y, si eres administrador/a, editar los textos e
+                imágenes del sitio. El acceso es con tu cuenta de Google del equipo (por ejemplo, tu correo @propiedadesrossannaangulo.cl).
               </p>
               {googleEnabled && (
                 <div>

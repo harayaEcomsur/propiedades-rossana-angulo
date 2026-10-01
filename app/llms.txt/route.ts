@@ -1,4 +1,4 @@
-import { clientConfig } from "@/config/client.config";
+import { getSiteConfig } from "@/lib/site-content";
 import { OPERATION_LABEL } from "@/components/properties/PropertyCard";
 import { getPublicProperties } from "@/lib/public-properties";
 import { absoluteUrl } from "@/lib/seo";
@@ -9,6 +9,7 @@ import { absoluteUrl } from "@/lib/seo";
 export const revalidate = 3600;
 
 export async function GET() {
+  const clientConfig = await getSiteConfig();
   const { meta, seo, services, pricing, faq, contact, about } = clientConfig;
   const properties = await getPublicProperties();
 

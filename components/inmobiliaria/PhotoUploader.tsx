@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 // antes de subir — así una foto de celular de 4-8MB llega al servidor pesando
 // unos cientos de KB, sin depender de una librería nativa (sharp, etc.) que
 // las funciones serverless no necesitan cargar para esto.
-async function resizeImage(file: File, maxSide = 1600, quality = 0.75): Promise<Blob> {
+export async function resizeImage(file: File, maxSide = 1600, quality = 0.75): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
   const w = Math.round(bitmap.width * scale);

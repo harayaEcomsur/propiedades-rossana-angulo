@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { clientConfig } from "@/config/client.config";
+import { clientConfig as baseConfig } from "@/config/client.config";
+import { getSiteConfig } from "@/lib/site-content";
 import { Header } from "@/components/layout/Header";
 import { listProviders } from "@/lib/realestate-store";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: `Proveedores de confianza — ${clientConfig.meta.businessName}`,
+  title: `Proveedores de confianza — ${baseConfig.meta.businessName}`,
   description: "Directorio de proveedores de confianza recomendados por Propiedades Rossanna Angulo para dueños y arrendatarios: mantención, reparaciones y servicios del hogar.",
   alternates: { canonical: "/proveedores" },
-  openGraph: { url: "/proveedores", images: clientConfig.seo.ogImageUrl ? [clientConfig.seo.ogImageUrl] : undefined },
+  openGraph: { url: "/proveedores", images: baseConfig.seo.ogImageUrl ? [baseConfig.seo.ogImageUrl] : undefined },
 };
 
 // Página pública, sin login: el link que se comparte a dueños y arrendatarios
 // al entregar una propiedad. Curada por la administradora desde el panel
 // /inmobiliaria/admin.
 export default async function ProveedoresPage() {
+  const clientConfig = await getSiteConfig();
   if (!clientConfig.modules.inmobiliariaAdmin) notFound();
   const providers = await listProviders();
   const byCategory = new Map<string, typeof providers>();

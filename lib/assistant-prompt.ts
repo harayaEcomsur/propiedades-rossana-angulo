@@ -1,9 +1,11 @@
-import { clientConfig } from "@/config/client.config";
+import { getSiteConfig } from "@/lib/site-content";
 import { getPublicProperties } from "@/lib/public-properties";
 
 // System prompt compartido por todos los canales del asistente (chat del sitio
 // y WhatsApp): un solo cerebro config-driven, N canales.
 export async function buildSystemPrompt(): Promise<string> {
+  // Contacto y textos editados en el panel: el asistente responde con lo vigente.
+  const clientConfig = await getSiteConfig();
   const { chat, meta, contact, modules, store } = clientConfig;
   const properties = await getPublicProperties();
   const qa = chat.qaPairs.map((p, i) => `${i + 1}. P: ${p.q}\n   R: ${p.a}`).join("\n");
@@ -29,6 +31,18 @@ export async function buildSystemPrompt(): Promise<string> {
           .join("\n")}\nCaptura de interesados: cuando alguien muestre interés real en comprar o arrendar, conversa para conocer qué busca (operación, comuna, presupuesto aproximado, plazo) y OFRÉCELE dejar sus datos para que un asesor lo contacte con opciones a su medida. Si acepta, pide nombre y teléfono y usa la herramienta registrar_lead con todo lo que averiguaste — nunca la llames sin teléfono real del cliente ni inventes datos. Tras registrarlo, confirma que del equipo lo contactarán pronto. Si solo pregunta por curiosidad, no insistas con los datos.`
       : "",
     qa ? `Preguntas frecuentes y sus respuestas oficiales:\n${qa}` : "",
+    // Lo que la administradora edita en el panel (valores y preguntas del sitio)
+    // manda sobre las respuestas fijas de arriba si alguna quedó desactualizada.
+    clientConfig.pricing?.length
+      ? `Valores vigentes publicados en el sitio (mandan sobre cualquier otro dato de precios):\n${clientConfig.pricing
+          .map((p) => `- ${p.name}: ${p.price} (incluye: ${p.features.join("; ")})`)
+          .join("\n")}`
+      : "",
+    clientConfig.faq?.length
+      ? `Preguntas frecuentes publicadas en el sitio (mandan si contradicen algo anterior):\n${clientConfig.faq
+          .map((f) => `- ${f.q} ${f.a}`)
+          .join("\n")}`
+      : "",
     contactLine
       ? `Datos de contacto: ${contactLine}. Si preguntan cómo contactar o piden alguno de estos datos, dalos directamente en tu respuesta.`
       : "",

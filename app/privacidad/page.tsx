@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
-import { clientConfig } from "@/config/client.config";
+import { clientConfig as baseConfig } from "@/config/client.config";
+import { getSiteConfig } from "@/lib/site-content";
 import { Header } from "@/components/layout/Header";
 import { buildPrivacySections } from "@/lib/privacy-content";
 import { ArcoRequestForm } from "@/components/privacy/ArcoRequestForm";
 
 export const metadata: Metadata = {
-  title: `Política de privacidad — ${clientConfig.meta.businessName}`,
+  title: `Política de privacidad — ${baseConfig.meta.businessName}`,
   description: "Política de privacidad de Propiedades Rossanna Angulo: qué datos personales se recopilan, para qué se usan y cómo ejercer tus derechos (Ley 21.719).",
   alternates: { canonical: "/privacidad" },
-  openGraph: { url: "/privacidad", images: clientConfig.seo.ogImageUrl ? [clientConfig.seo.ogImageUrl] : undefined },
+  openGraph: { url: "/privacidad", images: baseConfig.seo.ogImageUrl ? [baseConfig.seo.ogImageUrl] : undefined },
 };
 
 // Política de privacidad dinámica (ver lib/privacy-content.ts) + el canal para
 // ejercer derechos ARCO+ (Ley 21.719). Página pública, sin login: cualquiera
 // que haya interactuado con el negocio puede llegar acá.
-export default function PrivacidadPage() {
+export default async function PrivacidadPage() {
+  const clientConfig = await getSiteConfig();
   const sections = buildPrivacySections();
 
   return (

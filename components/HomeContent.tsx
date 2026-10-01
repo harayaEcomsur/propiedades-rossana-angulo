@@ -1,4 +1,4 @@
-import { clientConfig } from "@/config/client.config";
+import { getSiteConfig } from "@/lib/site-content";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
@@ -32,6 +32,8 @@ import { getServicePrices } from "@/lib/booking-store";
 import { getPublicProperties } from "@/lib/public-properties";
 
 export async function HomeContent() {
+  // Config con los textos e imágenes editados en el panel (pestaña "Sitio").
+  const clientConfig = await getSiteConfig();
   const { modules, contact, branding, meta } = clientConfig;
   const hasWhatsapp = modules.whatsappButton && Boolean(contact.whatsapp);
   const layout = branding.layout;
