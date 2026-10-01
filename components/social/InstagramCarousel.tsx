@@ -77,6 +77,10 @@ export function InstagramCarousel({ posts }: { posts: InstagramPost[] }) {
                 alt={post.caption?.slice(0, 120) || "Publicación de Instagram"}
                 fill
                 sizes="(min-width: 1024px) 25vw, (min-width: 640px) 40vw, 72vw"
+                // Instagram ya sirve las fotos optimizadas desde su CDN, y sus
+                // URLs firmadas son muy largas: pasar por el optimizador las
+                // repetía en 8 tamaños y engordaba el HTML ~120 KB.
+                unoptimized
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <span className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-black/0 to-black/0 p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
