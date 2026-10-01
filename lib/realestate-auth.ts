@@ -11,6 +11,10 @@ import { brokerByEmail, type Broker } from "@/lib/realestate-store";
 //
 //  1. Google (recomendado): cada corredora entra con su cuenta, autorizada
 //     contra re_brokers.email.
+//  1b. Superadministradores: correos en SUPERADMIN_EMAILS (env, separados por
+//     coma). Entran con Google como admin, pero no están en re_brokers: no
+//     aparecen en la lista de usuarios ni se pueden desactivar desde el panel.
+//     Es el acceso de HarayaDev, que mantiene el sitio.
 //  2. Clave compartida (bootstrap): ?clave=... contra REALESTATE_ADMIN_KEY,
 //     siempre admin — es la forma en que Rossana entra la primera vez, antes
 //     de que exista ningún corredor en la base, para poder agregarse a ella
@@ -19,6 +23,27 @@ import { brokerByEmail, type Broker } from "@/lib/realestate-store";
 const SESSION_COOKIE = "haraya_re_session";
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7;
 const CLAVE_COMPARTIDA_EMAIL = "clave-compartida";
+
+function superadminBroker(email: string): Broker | null {
+  const list = (process.env.SUPERADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (!list.includes(email.toLowerCase())) return null;
+  return {
+    id: `_super:${email.toLowerCase()}`,
+    email,
+    name: "Superadministrador",
+    role: "admin",
+    active: true,
+    superadmin: true,
+    createdAt: new Date(0).toISOString(),
+  };
+}
+
+async function brokerOrSuperadmin(email: string): Promise<Broker | null> {
+  return superadminBroker(email) ?? (await brokerByEmail(email));
+}
 
 function sessionSecret(): Uint8Array | null {
   const secret = process.env.SESSION_SECRET;
@@ -40,8 +65,8 @@ export async function verifyGoogleCredentialRE(idToken: string): Promise<Broker 
   }
   const email = payload?.email;
   if (!email || !payload?.email_verified) return { error: "No se pudo verificar el correo de Google." };
-  const broker = await brokerByEmail(email);
-  if (!broker) return { error: `${email} no está autorizado en el panel inmobiliario — pídele a Rossana que te agregue como corredora.` };
+  const broker = await brokerOrSuperadmin(email);
+  if (!broker) return { error: `${email} no tiene acceso al panel. Pídele a la administradora que te agregue en la pestaña "Usuarios".` };
   return broker;
 }
 
@@ -75,7 +100,7 @@ async function sessionBrokerFromCookie(): Promise<Broker | null> {
   try {
     const { payload } = await jwtVerify(jwt, secret);
     const email = typeof payload.email === "string" ? payload.email : null;
-    return email ? await brokerByEmail(email) : null;
+    return email ? await brokerOrSuperadmin(email) : null;
   } catch {
     return null;
   }

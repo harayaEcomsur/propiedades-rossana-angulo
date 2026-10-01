@@ -69,7 +69,7 @@ export async function GET(req: Request) {
   const scoped = <T extends { brokerId: string }>(list: T[]) => (admin ? list : list.filter((x) => x.brokerId === broker.id));
 
   return Response.json({
-    broker: { id: broker.id, name: broker.name, email: broker.email, role: broker.role },
+    broker: { id: broker.id, name: broker.name, email: broker.email, role: broker.role, superadmin: Boolean(broker.superadmin) },
     brokers: admin ? await listBrokers() : [],
     clients: scoped(clients),
     properties: scoped(properties),

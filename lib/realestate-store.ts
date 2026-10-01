@@ -12,6 +12,9 @@ export interface Broker {
   email: string;
   name: string;
   role: "admin" | "corredor";
+  // Superadministrador fijo (SUPERADMIN_EMAILS, ver lib/realestate-auth.ts):
+  // no vive en re_brokers, así que nadie lo puede quitar desde el panel.
+  superadmin?: boolean;
   active: boolean;
   createdAt: string;
 }

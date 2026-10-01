@@ -123,7 +123,7 @@ interface REContract {
 }
 
 interface Bundle {
-  broker: { id: string; name: string; email: string; role: Role };
+  broker: { id: string; name: string; email: string; role: Role; superadmin?: boolean };
   brokers: Broker[];
   clients: REClient[];
   properties: REProperty[];
@@ -191,7 +191,8 @@ export function AdminInmobiliaria({ adminKey }: { adminKey?: string }) {
   return (
     <div className="flex flex-col gap-6">
       <p className="text-sm text-foreground/60">
-        Conectado como <strong className="text-foreground">{data.broker.name}</strong> ({isAdmin ? "administrador/a" : "asesor/a"})
+        Conectado como <strong className="text-foreground">{data.broker.name}</strong> (
+        {data.broker.superadmin ? "superadministrador · HarayaDev" : isAdmin ? "administrador/a" : "asesor/a"})
       </p>
       <div className="flex flex-wrap gap-2 border-b border-foreground/10 pb-3">
         {tabs.map((t) => (
