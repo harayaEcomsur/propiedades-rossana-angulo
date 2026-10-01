@@ -1,12 +1,13 @@
 import { Check } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import type { ClientConfig } from "@/config/schema";
+import { slugify } from "@/lib/text";
 
-export function Pricing({ plans }: { plans: NonNullable<ClientConfig["pricing"]> }) {
+export function Pricing({ plans, label = "Precios" }: { plans: NonNullable<ClientConfig["pricing"]>; label?: string }) {
   return (
-    <section id="precios" className="py-16 sm:py-24">
+    <section id={slugify(label)} className="py-16 sm:py-24">
       <Container>
-        <h2 className="text-center font-heading text-3xl font-bold text-foreground">Precios</h2>
+        <h2 className="text-center font-heading text-3xl font-bold text-foreground">{label}</h2>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
             <div

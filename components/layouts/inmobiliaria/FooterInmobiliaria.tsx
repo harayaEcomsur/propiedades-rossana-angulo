@@ -1,7 +1,9 @@
 import { Instagram, MessageCircle, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { slugify } from "@/lib/text";
 import type { ClientConfig } from "@/config/schema";
+import { HarayaDevCredit } from "@/components/brand/HarayaDevCredit";
 
 // Pie oscuro (mismo negro de "En Exclusiva") con el logo en placa blanca, como
 // en el hero.
@@ -12,7 +14,7 @@ export function FooterInmobiliaria({ config, showCredit }: { config: ClientConfi
     modules.propiedades && { href: "/propiedades", label: "Propiedades" },
     { href: "/#servicios", label: "Servicios" },
     { href: "/#equipo", label: "Equipo" },
-    modules.pricing && { href: "/#precios", label: "Precios" },
+    modules.pricing && { href: `/#${slugify(branding.pricingLabel)}`, label: branding.pricingLabel },
     modules.faq && { href: "/#preguntas-frecuentes", label: "Preguntas frecuentes" },
     { href: "/#contacto", label: "Contacto" },
   ].filter(Boolean) as { href: string; label: string }[];
@@ -78,15 +80,11 @@ export function FooterInmobiliaria({ config, showCredit }: { config: ClientConfi
           <p>
             © {new Date().getFullYear()} {meta.businessName}. Todos los derechos reservados.
           </p>
-          <div className="flex flex-wrap gap-5">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <a href="/privacidad" className="hover:text-white">
               Política de privacidad
             </a>
-            {showCredit && (
-              <a href="https://haraya.dev/como-lo-hicimos" target="_blank" rel="noopener" className="hover:text-white">
-                Sitio por HarayaDev
-              </a>
-            )}
+            {showCredit && <HarayaDevCredit tone="dark" />}
           </div>
         </Container>
       </div>

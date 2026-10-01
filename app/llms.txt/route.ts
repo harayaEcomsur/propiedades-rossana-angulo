@@ -36,7 +36,7 @@ export async function GET() {
   ];
 
   if (pricing?.length) {
-    lines.push("", "## Precios");
+    lines.push("", `## ${clientConfig.branding.pricingLabel}`);
     for (const plan of pricing) lines.push(`- **${plan.name}**: ${plan.price} — incluye: ${plan.features.join("; ")}`);
   }
 

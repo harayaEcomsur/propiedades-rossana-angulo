@@ -26,6 +26,9 @@ export const clientConfig = defineClientConfig({
     // El logo trae el nombre escrito en cursiva — no repetirlo en texto.
     logoIncludesName: true,
     layout: "inmobiliaria",
+    // Crédito "Sitio hecho por HarayaDev" (con su logo) en el pie de página.
+    credit: true,
+    pricingLabel: "Valores",
   },
 
   themeVariants: [

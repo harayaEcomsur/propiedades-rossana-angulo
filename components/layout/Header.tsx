@@ -5,6 +5,7 @@ import { Menu, MessageCircle, X } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import type { ClientConfig } from "@/config/schema";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { slugify } from "@/lib/text";
 
 export function Header({ config }: { config: ClientConfig }) {
   const [open, setOpen] = useState(false);
@@ -19,7 +20,7 @@ export function Header({ config }: { config: ClientConfig }) {
     modules.tienda && { href: "/tienda", label: "Tienda" },
     { href: "/#servicios", label: "Servicios" },
     inmobiliaria && config.team?.length ? { href: "/#equipo", label: "Equipo" } : { href: "/#nosotros", label: "Nosotros" },
-    modules.pricing && { href: "/#precios", label: "Precios" },
+    modules.pricing && { href: `/#${slugify(branding.pricingLabel)}`, label: branding.pricingLabel },
     { href: "/#contacto", label: "Contacto" },
   ].filter(Boolean) as { href: string; label: string }[];
 

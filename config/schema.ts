@@ -72,6 +72,9 @@ export const clientConfigSchema = z.object({
     // Por eso viene APAGADO por defecto — se enciende cuando el cliente lo
     // aprueba. En las demos va siempre encendido (son nuestras).
     credit: z.boolean().default(false),
+    // Cómo se llama la sección de precios en el menú, el encabezado y el pie
+    // (ej. "Valores", "Tarifas"). El ancla se deriva del nombre (#valores).
+    pricingLabel: z.string().default("Precios"),
   }),
 
   hero: z.object({

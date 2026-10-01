@@ -3,16 +3,18 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/layouts/inmobiliaria/SectionHeading";
 import type { ClientConfig } from "@/config/schema";
+import { slugify } from "@/lib/text";
 
 // Precios transparentes: el plan destacado va en negro (mismo tono de la
 // franja "En Exclusiva") para que se lea como la opción principal.
-export function PricingInmobiliaria({ plans }: { plans: NonNullable<ClientConfig["pricing"]> }) {
+export function PricingInmobiliaria({ plans, label = "Precios" }: { plans: NonNullable<ClientConfig["pricing"]>; label?: string }) {
+  const id = slugify(label);
   return (
-    <section id="precios" aria-labelledby="precios-titulo" className="bg-foreground/[0.03] py-20 sm:py-28">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="bg-foreground/[0.03] py-20 sm:py-28">
       <Container>
         <SectionHeading
-          id="precios-titulo"
-          eyebrow="Precios"
+          id={`${id}-titulo`}
+          eyebrow={label}
           title="Honorarios claros, sin letra chica"
           subtitle="La comisión se paga solo si el negocio se concreta."
           align="center"

@@ -116,7 +116,7 @@ export async function HomeContent() {
               tagline="Propiedades nuevas, ventas y arriendos en @propiedadesrossanna."
             />
           ) : null}
-          {modules.pricing && clientConfig.pricing?.length ? <PricingInmobiliaria plans={clientConfig.pricing} /> : null}
+          {modules.pricing && clientConfig.pricing?.length ? <PricingInmobiliaria plans={clientConfig.pricing} label={branding.pricingLabel} /> : null}
           {modules.faq && clientConfig.faq?.length ? <FAQInmobiliaria items={clientConfig.faq} whatsapp={contact.whatsapp} /> : null}
           <ContactInmobiliaria contact={contact} showForm={modules.contactForm} />
         </main>
@@ -138,7 +138,7 @@ export async function HomeContent() {
           <Testimonials testimonials={clientConfig.testimonials} />
         ) : null}
         {instagramUrl ? <InstagramFeed instagramUrl={instagramUrl} businessName={meta.businessName} /> : null}
-        {modules.pricing && clientConfig.pricing?.length ? <Pricing plans={clientConfig.pricing} /> : null}
+        {modules.pricing && clientConfig.pricing?.length ? <Pricing plans={clientConfig.pricing} label={branding.pricingLabel} /> : null}
         {modules.faq && clientConfig.faq?.length ? <FAQ items={clientConfig.faq} /> : null}
         <section id="contacto" className="py-16 sm:py-24">
           <Container className="grid gap-10 lg:grid-cols-2">
