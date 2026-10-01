@@ -16,13 +16,15 @@ export function ExclusiveInmobiliaria({ properties, copy }: { properties: Proper
     <section id="exclusivas" aria-labelledby="exclusivas-titulo" className="pb-4 sm:pb-8">
       <div className="bg-accent pb-40 pt-20 text-center sm:pb-48 sm:pt-24">
         <Container>
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
-            <Star size={12} fill="currentColor" className="text-primary" aria-hidden /> {copy.eyebrow}
-          </p>
-          <h2 id="exclusivas-titulo" className="mt-4 font-heading text-4xl font-bold text-white sm:text-6xl">
+          {copy.eyebrow && (
+            <p className="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+              <Star size={12} fill="currentColor" className="text-primary" aria-hidden /> {copy.eyebrow}
+            </p>
+          )}
+          <h2 id="exclusivas-titulo" className="font-heading text-4xl font-bold text-white sm:text-6xl">
             {copy.title}
           </h2>
-          <p className="mx-auto mt-4 max-w-xl font-heading text-2xl text-primary">{copy.subtitle}</p>
+          {copy.subtitle && <p className="mx-auto mt-4 max-w-xl font-heading text-2xl text-primary">{copy.subtitle}</p>}
           <Link
             href="/propiedades?exclusivas=1"
             className="mt-8 inline-flex min-h-11 items-center bg-primary px-7 py-3.5 text-sm font-semibold uppercase tracking-wider text-white transition-opacity hover:opacity-90"

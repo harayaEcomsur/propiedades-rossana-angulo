@@ -70,7 +70,7 @@ export function ContactInmobiliaria({ contact, showForm, copy }: { contact: Clie
         {showForm && (
           <div className="h-fit bg-background p-6 shadow-[0_10px_40px_-16px_rgba(0,0,0,0.3)] sm:p-10">
             <h3 className="font-heading text-2xl font-semibold text-foreground">{copy.formTitle}</h3>
-            <p className="mb-6 mt-2 text-sm text-foreground/65">{copy.formSubtitle}</p>
+            {copy.formSubtitle ? <p className="mb-6 mt-2 text-sm text-foreground/65">{copy.formSubtitle}</p> : <div className="mb-6" />}
             <ContactForm squared />
           </div>
         )}

@@ -15,7 +15,7 @@ export function PricingInmobiliaria({ plans, label = "Precios", copy }: { plans:
       <Container>
         <SectionHeading
           id={`${id}-titulo`}
-          eyebrow={copy.eyebrow || label}
+          eyebrow={copy.eyebrow}
           title={copy.title}
           subtitle={copy.subtitle || undefined}
           align="center"

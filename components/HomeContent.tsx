@@ -119,7 +119,7 @@ export async function HomeContent() {
               businessName={meta.businessName}
               variant="carousel"
               heading={{ eyebrow: copy.instagram.eyebrow, title: copy.instagram.title }}
-              tagline={copy.instagram.subtitle || "Propiedades nuevas, ventas y arriendos en @propiedadesrossanna."}
+              tagline={copy.instagram.subtitle}
             />
           ) : null}
           {modules.pricing && clientConfig.pricing?.length ? <PricingInmobiliaria plans={clientConfig.pricing} label={branding.pricingLabel} copy={copy.pricing} /> : null}

@@ -54,15 +54,35 @@ const SECTIONS: { id: Section; label: string; anchor?: string }[] = [
   { id: "seo", label: "Google (SEO)" },
 ];
 
-// Quita strings vacíos / objetos vacíos para que lo opcional quede "sin dato"
-// en vez de "" (el esquema valida emails/URLs y "" no pasaría).
+// Campos con formato (correo, enlace, imagen, teléfono…): vacíos se quitan,
+// porque "" no pasaría la validación y significa "sin dato". El resto de los
+// textos (bajadas, antetítulos, descripciones) se guardan vacíos a propósito:
+// así un texto se puede dejar en blanco y no se muestra.
+const FORMAT_KEYS = new Set([
+  "email",
+  "url",
+  "href",
+  "photoUrl",
+  "imageUrl",
+  "backgroundImageUrl",
+  "backgroundImageCredit",
+  "phone",
+  "whatsapp",
+  "whatsappPrefilledMessage",
+  "address",
+  "mapQuery",
+  "price",
+  "open",
+  "close",
+]);
+
 function clean<T>(value: T): T {
   if (Array.isArray(value)) return value.map(clean).filter((v) => v !== "" && v !== undefined) as T;
   if (value && typeof value === "object") {
     const out: Json = {};
     for (const [k, v] of Object.entries(value as Json)) {
       const c = clean(v);
-      if (c === "" || c === undefined) continue;
+      if (c === undefined || (c === "" && FORMAT_KEYS.has(k))) continue;
       if (c && typeof c === "object" && !Array.isArray(c) && Object.keys(c).length === 0) continue;
       out[k] = c;
     }
@@ -638,7 +658,10 @@ function TitlesForm({ value, onChange }: { value: Content["titles"]; onChange: (
           </div>
         </details>
       ))}
-      <p className="text-xs text-foreground/55">Si dejas un campo vacío, se usa el texto original.</p>
+      <p className="text-xs text-foreground/55">
+        Los antetítulos y las bajadas se pueden dejar vacíos y no se muestran. Si un título o un botón queda vacío, se usa el texto
+        original.
+      </p>
     </div>
   );
 }

@@ -18,10 +18,10 @@ export function SectionHeading({
   const centered = align === "center";
   return (
     <div className={centered ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
-      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">{eyebrow}</p>
+      {eyebrow && <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-primary">{eyebrow}</p>}
       <h2
         id={id}
-        className={`mt-3 text-balance font-heading text-3xl font-bold leading-tight sm:text-4xl ${
+        className={`text-balance font-heading text-3xl font-bold leading-tight sm:text-4xl ${
           tone === "dark" ? "text-white" : "text-foreground"
         }`}
       >

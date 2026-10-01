@@ -42,7 +42,12 @@ export async function InstagramFeed({
       <section id="instagram" className="overflow-hidden py-20 sm:py-28">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-6">
-            <SectionHeading eyebrow={heading.eyebrow} title={heading.title} subtitle={tagline || `${handle} — novedades de ${businessName}.`} />
+            <SectionHeading
+              eyebrow={heading.eyebrow}
+              title={heading.title}
+              // undefined = texto genérico; "" = bajada vacía a propósito (no se muestra).
+              subtitle={tagline === undefined ? `${handle} — novedades de ${businessName}.` : tagline || undefined}
+            />
             {followButton}
           </div>
           {posts && posts.length > 0 && (

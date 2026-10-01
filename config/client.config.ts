@@ -289,6 +289,12 @@ export const clientConfig = defineClientConfig({
     },
   ],
 
+  // Textos de encabezados propios de este sitio (el resto, por defecto en
+  // lib/section-copy.ts). Todo editable en el panel → Sitio → Títulos y menú.
+  sections: {
+    instagram: { subtitle: "Propiedades nuevas, ventas y arriendos en @propiedadesrossanna." },
+  },
+
   // Diferenciadores bajo el hero — todos confirmados por la clienta o por su
   // Instagram ("Acreditada / 9 años de experiencia").
   pillars: [

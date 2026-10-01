@@ -38,7 +38,7 @@ export function HeroInmobiliaria({
         <h1 className="mt-4 max-w-3xl font-heading text-4xl font-bold leading-tight text-white sm:text-6xl">
           {hero.title}
         </h1>
-        <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">{hero.subtitle}</p>
+        {hero.subtitle && <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">{hero.subtitle}</p>}
         {hero.badges && hero.badges.length > 0 && (
           <ul className="mt-6 flex flex-wrap gap-3">
             {hero.badges.map((badge) => (

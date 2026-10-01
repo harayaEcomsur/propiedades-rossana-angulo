@@ -47,10 +47,18 @@ export const DEFAULT_NAV = {
 export type SectionCopy = typeof DEFAULT_SECTIONS;
 export type NavCopy = typeof DEFAULT_NAV;
 
-// Superpone sin pisar con vacíos: un campo "" o ausente conserva el default.
+// Campos que se pueden dejar en blanco a propósito (antetítulos y bajadas):
+// un "" guardado significa "no mostrar". Títulos y botones, en cambio, vuelven
+// al texto por defecto si quedan vacíos (una sección nunca queda sin título ni
+// un botón sin texto).
+const BLANKABLE = new Set(["eyebrow", "subtitle", "formSubtitle"]);
+
 function merge<T extends Record<string, string>>(base: T, over?: Partial<Record<keyof T, string | undefined>>): T {
   const out = { ...base };
-  for (const [k, v] of Object.entries(over ?? {})) if (typeof v === "string" && v.trim()) (out as Record<string, string>)[k] = v;
+  for (const [k, v] of Object.entries(over ?? {})) {
+    if (typeof v !== "string") continue;
+    if (v.trim() || BLANKABLE.has(k)) (out as Record<string, string>)[k] = v.trim();
+  }
   return out;
 }
 
