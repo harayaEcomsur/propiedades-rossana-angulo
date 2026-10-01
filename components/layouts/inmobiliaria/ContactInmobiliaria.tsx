@@ -8,7 +8,17 @@ import { instagramHandle } from "@/lib/instagram";
 import type { ClientConfig } from "@/config/schema";
 import type { SectionCopy } from "@/lib/section-copy";
 
-export function ContactInmobiliaria({ contact, showForm, copy }: { contact: ClientConfig["contact"]; showForm: boolean; copy: SectionCopy["contact"] }) {
+export function ContactInmobiliaria({
+  contact,
+  showForm,
+  copy,
+  advisors = [],
+}: {
+  contact: ClientConfig["contact"];
+  showForm: boolean;
+  copy: SectionCopy["contact"];
+  advisors?: string[];
+}) {
   const instagram = contact.socials?.find((s) => s.platform === "instagram")?.url;
   const hours = contact.hours
     ?.map((h) => (h.closed ? `${h.day}: cerrado` : `${h.day}: ${h.open} a ${h.close}`))
@@ -71,7 +81,7 @@ export function ContactInmobiliaria({ contact, showForm, copy }: { contact: Clie
           <div className="h-fit bg-background p-6 shadow-[0_10px_40px_-16px_rgba(0,0,0,0.3)] sm:p-10">
             <h3 className="font-heading text-2xl font-semibold text-foreground">{copy.formTitle}</h3>
             {copy.formSubtitle ? <p className="mb-6 mt-2 text-sm text-foreground/65">{copy.formSubtitle}</p> : <div className="mb-6" />}
-            <ContactForm squared />
+            <ContactForm squared advisors={advisors} />
           </div>
         )}
       </Container>

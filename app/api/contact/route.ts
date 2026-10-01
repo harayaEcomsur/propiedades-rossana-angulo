@@ -7,6 +7,10 @@ const contactSchema = z.object({
   name: z.string().min(1),
   contactInfo: z.string().min(1),
   message: z.string().min(1).max(2000),
+  // Asesor elegido en el formulario (opcional): se recibe solo el NOMBRE y el
+  // correo se busca acá, en el equipo publicado — así el formulario no sirve
+  // para mandar correos a direcciones arbitrarias.
+  advisor: z.string().max(120).optional(),
 });
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,7 +34,13 @@ export async function POST(req: Request) {
     );
   }
 
-  const { name, contactInfo, message } = parsed.data;
+  const { name, contactInfo, message, advisor } = parsed.data;
+  const chosen = advisor ? clientConfig.team?.find((m) => m.name === advisor) : undefined;
+  if (advisor && !chosen) return Response.json({ error: "El asesor elegido no está disponible." }, { status: 400 });
+  // Con asesor: le llega a él/ella con copia a la casilla principal (no se
+  // pierde ningún contacto). Sin asesor (o sin correo): solo a la principal.
+  const to = chosen?.email && chosen.email.toLowerCase() !== destination.toLowerCase() ? chosen.email : destination;
+  const cc = to !== destination ? destination : undefined;
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -42,11 +52,21 @@ export async function POST(req: Request) {
       // Remitente con el dominio propio (verificado en Resend). Sin EMAIL_FROM,
       // la dirección de prueba de Resend, que solo entrega al dueño de la cuenta.
       from: process.env.EMAIL_FROM || "Sitio web <onboarding@resend.dev>",
-      to: destination,
+      to,
+      ...(cc ? { cc } : {}),
       // Si el visitante dejó un correo, "Responder" le contesta directo a él.
       ...(emailPattern.test(contactInfo.trim()) ? { reply_to: contactInfo.trim() } : {}),
-      subject: `Nuevo contacto de ${name} — ${clientConfig.meta.businessName}`,
-      text: `Nombre: ${name}\nContacto: ${contactInfo}\n\nMensaje:\n${message}`,
+      subject: chosen
+        ? `Nuevo contacto para ${chosen.name}: ${name} — ${clientConfig.meta.businessName}`
+        : `Nuevo contacto de ${name} — ${clientConfig.meta.businessName}`,
+      text: [
+        `Nombre: ${name}`,
+        `Contacto: ${contactInfo}`,
+        chosen ? `Quiere hablar con: ${chosen.name}` : "Asesor: sin preferencia",
+        "",
+        "Mensaje:",
+        message,
+      ].join("\n"),
     }),
   });
 

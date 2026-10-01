@@ -4,7 +4,9 @@ import { useState } from "react";
 import { ConsentCheckbox } from "@/components/privacy/ConsentCheckbox";
 
 // `squared`: bordes rectos, para el layout inmobiliaria (mismo lenguaje que sus botones).
-export function ContactForm({ squared = false }: { squared?: boolean } = {}) {
+// `advisors`: nombres del equipo; si viene, se muestra un selector opcional y el
+// mensaje le llega también a quien se elija (ver app/api/contact).
+export function ContactForm({ squared = false, advisors = [] }: { squared?: boolean; advisors?: string[] } = {}) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [consent, setConsent] = useState(false);
@@ -18,6 +20,7 @@ export function ContactForm({ squared = false }: { squared?: boolean } = {}) {
       name: String(data.get("name") ?? ""),
       contactInfo: String(data.get("contactInfo") ?? ""),
       message: String(data.get("message") ?? ""),
+      advisor: String(data.get("advisor") ?? "") || undefined,
     };
 
     try {
@@ -74,6 +77,26 @@ export function ContactForm({ squared = false }: { squared?: boolean } = {}) {
           className={`w-full ${squared ? "min-h-11 bg-white" : "rounded-lg"} border border-black/10 px-3 py-2 focus:border-primary focus:outline-none`}
         />
       </div>
+      {advisors.length > 0 && (
+        <div>
+          <label htmlFor="advisor" className="mb-1 block text-sm font-medium text-foreground">
+            ¿Con quién quieres hablar? <span className="font-normal text-foreground/50">(opcional)</span>
+          </label>
+          <select
+            id="advisor"
+            name="advisor"
+            defaultValue=""
+            className={`w-full ${squared ? "min-h-11 bg-white" : "rounded-lg"} border border-black/10 px-3 py-2 text-foreground focus:border-primary focus:outline-none`}
+          >
+            <option value="">Sin preferencia</option>
+            {advisors.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div>
         <label htmlFor="message" className="mb-1 block text-sm font-medium text-foreground">
           Mensaje

@@ -124,7 +124,13 @@ export async function HomeContent() {
           ) : null}
           {modules.pricing && clientConfig.pricing?.length ? <PricingInmobiliaria plans={clientConfig.pricing} label={branding.pricingLabel} copy={copy.pricing} /> : null}
           {modules.faq && clientConfig.faq?.length ? <FAQInmobiliaria items={clientConfig.faq} whatsapp={contact.whatsapp} copy={copy.faq} /> : null}
-          <ContactInmobiliaria contact={contact} showForm={modules.contactForm} copy={copy.contact} />
+          <ContactInmobiliaria
+            contact={contact}
+            showForm={modules.contactForm}
+            copy={copy.contact}
+            // Selector opcional del formulario: el mensaje le llega también a quien se elija.
+            advisors={(clientConfig.team ?? []).map((m) => m.name)}
+          />
         </main>
         <Footer config={clientConfig} />
         {floating}
