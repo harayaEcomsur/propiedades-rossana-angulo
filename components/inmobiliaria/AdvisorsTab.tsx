@@ -259,7 +259,7 @@ export function AdvisorsTab({
 function AddAdvisor({ authHeaders, reload }: { authHeaders: Record<string, string>; reload: () => void }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [title, setTitle] = useState("Asesora inmobiliaria");
+  const [title, setTitle] = useState("Agente Inmobiliario");
   const [role, setRole] = useState<"admin" | "corredor">("corredor");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");

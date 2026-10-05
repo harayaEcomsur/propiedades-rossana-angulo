@@ -17,7 +17,7 @@ export interface Broker {
   superadmin?: boolean;
   // Ficha pública (sección "Nuestros asesores" del sitio). Cada usuario del
   // panel es también un asesor del sitio, salvo que showOnSite sea false.
-  title?: string; // cargo visible, ej. "Asesora inmobiliaria"
+  title?: string; // cargo visible, ej. "Agente Inmobiliario"
   photoUrl?: string;
   bio?: string;
   phone?: string;
