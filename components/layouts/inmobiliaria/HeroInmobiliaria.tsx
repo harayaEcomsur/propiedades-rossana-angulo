@@ -21,7 +21,7 @@ export function HeroInmobiliaria({
   return (
     <section className="relative flex min-h-[82vh] items-end overflow-hidden">
       {hero.backgroundImageUrl ? (
-        <Image src={hero.backgroundImageUrl} alt="" fill priority className="object-cover" />
+        <Image src={hero.backgroundImageUrl} alt="" fill priority sizes="100vw" quality={70} className="object-cover" />
       ) : (
         <div className="absolute inset-0 bg-primary/20" />
       )}

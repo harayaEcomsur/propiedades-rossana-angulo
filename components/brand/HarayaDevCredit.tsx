@@ -10,7 +10,6 @@ export function HarayaDevCredit({ tone = "dark" }: { tone?: "dark" | "light" }) 
       target="_blank"
       rel="noopener"
       className="group inline-flex items-center gap-2.5"
-      aria-label="Sitio hecho por HarayaDev"
     >
       <span className={`text-xs ${muted}`}>Sitio hecho por</span>
       <svg width="22" height="22" viewBox="0 0 512 512" aria-hidden="true" focusable="false" className="transition-transform group-hover:scale-110">

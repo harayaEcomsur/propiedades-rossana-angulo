@@ -7,7 +7,14 @@ import { listProviders } from "@/lib/realestate-store";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+// Sin proveedores cargados la página queda vacía: no se indexa (Google la
+// tomaría como contenido pobre) hasta que la administradora cargue alguno.
+export async function generateMetadata(): Promise<Metadata> {
+  const empty = (await listProviders()).length === 0;
+  return { ...metadata, ...(empty && { robots: { index: false, follow: true } }) };
+}
+
+const metadata: Metadata = {
   title: `Proveedores de confianza — ${baseConfig.meta.businessName}`,
   description: "Directorio de proveedores de confianza recomendados por Propiedades Rossanna Angulo para dueños y arrendatarios: mantención, reparaciones y servicios del hogar.",
   alternates: { canonical: "/proveedores" },

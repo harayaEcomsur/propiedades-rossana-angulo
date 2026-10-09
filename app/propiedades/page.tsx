@@ -45,7 +45,7 @@ export default async function PropiedadesPage() {
       <Header config={clientConfig} />
       <main className="py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Propiedades</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color-mix(in_srgb,var(--color-primary)_85%,black)]">Propiedades</p>
           <h1 className="mt-3 font-heading text-3xl font-bold text-foreground sm:text-4xl">
             Encuentra tu próxima propiedad
           </h1>

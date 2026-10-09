@@ -44,6 +44,8 @@ export function HeaderClient({ logoUrl, businessName, logoIncludesName, inmobili
           {/* En móvil el nombre siempre acompaña al logo (el logo se achica y
               puede no leerse); en desktop se omite solo si el logo ya lo trae. */}
           <span
+            // El logo ya lleva el nombre como texto alternativo: esto es solo visual.
+            aria-hidden="true"
             className={`truncate font-heading text-sm font-medium text-foreground/80 ${
               branding.logoIncludesName ? "md:hidden" : ""
             }`}

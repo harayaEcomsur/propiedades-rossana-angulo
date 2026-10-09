@@ -13,7 +13,8 @@ export function PillarsInmobiliaria({ pillars }: { pillars: NonNullable<ClientCo
         {pillars.map((p, i) => (
           <Reveal key={p.title} delay={i * 80} className="py-8 sm:px-6 sm:py-10 lg:first:pl-0">
             <Icon name={p.icon} className="h-6 w-6 text-primary" aria-hidden />
-            <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">{p.title}</h3>
+            {/* h2: es el primer nivel bajo el h1 del hero (un h3 aquí rompe el orden de títulos). */}
+            <h2 className="mt-4 font-heading text-lg font-semibold text-foreground">{p.title}</h2>
             {p.text && <p className="mt-1.5 text-sm leading-relaxed text-foreground/65">{p.text}</p>}
           </Reveal>
         ))}

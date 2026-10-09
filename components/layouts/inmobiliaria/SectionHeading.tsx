@@ -18,7 +18,8 @@ export function SectionHeading({
   const centered = align === "center";
   return (
     <div className={centered ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
-      {eyebrow && <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-primary">{eyebrow}</p>}
+      {/* Rojo de la marca 15% más oscuro: en texto de 12px el original queda en 4,35:1 (mínimo WCAG 4,5:1). */}
+      {eyebrow && <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[color-mix(in_srgb,var(--color-primary)_85%,black)]">{eyebrow}</p>}
       <h2
         id={id}
         className={`text-balance font-heading text-3xl font-bold leading-tight sm:text-4xl ${

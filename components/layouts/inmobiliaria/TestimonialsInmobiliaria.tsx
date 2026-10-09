@@ -16,7 +16,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
       <figcaption className="mt-6 flex items-center justify-between gap-3">
         <span className="text-sm font-semibold uppercase tracking-wider text-foreground">{t.name}</span>
         {t.rating && (
-          <span className="flex gap-0.5 text-primary" aria-label={`${t.rating} de 5 estrellas`}>
+          <span role="img" className="flex gap-0.5 text-primary" aria-label={`${t.rating} de 5 estrellas`}>
             {Array.from({ length: 5 }).map((_, j) => (
               <Star key={j} size={14} fill={j < t.rating! ? "currentColor" : "none"} aria-hidden />
             ))}
