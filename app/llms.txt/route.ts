@@ -36,6 +36,14 @@ export async function GET() {
     ...services.map((s) => `- **${s.title}**: ${s.description}`),
   ];
 
+  if (clientConfig.team?.length) {
+    lines.push("", `## Equipo (${clientConfig.team.length} personas)`);
+    for (const m of clientConfig.team) {
+      const contacto = [m.phone && `tel. ${m.phone}`, m.whatsapp && `WhatsApp +${m.whatsapp}`, m.email].filter(Boolean).join(", ");
+      lines.push(`- **${m.name}** — ${m.role}${contacto ? ` (${contacto})` : ""}${m.bio ? `. ${m.bio}` : ""}`);
+    }
+  }
+
   if (pricing?.length) {
     lines.push("", `## ${clientConfig.branding.pricingLabel}`);
     for (const plan of pricing) lines.push(`- **${plan.name}**: ${plan.price} — incluye: ${plan.features.join("; ")}`);

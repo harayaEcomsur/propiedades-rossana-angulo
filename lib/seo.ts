@@ -102,6 +102,20 @@ export function buildLocalBusinessJsonLd(config: ClientConfig) {
         telephone: contact.phone,
         email: contact.email,
         founder: seo.founder ? { "@type": "Person", name: seo.founder, jobTitle: seo.founderJobTitle } : undefined,
+        // Equipo completo: así buscadores e IAs listan a todos los asesores
+        // (antes solo podían inferirlos de las tarjetas de la página).
+        employee: config.team?.length
+          ? config.team.map((m) => ({
+              "@type": "Person",
+              name: m.name,
+              jobTitle: m.role,
+              ...(m.photoUrl && { image: absoluteUrl(m.photoUrl) }),
+              ...(m.email && { email: m.email }),
+              ...(m.phone && { telephone: m.phone }),
+              worksFor: { "@id": organizationId() },
+            }))
+          : undefined,
+        numberOfEmployees: config.team?.length ? { "@type": "QuantitativeValue", value: config.team.length } : undefined,
         address: seo.postalAddress
           ? { "@type": "PostalAddress", ...seo.postalAddress }
           : contact.address

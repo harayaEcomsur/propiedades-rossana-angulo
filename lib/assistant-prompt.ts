@@ -30,6 +30,11 @@ export async function buildSystemPrompt(): Promise<string> {
           )
           .join("\n")}\nCaptura de interesados: cuando alguien muestre interés real en comprar o arrendar, conversa para conocer qué busca (operación, comuna, presupuesto aproximado, plazo) y OFRÉCELE dejar sus datos para que un asesor lo contacte con opciones a su medida. Si acepta, pide nombre y teléfono y usa la herramienta registrar_lead con todo lo que averiguaste — nunca la llames sin teléfono real del cliente ni inventes datos. Tras registrarlo, confirma que del equipo lo contactarán pronto. Si solo pregunta por curiosidad, no insistas con los datos.`
       : "",
+    clientConfig.team?.length
+      ? `Equipo (${clientConfig.team.length} personas; si preguntan por los asesores, nómbralos a todos):\n${clientConfig.team
+          .map((m) => `- ${m.name}, ${m.role}${m.whatsapp ? ` — WhatsApp +${m.whatsapp}` : m.phone ? ` — ${m.phone}` : ""}${m.email ? ` — ${m.email}` : ""}`)
+          .join("\n")}`
+      : "",
     qa ? `Preguntas frecuentes y sus respuestas oficiales:\n${qa}` : "",
     // Lo que la administradora edita en el panel (valores y preguntas del sitio)
     // manda sobre las respuestas fijas de arriba si alguna quedó desactualizada.
