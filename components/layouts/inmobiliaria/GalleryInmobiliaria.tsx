@@ -20,7 +20,7 @@ export function GalleryInmobiliaria({ images }: { images: NonNullable<ClientConf
                   src={img.url}
                   alt={img.alt}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 />
               </div>
               <figcaption className="mt-3 border-b border-foreground/15 pb-3 text-sm font-medium uppercase tracking-wider text-foreground/80">

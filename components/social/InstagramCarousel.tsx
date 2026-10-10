@@ -23,7 +23,7 @@ export function InstagramCarousel({ posts }: { posts: InstagramPost[] }) {
         // firmadas son muy largas: pasar por el optimizador las repetía en 8
         // tamaños y engordaba el HTML.
         unoptimized
-        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
       />
       <span className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-black/0 to-black/0 p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
         <span className="line-clamp-3 text-sm leading-snug text-white">{post.caption}</span>

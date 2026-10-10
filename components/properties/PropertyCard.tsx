@@ -48,7 +48,7 @@ export function PropertyCard({
           priority={priority}
           loading={priority ? undefined : eager ? "eager" : "lazy"}
           sizes="(min-width: 1152px) 370px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
         <div className="absolute left-3 top-3 flex flex-wrap gap-2">
           <span className="bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-foreground">

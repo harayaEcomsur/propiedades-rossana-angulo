@@ -56,3 +56,17 @@ html.reveal-ready [data-reveal][data-revealed] {
     transition: none;
   }
 }
+
+/* "Reducir movimiento" del sistema: sin transiciones ni animaciones en todo el
+   sitio (zoom de fotos, desplazamientos, giros). Los cambios de estado siguen
+   ocurriendo, solo que sin animarse. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

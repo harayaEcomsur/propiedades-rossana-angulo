@@ -86,7 +86,7 @@ export async function InstagramFeed({
                   src={post.mediaUrl}
                   alt={post.caption?.slice(0, 120) || "Publicación de Instagram"}
                   fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   sizes="(min-width: 1024px) 16vw, 33vw"
                   unoptimized
                 />
