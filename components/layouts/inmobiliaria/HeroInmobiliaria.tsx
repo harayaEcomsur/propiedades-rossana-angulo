@@ -26,6 +26,8 @@ export function HeroInmobiliaria({
         <div className="absolute inset-0 bg-primary/20" />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+      {/* Oscurece el lado del texto: la foto tiene edificios claros detrás del título. */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-transparent" />
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-40 sm:px-6 sm:pb-24">
         {/* El logo viene sobre fondo blanco (JPG): va en una placa blanca que
             recorta el margen vacío del cuadrado original. */}
@@ -74,7 +76,7 @@ export function HeroInmobiliaria({
           href={hero.backgroundImageCredit.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute bottom-2 right-3 text-[10px] text-white/60 hover:text-white"
+          className="absolute bottom-2 left-3 text-[10px] text-white/60 hover:text-white"
         >
           {hero.backgroundImageCredit.text}
         </a>
