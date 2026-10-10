@@ -3,7 +3,6 @@ import { getSiteConfig } from "@/lib/site-content";
 import { getFontVariables } from "@/lib/fonts";
 import { paletteToCssVars } from "@/lib/theme";
 import { buildMetadata, buildLocalBusinessJsonLd, jsonLdString } from "@/lib/seo";
-import { REVEAL_SCRIPT } from "@/lib/reveal-script";
 import "./globals.css";
 
 // Metadatos y JSON-LD salen del config con lo editado en el panel (CMS).
@@ -21,13 +20,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       lang={clientConfig.meta.locale}
       className={fontVariables}
       style={paletteToCssVars(clientConfig.branding.palette)}
-      // El script de animaciones agrega una clase a <html> antes de hidratar.
-      suppressHydrationWarning
     >
-      <head>
-        {/* Antes del primer pintado: deja listas las animaciones de entrada sin esperar a React. */}
-        <script dangerouslySetInnerHTML={{ __html: REVEAL_SCRIPT }} />
-      </head>
       <body>
         {children}
         <script
