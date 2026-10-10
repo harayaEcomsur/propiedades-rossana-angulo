@@ -2,6 +2,7 @@ import { getSiteConfig } from "@/lib/site-content";
 import { OPERATION_LABEL } from "@/components/properties/PropertyCard";
 import { getPublicProperties } from "@/lib/public-properties";
 import { getComunaPages } from "@/lib/comuna-pages";
+import { GUIDES } from "@/lib/guides";
 import { absoluteUrl } from "@/lib/seo";
 
 // /llms.txt (llmstxt.org): resumen en Markdown del negocio para buscadores y
@@ -76,6 +77,7 @@ export async function GET() {
     `- [Inicio](${absoluteUrl("/")})`,
     `- [Propiedades](${absoluteUrl("/propiedades")})`,
     ...comunas.map((c) => `- [Propiedades en ${c.name}](${absoluteUrl(`/propiedades-en/${c.slug}`)}): ${c.properties.length} en venta y arriendo`),
+    ...GUIDES.map((g) => `- [${g.title}](${absoluteUrl(`/guias/${g.slug}`)}): ${g.description}`),
     `- [Política de privacidad](${absoluteUrl("/privacidad")})`
   );
 

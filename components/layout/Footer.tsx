@@ -21,6 +21,9 @@ export function Footer({ config }: { config: ClientConfig }) {
               {contact.phone}
             </a>
           )}
+          <a href="/guias" className="hover:text-primary">
+            Guías
+          </a>
           <a href="/privacidad" className="hover:text-primary">
             Política de privacidad
           </a>

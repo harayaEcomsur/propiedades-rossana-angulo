@@ -3,6 +3,7 @@ import { clientConfig } from "@/config/client.config";
 import { getPublicProperties } from "@/lib/public-properties";
 import { absoluteUrl } from "@/lib/seo";
 import { getComunaPages } from "@/lib/comuna-pages";
+import { GUIDES } from "@/lib/guides";
 import { listProviders } from "@/lib/realestate-store";
 
 // Solo URLs públicas e indexables (con su canonical). Las fichas salen del
@@ -31,6 +32,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const c of await getComunaPages()) {
     entries.push({ url: absoluteUrl(`/propiedades-en/${c.slug}`), lastModified: now, changeFrequency: "weekly", priority: 0.85 });
+  }
+
+  entries.push({ url: absoluteUrl("/guias"), lastModified: now, changeFrequency: "monthly", priority: 0.6 });
+  for (const g of GUIDES) {
+    entries.push({ url: absoluteUrl(`/guias/${g.slug}`), lastModified: new Date(g.updated), changeFrequency: "monthly", priority: 0.6 });
   }
 
   // Solo si tiene contenido (ver la misma regla en app/proveedores/page.tsx).
