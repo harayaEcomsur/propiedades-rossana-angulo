@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { BedDouble, Bath, Ruler, Car, ArrowLeft } from "lucide-react";
 import { clientConfig as baseConfig } from "@/config/client.config";
 import { getSiteConfig } from "@/lib/site-content";
@@ -71,7 +71,13 @@ export default async function PropiedadPage({ params }: { params: { slug: string
   const clientConfig = await getSiteConfig();
   const { modules, contact, syndication } = clientConfig;
   const property = await findProperty(params.slug);
-  if (!modules.propiedades || !property) notFound();
+  if (!modules.propiedades) notFound();
+  if (!property) {
+    // Dirección antigua de una ficha que se movió: 301 a la nueva.
+    const moved = baseConfig.propertyRedirects?.[params.slug];
+    if (moved) permanentRedirect(`/propiedades/${moved}`);
+    notFound();
+  }
 
   const hasWhatsapp = modules.whatsappButton && Boolean(contact.whatsapp);
   const video = property.video ? videoEmbed(property.video) : null;

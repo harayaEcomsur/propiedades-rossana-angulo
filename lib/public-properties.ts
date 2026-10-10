@@ -34,10 +34,12 @@ export function propertySlug(p: Pick<REProperty, "id" | "title">): string {
   return `${slugify(p.title)}-${p.id.slice(0, 6)}`;
 }
 
-export function formatPropertyPrice(p: Pick<REProperty, "price" | "currency" | "operation">): string {
-  if (p.price === undefined) return "Consultar";
+export function formatPropertyPrice(p: Pick<REProperty, "price" | "currency" | "operation"> & { maintenanceFee?: number }): string {
+  if (p.price === undefined || p.price === null) return "Consultar";
   const amount = p.currency === "UF" ? `UF ${p.price.toLocaleString("es-CL")}` : `$${p.price.toLocaleString("es-CL")}`;
-  return p.operation === "arriendo" && p.currency !== "UF" ? `${amount}/mes` : amount;
+  if (p.operation !== "arriendo" || p.currency === "UF") return amount;
+  // Arriendo: el gasto común se muestra junto al valor, como se publica en Instagram.
+  return p.maintenanceFee ? `${amount}/mes + $${p.maintenanceFee.toLocaleString("es-CL")} GC` : `${amount}/mes`;
 }
 
 function toPublic(p: REProperty): Property {
@@ -46,7 +48,9 @@ function toPublic(p: REProperty): Property {
     title: p.title,
     operation: p.operation,
     type: TYPE_MAP[p.type] ?? "casa",
-    comuna: p.neighborhood || p.city || p.region || "",
+    // La comuna agrupa el filtro del buscador (Concón, Viña del Mar…); el barrio
+    // o sector va en el título y la descripción.
+    comuna: p.city || p.neighborhood || p.region || "",
     price: formatPropertyPrice(p),
     bedrooms: p.bedrooms,
     bathrooms: p.bathrooms,

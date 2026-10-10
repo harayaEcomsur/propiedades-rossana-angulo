@@ -288,6 +288,24 @@ export const clientConfigSchema = z.object({
     })
     .optional(),
 
+  // Páginas por comuna (/propiedades-en/<slug>): texto propio + propiedades de
+  // esa comuna. Solo se publican con al menos 3 propiedades (MIN_COMUNA_PROPERTIES).
+  comunaPages: z
+    .array(
+      z.object({
+        slug: z.string(),
+        name: z.string(), // tal como figura en la ficha (campo comuna)
+        intro: z.string(),
+        sectors: z.array(z.string()).optional(),
+      })
+    )
+    .optional(),
+
+  // Direcciones antiguas de fichas → nueva (slug). Cuando una propiedad cambia
+  // de dirección (ej. al pasar del config al panel), la antigua redirige con
+  // 301 para no perder enlaces compartidos ni lo que Google ya indexó.
+  propertyRedirects: z.record(z.string()).optional(),
+
   // Pilares del negocio: franja de 3-4 diferenciadores bajo el hero (layout
   // inmobiliaria). `icon` = nombre de un ícono de lucide-react.
   pillars: z.array(z.object({ icon: z.string(), title: z.string(), text: z.string() })).max(4).optional(),

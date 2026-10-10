@@ -295,6 +295,39 @@ export const clientConfig = defineClientConfig({
     instagram: { subtitle: "Propiedades nuevas, ventas y arriendos en @propiedadesrossanna." },
   },
 
+  // Fichas que antes vivían en el config: su dirección antigua redirige (301)
+  // a la ficha nueva del panel.
+  propertyRedirects: {
+    "depto-meseta-coraceros": "departamento-piso-28-en-meseta-coraceros-f4356d",
+    "depto-providencia-carlos-antunez": "departamento-en-carlos-antunez-providencia-912655",
+    "loft-renaca": "loft-en-condominio-con-piscina-renaca-88844b",
+    "depto-av-antofagasta": "departamento-en-av-antofagasta-cerca-de-clinica-renaca-c93908",
+    "depto-mariposa-concon": "departamento-mariposa-piso-18-en-concon-f8b62a",
+    "depto-el-encanto-las-agatas": "exclusivo-departamento-en-el-encanto-renaca-a1c64d",
+    "casa-bosque-de-montemar": "casa-en-bosque-de-montemar-589d88",
+    "depto-rotonda-santa-julia": "departamento-en-rotonda-santa-julia-3026aa",
+    "casa-condominio-piscina-quincho": "casa-en-condominio-con-piscina-y-quincho-99548c",
+  },
+
+  // Páginas por comuna. Textos basados en los sectores donde Rossanna tiene
+  // propiedades publicadas.
+  comunaPages: [
+    {
+      slug: "concon",
+      name: "Concón",
+      intro:
+        "Concón, la comuna costera al norte de Viña del Mar, combina playas, las Dunas de Concón (santuario de la naturaleza) y una oferta gastronómica frente al mar. Sus barrios mezclan edificios con vista al mar, como Costa Brava y Abedules, con sectores de casas como Bosque de Montemar y Bellavista, y condominios con piscina y áreas verdes.",
+      sectors: ["Bosque de Montemar", "Bellavista", "Costa Brava", "Abedules", "Escrivá de Balaguer"],
+    },
+    {
+      slug: "vina-del-mar",
+      name: "Viña del Mar",
+      intro:
+        "Viña del Mar es la principal ciudad residencial y turística de la Región de Valparaíso. Trabajamos propiedades en sectores con vista a la bahía, como Reñaca, El Encanto y Cochoa; barrios residenciales cerca de centros comerciales, como Jardín del Mar y Santa Julia; y zonas bien conectadas con el centro, como Agua Santa y Meseta Coraceros.",
+      sectors: ["Reñaca", "El Encanto", "Cochoa", "Jardín del Mar", "Santa Julia", "Agua Santa", "Meseta Coraceros"],
+    },
+  ],
+
   // Diferenciadores bajo el hero — todos confirmados por la clienta o por su
   // Instagram ("Acreditada") y la clienta (10 años de experiencia, oct. 2026).
   pillars: [

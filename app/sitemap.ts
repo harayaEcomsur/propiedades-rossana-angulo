@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { clientConfig } from "@/config/client.config";
 import { getPublicProperties } from "@/lib/public-properties";
 import { absoluteUrl } from "@/lib/seo";
+import { getComunaPages } from "@/lib/comuna-pages";
 import { listProviders } from "@/lib/realestate-store";
 
 // Solo URLs públicas e indexables (con su canonical). Las fichas salen del
@@ -26,6 +27,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       });
     }
+  }
+
+  for (const c of await getComunaPages()) {
+    entries.push({ url: absoluteUrl(`/propiedades-en/${c.slug}`), lastModified: now, changeFrequency: "weekly", priority: 0.85 });
   }
 
   // Solo si tiene contenido (ver la misma regla en app/proveedores/page.tsx).

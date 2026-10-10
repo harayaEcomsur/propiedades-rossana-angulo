@@ -1,6 +1,7 @@
 import { getSiteConfig } from "@/lib/site-content";
 import { OPERATION_LABEL } from "@/components/properties/PropertyCard";
 import { getPublicProperties } from "@/lib/public-properties";
+import { getComunaPages } from "@/lib/comuna-pages";
 import { absoluteUrl } from "@/lib/seo";
 
 // /llms.txt (llmstxt.org): resumen en Markdown del negocio para buscadores y
@@ -68,7 +69,15 @@ export async function GET() {
     for (const item of faq) lines.push("", `### ${item.q}`, item.a);
   }
 
-  lines.push("", "## Páginas", `- [Inicio](${absoluteUrl("/")})`, `- [Propiedades](${absoluteUrl("/propiedades")})`, `- [Política de privacidad](${absoluteUrl("/privacidad")})`);
+  const comunas = await getComunaPages();
+  lines.push(
+    "",
+    "## Páginas",
+    `- [Inicio](${absoluteUrl("/")})`,
+    `- [Propiedades](${absoluteUrl("/propiedades")})`,
+    ...comunas.map((c) => `- [Propiedades en ${c.name}](${absoluteUrl(`/propiedades-en/${c.slug}`)}): ${c.properties.length} en venta y arriendo`),
+    `- [Política de privacidad](${absoluteUrl("/privacidad")})`
+  );
 
   const body = lines.filter((l, i, arr) => !(l === "" && arr[i - 1] === "")).filter((l) => l !== undefined).join("\n") + "\n";
   return new Response(body.replace(/\n{3,}/g, "\n\n"), {

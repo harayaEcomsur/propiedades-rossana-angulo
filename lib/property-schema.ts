@@ -70,13 +70,14 @@ export function propertyJsonLd(p: Property) {
   };
 }
 
-export function propertyListJsonLd(properties: Property[]) {
+// `extra`: un nivel más en la miga de pan (p. ej. la página de una comuna).
+export function propertyListJsonLd(properties: Property[], extra?: { name: string; path: string }) {
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "ItemList",
-        name: "Propiedades en venta y arriendo",
+        name: extra ? `Propiedades en venta y arriendo en ${extra.name}` : "Propiedades en venta y arriendo",
         numberOfItems: properties.length,
         itemListElement: properties.map((p, i) => ({
           "@type": "ListItem",
@@ -88,6 +89,7 @@ export function propertyListJsonLd(properties: Property[]) {
       breadcrumbJsonLd([
         { name: "Inicio", path: "/" },
         { name: "Propiedades", path: "/propiedades" },
+        ...(extra ? [extra] : []),
       ]),
     ],
   };

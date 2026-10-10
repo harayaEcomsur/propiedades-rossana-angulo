@@ -10,6 +10,8 @@ import { PropertyExplorer } from "@/components/properties/PropertyExplorer";
 import { getPublicProperties } from "@/lib/public-properties";
 import { propertyListJsonLd } from "@/lib/property-schema";
 import { jsonLdString } from "@/lib/seo";
+import Link from "next/link";
+import { getComunaPages } from "@/lib/comuna-pages";
 import { joinChannels, syndicationChannels } from "@/lib/syndication";
 
 export const revalidate = 300;
@@ -38,6 +40,7 @@ export default async function PropiedadesPage() {
   if (!modules.propiedades || !properties.length) notFound();
   const hasWhatsapp = modules.whatsappButton && Boolean(contact.whatsapp);
   const portals = syndicationChannels(syndication);
+  const comunas = await getComunaPages();
 
   return (
     <>
@@ -54,6 +57,15 @@ export default async function PropiedadesPage() {
               Publicamos cada propiedad también en {joinChannels(portals)}, para que llegue a más
               personas.
             </p>
+          )}
+          {comunas.length > 0 && (
+            <nav aria-label="Propiedades por comuna" className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+              {comunas.map((c) => (
+                <Link key={c.slug} href={`/propiedades-en/${c.slug}`} className="font-medium text-primary underline-offset-4 hover:underline">
+                  Propiedades en {c.name}
+                </Link>
+              ))}
+            </nav>
           )}
           <div className="mt-10">
             <PropertyExplorer properties={properties} />
