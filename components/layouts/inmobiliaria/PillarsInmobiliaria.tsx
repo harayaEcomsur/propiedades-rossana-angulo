@@ -11,7 +11,7 @@ export function PillarsInmobiliaria({ pillars }: { pillars: NonNullable<ClientCo
     <section aria-label="Por qué elegirnos" className="border-b border-foreground/10 bg-background">
       <Container className="grid grid-cols-1 divide-y divide-foreground/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
         {pillars.map((p, i) => (
-          <Reveal key={p.title} delay={i * 80} className="py-8 sm:px-6 sm:py-10 lg:first:pl-0">
+          <Reveal key={p.title} delay={i * 40} className="py-8 sm:px-6 sm:py-10 lg:first:pl-0">
             <Icon name={p.icon} className="h-6 w-6 text-primary" aria-hidden />
             {/* h2: es el primer nivel bajo el h1 del hero (un h3 aquí rompe el orden de títulos). */}
             <h2 className="mt-4 font-heading text-lg font-semibold text-foreground">{p.title}</h2>

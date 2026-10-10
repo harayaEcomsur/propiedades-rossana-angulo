@@ -33,7 +33,8 @@ export function FeaturedProperties({ properties, copy = DEFAULT_SECTIONS.propert
         <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((p, i) => (
             <Reveal key={p.slug} delay={(i % 3) * 90}>
-              <PropertyCard property={p} />
+              {/* Primera fila: foto sin lazy-load, para que la tarjeta no aparezca con el cuadro gris. */}
+              <PropertyCard property={p} eager={i < 3} />
             </Reveal>
           ))}
         </div>
