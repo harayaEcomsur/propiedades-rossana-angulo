@@ -61,7 +61,7 @@ export default async function PropiedadesPage() {
           {comunas.length > 0 && (
             <nav aria-label="Propiedades por comuna" className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
               {comunas.map((c) => (
-                <Link key={c.slug} href={`/propiedades-en/${c.slug}`} className="font-medium text-primary underline-offset-4 hover:underline">
+                <Link key={c.slug} href={`/propiedades-en/${c.slug}`} className="font-medium text-[color-mix(in_srgb,var(--color-primary)_85%,black)] underline underline-offset-4 hover:no-underline">
                   Propiedades en {c.name}
                 </Link>
               ))}

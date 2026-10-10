@@ -13,7 +13,17 @@ export const OPERATION_LABEL: Record<Property["operation"], string> = {
 
 // `card` = tarjeta con fondo blanco y sombra (para ir sobre la franja oscura de
 // "En Exclusiva"); `plain` = editorial, sin caja, sobre el fondo del sitio.
-export function PropertyCard({ property, variant = "plain" }: { property: Property; variant?: "plain" | "card" }) {
+export function PropertyCard({
+  property,
+  variant = "plain",
+  priority = false,
+  eager = false,
+}: {
+  property: Property;
+  variant?: "plain" | "card";
+  priority?: boolean;
+  eager?: boolean;
+}) {
   const specs = [
     property.bedrooms != null && { icon: BedDouble, label: `${property.bedrooms} dorm.`, sr: `${property.bedrooms} dormitorios` },
     property.bathrooms != null && { icon: Bath, label: `${property.bathrooms} baños`, sr: `${property.bathrooms} baños` },
@@ -35,7 +45,9 @@ export function PropertyCard({ property, variant = "plain" }: { property: Proper
           src={property.images[0]}
           alt={property.title}
           fill
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          priority={priority}
+          loading={priority ? undefined : eager ? "eager" : "lazy"}
+          sizes="(min-width: 1152px) 370px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
         <div className="absolute left-3 top-3 flex flex-wrap gap-2">

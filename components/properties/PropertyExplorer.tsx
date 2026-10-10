@@ -80,8 +80,11 @@ export function PropertyExplorer({ properties }: { properties: Property[] }) {
 
       {filtered.length ? (
         <div className="mt-4 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((p) => (
-            <PropertyCard key={p.slug} property={p} />
+          <h2 className="sr-only">Resultados</h2>
+          {/* La primera fila se ve sin desplazar: sin lazy-load, y la primera
+              foto con prioridad (es el LCP en celular). */}
+          {filtered.map((p, i) => (
+            <PropertyCard key={p.slug} property={p} priority={i === 0} eager={i < 3} />
           ))}
         </div>
       ) : (

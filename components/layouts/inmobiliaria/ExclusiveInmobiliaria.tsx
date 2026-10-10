@@ -36,7 +36,7 @@ export function ExclusiveInmobiliaria({ properties, copy }: { properties: Proper
       <Container className="-mt-28 sm:-mt-36">
         <div className={`grid grid-cols-1 gap-8 ${exclusives.length > 1 ? "sm:grid-cols-2" : "mx-auto max-w-md"} ${exclusives.length > 2 ? "lg:grid-cols-3" : ""}`}>
           {exclusives.map((p, i) => (
-            <Reveal key={p.slug} delay={i * 90}>
+            <Reveal key={p.slug} delay={(i % 3) * 90}>
               <PropertyCard property={p} variant="card" />
             </Reveal>
           ))}

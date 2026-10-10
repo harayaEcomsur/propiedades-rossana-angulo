@@ -128,11 +128,18 @@ export default async function PropiedadPage({ params }: { params: { slug: string
           {showGallery && (
             <div className={`mt-8 grid gap-3 ${property.images.length > 1 ? "sm:grid-cols-3" : ""}`}>
               <div className={`relative aspect-[4/3] overflow-hidden ${property.images.length > 1 ? "sm:col-span-2 sm:row-span-2" : "sm:aspect-[16/9]"}`}>
-                <Image src={property.images[0]} alt={property.title} fill priority className="object-cover" />
+                <Image
+                  src={property.images[0]}
+                  alt={property.title}
+                  fill
+                  priority
+                  sizes={property.images.length > 1 ? "(min-width: 1152px) 760px, (min-width: 640px) 66vw, 100vw" : "(min-width: 1152px) 1152px, 100vw"}
+                  className="object-cover"
+                />
               </div>
               {property.images.slice(1, 5).map((img, i) => (
                 <div key={img} className="relative aspect-[4/3] overflow-hidden">
-                  <Image src={img} alt={`${property.title} — foto ${i + 2}`} fill className="object-cover" />
+                  <Image src={img} alt={`${property.title} — foto ${i + 2}`} fill sizes="(min-width: 1152px) 380px, (min-width: 640px) 33vw, 100vw" className="object-cover" />
                 </div>
               ))}
             </div>
@@ -168,7 +175,7 @@ export default async function PropiedadPage({ params }: { params: { slug: string
               )}
             </div>
             <div className={`flex flex-col gap-6 ${sideVideo ? "order-first lg:order-none" : ""}`}>
-              {sideVideo && <PropertyVideo video={sideVideo} title={property.title} poster={property.images[0]} />}
+              {sideVideo && <PropertyVideo video={sideVideo} title={property.title} poster={`/_next/image?url=${encodeURIComponent(property.images[0])}&w=640&q=75`} />}
               <aside className="h-fit border border-foreground/15 p-6">
                 <p className="font-heading text-base font-semibold text-foreground">¿Te interesa esta propiedad?</p>
                 <p className="mt-2 text-sm text-foreground/70">
