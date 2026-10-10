@@ -1,4 +1,4 @@
-// Aparición suave al entrar en pantalla (fade + 16px hacia arriba).
+// Aparición suave al entrar en pantalla (fade + 12px hacia arriba).
 //
 // Es solo un marcador (data-reveal): no espera a que React hidrate la página.
 // La animación la maneja un script mínimo en el <head> (lib/reveal-script.ts)
