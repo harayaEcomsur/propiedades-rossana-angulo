@@ -498,6 +498,61 @@ export async function addProperty(data: Omit<REProperty, "id" | "createdAt">): P
   return p;
 }
 
+// Edición completa de una ficha desde el panel. `null` borra un dato opcional
+// (ej. quitar el gasto común); `undefined` lo deja como estaba.
+export type PropertyUpdate = Partial<{
+  [K in keyof Omit<REProperty, "id" | "brokerId" | "createdAt" | "status" | "instagramMediaId" | "instagramUrl">]: REProperty[K] | null;
+}>;
+
+const PROPERTY_COLUMNS: Record<string, string> = {
+  title: "title",
+  operation: "operation",
+  type: "type",
+  address: "address",
+  region: "region",
+  city: "city",
+  neighborhood: "neighborhood",
+  price: "price",
+  currency: "currency",
+  description: "description",
+  bedrooms: "bedrooms",
+  bathrooms: "bathrooms",
+  coveredArea: "covered_area",
+  totalArea: "total_area",
+  parkingSpots: "parking_spots",
+  storageUnits: "storage_units",
+  maintenanceFee: "maintenance_fee",
+  petsAllowed: "pets_allowed",
+  furnished: "furnished",
+  condition: "condition",
+  photos: "photos",
+  video: "video",
+  exclusive: "exclusive",
+};
+
+export async function updateProperty(id: string, patch: PropertyUpdate): Promise<void> {
+  await withDb(
+    async () => {
+      const sql = db();
+      const fields: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(patch)) {
+        const col = PROPERTY_COLUMNS[k];
+        if (!col || v === undefined) continue;
+        fields[col] = k === "photos" ? jsonb(v) : typeof v === "string" ? v.trim() || null : v;
+      }
+      if (Object.keys(fields).length) await sql`UPDATE re_properties SET ${sql(fields)} WHERE id = ${id}`;
+    },
+    () => {
+      const p = store().properties.find((x) => x.id === id);
+      if (!p) return;
+      for (const [k, v] of Object.entries(patch)) {
+        if (v === undefined) continue;
+        (p as unknown as Record<string, unknown>)[k] = v === null || v === "" ? undefined : v;
+      }
+    }
+  );
+}
+
 export async function updatePropertyStatus(id: string, status: REProperty["status"]): Promise<void> {
   await withDb(
     async () => {

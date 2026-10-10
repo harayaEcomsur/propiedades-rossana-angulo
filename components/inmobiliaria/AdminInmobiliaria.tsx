@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { PhotoUploader } from "@/components/inmobiliaria/PhotoUploader";
 import { SiteEditor } from "@/components/inmobiliaria/SiteEditor";
+import { missingFields } from "@/lib/property-completeness";
 import { AdvisorsTab, MyProfileTab, type AdvisorData } from "@/components/inmobiliaria/AdvisorsTab";
+import { TestimonialsTab } from "@/components/inmobiliaria/TestimonialsTab";
 
 type Role = "admin" | "corredor";
 
@@ -129,7 +131,7 @@ interface Bundle {
   instagramConnected: boolean;
 }
 
-const TABS = ["ficha", "propiedades", "clientes", "proveedores", "entregas", "contratos", "corredoras", "sitio"] as const;
+const TABS = ["ficha", "propiedades", "clientes", "proveedores", "entregas", "contratos", "corredoras", "testimonios", "sitio"] as const;
 type Tab = (typeof TABS)[number];
 
 const card = "rounded-xl border border-foreground/15 p-4 sm:p-5";
@@ -180,6 +182,7 @@ export function AdminInmobiliaria({ adminKey }: { adminKey?: string }) {
     ...(isAdmin
       ? [
           { id: "corredoras" as Tab, label: "Asesores" },
+          { id: "testimonios" as Tab, label: "Testimonios" },
           { id: "sitio" as Tab, label: "Sitio (textos e imágenes)" },
         ]
       : []),
@@ -220,6 +223,7 @@ export function AdminInmobiliaria({ adminKey }: { adminKey?: string }) {
         />
       )}
       {tab === "corredoras" && isAdmin && <AdvisorsTab advisors={data.brokers} currentId={data.broker.id} authHeaders={authHeaders} reload={load} />}
+      {tab === "testimonios" && isAdmin && <TestimonialsTab authHeaders={authHeaders} />}
       {tab === "sitio" && isAdmin && <SiteEditor authHeaders={authHeaders} />}
     </div>
   );
@@ -281,33 +285,49 @@ function formatPrice(p: REProperty): string {
   return formatted;
 }
 
-function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; authHeaders: Record<string, string>; reload: () => void; isAdmin: boolean }) {
-  const [title, setTitle] = useState("");
-  const [operation, setOperation] = useState<REProperty["operation"]>("venta");
-  const [type, setType] = useState<PropertyType>("departamento");
-  const [address, setAddress] = useState("");
-  const [region, setRegion] = useState("");
-  const [city, setCity] = useState("");
-  const [neighborhood, setNeighborhood] = useState("");
-  const [price, setPrice] = useState("");
-  const [currency, setCurrency] = useState<"CLP" | "UF">("CLP");
-  const [bedrooms, setBedrooms] = useState("");
-  const [bathrooms, setBathrooms] = useState("");
-  const [parkingSpots, setParkingSpots] = useState("");
-  const [storageUnits, setStorageUnits] = useState("");
-  const [coveredArea, setCoveredArea] = useState("");
-  const [totalArea, setTotalArea] = useState("");
-  const [maintenanceFee, setMaintenanceFee] = useState("");
-  const [condition, setCondition] = useState<REProperty["condition"]>("used");
-  const [furnished, setFurnished] = useState(false);
-  const [petsAllowed, setPetsAllowed] = useState(true);
-  const [exclusive, setExclusive] = useState(false);
-  const [description, setDescription] = useState("");
-  const [photos, setPhotos] = useState<string[]>([]);
+// Formulario de propiedad: crea una nueva o edita una existente (`initial`).
+// Avisa en vivo qué datos le faltan para que la ficha esté completa.
+function PropertyEditor({
+  data,
+  authHeaders,
+  reload,
+  initial,
+  onDone,
+}: {
+  data: Bundle;
+  authHeaders: Record<string, string>;
+  reload: () => void;
+  initial?: REProperty;
+  onDone?: () => void;
+}) {
+  const editing = Boolean(initial);
+  const str = (n?: number) => (n === undefined || n === null ? "" : String(n));
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [operation, setOperation] = useState<REProperty["operation"]>(initial?.operation ?? "venta");
+  const [type, setType] = useState<PropertyType>(initial?.type ?? "departamento");
+  const [address, setAddress] = useState(initial?.address ?? "");
+  const [region, setRegion] = useState(initial?.region ?? "");
+  const [city, setCity] = useState(initial?.city ?? "");
+  const [neighborhood, setNeighborhood] = useState(initial?.neighborhood ?? "");
+  const [price, setPrice] = useState(str(initial?.price));
+  const [currency, setCurrency] = useState<"CLP" | "UF">(initial?.currency ?? "CLP");
+  const [bedrooms, setBedrooms] = useState(str(initial?.bedrooms));
+  const [bathrooms, setBathrooms] = useState(str(initial?.bathrooms));
+  const [parkingSpots, setParkingSpots] = useState(str(initial?.parkingSpots));
+  const [storageUnits, setStorageUnits] = useState(str(initial?.storageUnits));
+  const [coveredArea, setCoveredArea] = useState(str(initial?.coveredArea));
+  const [totalArea, setTotalArea] = useState(str(initial?.totalArea));
+  const [maintenanceFee, setMaintenanceFee] = useState(str(initial?.maintenanceFee));
+  const [condition, setCondition] = useState<REProperty["condition"]>(initial?.condition ?? "used");
+  const [furnished, setFurnished] = useState(initial?.furnished ?? false);
+  const [petsAllowed, setPetsAllowed] = useState(initial?.petsAllowed ?? true);
+  const [exclusive, setExclusive] = useState(initial?.exclusive ?? false);
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [photos, setPhotos] = useState<string[]>(initial?.photos ?? []);
   // Si la ficha se importó de Instagram, queda vinculada a esa publicación (y
   // no se vuelve a publicar allá). Si no, se ofrece publicarla al guardar.
   const [importedFrom, setImportedFrom] = useState<{ mediaId: string; url: string; video?: string } | null>(null);
-  const [publishToInstagram, setPublishToInstagram] = useState(data.instagramConnected);
+  const [publishToInstagram, setPublishToInstagram] = useState(!editing && data.instagramConnected);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -329,11 +349,58 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
     setNotice("Datos leídos desde Instagram: revisa y completa la ficha (ubicación, precio, etc.) antes de guardar.");
   }
 
+  const missing = missingFields({
+    type,
+    neighborhood,
+    city,
+    price: numOrUndefined(price),
+    description,
+    photos,
+    bedrooms: numOrUndefined(bedrooms),
+    bathrooms: numOrUndefined(bathrooms),
+    coveredArea: numOrUndefined(coveredArea),
+    totalArea: numOrUndefined(totalArea),
+  });
+
   async function add() {
+    // Aviso al que publica: puede publicar igual, pero sabe qué falta (y la
+    // administración recibe un correo con la ficha incompleta).
+    if (missing.length && !confirm(`A esta ficha le falta: ${missing.join(", ")}.\n\n¿${editing ? "Guardar" : "Publicar"} igual?`)) return;
     setBusy(true);
     setErr(null);
     setNotice(null);
     try {
+      if (editing && initial) {
+        await patch("/api/inmobiliaria", authHeaders, {
+          kind: "property-update",
+          id: initial.id,
+          title,
+          operation,
+          type,
+          address,
+          region,
+          city,
+          neighborhood,
+          price: numOrUndefined(price) ?? null,
+          currency,
+          bedrooms: numOrUndefined(bedrooms) ?? null,
+          bathrooms: numOrUndefined(bathrooms) ?? null,
+          parkingSpots: numOrUndefined(parkingSpots) ?? null,
+          storageUnits: numOrUndefined(storageUnits) ?? null,
+          coveredArea: numOrUndefined(coveredArea) ?? null,
+          totalArea: numOrUndefined(totalArea) ?? null,
+          maintenanceFee: numOrUndefined(maintenanceFee) ?? null,
+          condition,
+          furnished,
+          petsAllowed,
+          description,
+          photos,
+          exclusive,
+        });
+        reload();
+        onDone?.();
+        return;
+      }
       const created: { property: REProperty } = await post("/api/inmobiliaria", authHeaders, {
         kind: "property",
         title,
@@ -398,11 +465,10 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
   }
 
   return (
-    <div className="flex flex-col gap-4">
       <div className={card}>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h3 className="font-semibold">Nueva propiedad</h3>
-          {data.instagramConnected && <InstagramImporter authHeaders={authHeaders} onImported={applyImport} />}
+          <h3 className="font-semibold">{editing ? `Editar: ${initial?.title}` : "Nueva propiedad"}</h3>
+          {!editing && data.instagramConnected && <InstagramImporter authHeaders={authHeaders} onImported={applyImport} />}
         </div>
         {importedFrom && (
           <p className="mb-3 rounded-lg bg-primary/10 px-3 py-2 text-xs text-foreground/80">
@@ -516,21 +582,49 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
           <p className="mb-1 text-xs text-foreground/50">Mínimo recomendado para este tipo: {PROPERTY_TYPE_MIN_PHOTOS[type]} fotos.</p>
           <PhotoUploader photos={photos} onChange={setPhotos} authHeaders={authHeaders} />
         </div>
-        {data.instagramConnected && !importedFrom && (
+        {missing.length > 0 && (
+          <div className="mt-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            <strong>A la ficha le falta:</strong> {missing.join(", ")}. Puedes publicarla igual, pero se ve mejor (y aparece mejor en
+            Google) con todo completo.
+          </div>
+        )}
+        {!editing && data.instagramConnected && !importedFrom && (
           <label className="mt-3 flex items-center gap-2 text-sm">
             <input type="checkbox" checked={publishToInstagram} onChange={(e) => setPublishToInstagram(e.target.checked)} />
             Publicar también en Instagram (carrusel con las primeras 10 fotos)
           </label>
         )}
-        <button className={`${btnPrimary} mt-3`} disabled={busy || !title || !type} onClick={add}>
-          {busy ? "Guardando…" : "Publicar propiedad"}
-        </button>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button className={btnPrimary} disabled={busy || !title || !type} onClick={add}>
+            {busy ? "Guardando…" : editing ? "Guardar cambios" : "Publicar propiedad"}
+          </button>
+          {editing && (
+            <button className={btnGhost} onClick={onDone}>
+              Cancelar
+            </button>
+          )}
+        </div>
         {err && <p className="mt-2 text-sm text-red-600">{err}</p>}
         {notice && <p className="mt-2 text-sm text-foreground/70">{notice}</p>}
       </div>
 
+  );
+}
+
+function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; authHeaders: Record<string, string>; reload: () => void; isAdmin: boolean }) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  return (
+    <div className="flex flex-col gap-4">
+      <PropertyEditor data={data} authHeaders={authHeaders} reload={reload} />
+
       <div className="grid gap-4 sm:grid-cols-2">
-        {data.properties.map((p) => (
+        {data.properties.map((p) => {
+          const faltan = missingFields(p);
+          return editingId === p.id ? (
+            <div key={p.id} className="sm:col-span-2">
+              <PropertyEditor data={data} authHeaders={authHeaders} reload={reload} initial={p} onDone={() => setEditingId(null)} />
+            </div>
+          ) : (
           <div key={p.id} className={card}>
             <div className="flex items-start justify-between gap-2">
               <div>
@@ -557,7 +651,10 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
                     .join(" · ")}
                 </p>
                 {p.price !== undefined && <p className="text-sm font-medium text-primary">{formatPrice(p)}</p>}
-                {isAdmin && <p className="text-xs text-foreground/40">Corredora: {brokerName(data, p.brokerId)}</p>}
+                {isAdmin && <p className="text-xs text-foreground/40">Asesor/a: {brokerName(data, p.brokerId)}</p>}
+                {faltan.length > 0 && (
+                  <p className="mt-1 rounded bg-amber-50 px-2 py-1 text-xs text-amber-900">Falta: {faltan.join(", ")}</p>
+                )}
               </div>
               <select
                 className="rounded-lg border border-foreground/20 bg-background px-2 py-1 text-xs"
@@ -582,6 +679,9 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
               </div>
             )}
             <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button className={btnGhost} onClick={() => setEditingId(p.id)}>
+                Editar
+              </button>
               <button
                 className={btnGhost}
                 onClick={async () => {
@@ -612,7 +712,8 @@ function PropertiesTab({ data, authHeaders, reload, isAdmin }: { data: Bundle; a
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
         {data.properties.length === 0 && <p className="text-sm text-foreground/50">Sin propiedades todavía.</p>}
       </div>
     </div>

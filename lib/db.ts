@@ -105,6 +105,19 @@ export function ensureSchema(): Promise<void> {
         )
       `;
       await sql`
+        CREATE TABLE IF NOT EXISTS testimonials (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          email TEXT NOT NULL,
+          rating INTEGER NOT NULL,
+          quote TEXT NOT NULL,
+          status TEXT NOT NULL DEFAULT 'pendiente',
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          reviewed_at TIMESTAMPTZ
+        )
+      `;
+      await sql`CREATE INDEX IF NOT EXISTS testimonials_status_idx ON testimonials (status, created_at DESC)`;
+      await sql`
         CREATE TABLE IF NOT EXISTS leads (
           id TEXT PRIMARY KEY,
           nombre TEXT NOT NULL,

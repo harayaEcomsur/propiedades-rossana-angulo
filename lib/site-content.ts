@@ -5,6 +5,7 @@ import { clientConfigSchema, type ClientConfig } from "@/config/schema";
 import { db, jsonb, withDb } from "@/lib/db";
 import { resolveNav, resolveSections } from "@/lib/section-copy";
 import { listBrokers } from "@/lib/realestate-store";
+import { listTestimonials } from "@/lib/testimonial-store";
 
 // CMS del sitio: lo que la administradora edita en /inmobiliaria/admin →
 // pestaña "Sitio" se guarda en `settings` (clave site_content) y se superpone
@@ -90,9 +91,20 @@ function mergeSections(base: ClientConfig["sections"], over: ClientConfig["secti
   return out as Sections;
 }
 
+// Testimonios reales aprobados en el panel (enviados por clientes desde /opina).
+// Con al menos uno aprobado, reemplazan a los del config/CMS.
+const cachedTestimonials = unstable_cache(
+  async (): Promise<NonNullable<ClientConfig["testimonials"]> | null> => {
+    const approved = await listTestimonials("aprobado");
+    return approved.length ? approved.map((t) => ({ name: t.name, quote: t.quote, rating: t.rating })) : null;
+  },
+  ["site-testimonials"],
+  { tags: [SITE_CONTENT_TAG], revalidate: 300 }
+);
+
 // Config que ve el público: el del código con las secciones editadas encima.
 export async function getSiteConfig(): Promise<ClientConfig> {
-  const [o, team] = await Promise.all([getSiteOverrides(), cachedTeam()]);
+  const [o, team, realTestimonials] = await Promise.all([getSiteOverrides(), cachedTeam(), cachedTestimonials()]);
   return {
     ...clientConfig,
     ...(o.hero && { hero: o.hero }),
@@ -110,6 +122,7 @@ export async function getSiteConfig(): Promise<ClientConfig> {
     ...(o.titles && { sections: mergeSections(clientConfig.sections, o.titles.sections), nav: { ...clientConfig.nav, ...o.titles.nav } }),
     // Los asesores del panel mandan sobre el equipo del config/CMS.
     ...(team && { team }),
+    ...(realTestimonials && { testimonials: realTestimonials }),
   };
 }
 

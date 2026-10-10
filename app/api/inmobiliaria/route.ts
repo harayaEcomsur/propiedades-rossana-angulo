@@ -1,5 +1,8 @@
 import { revalidatePath, revalidateTag } from "next/cache";
-import { SITE_CONTENT_TAG } from "@/lib/site-content";
+import { SITE_CONTENT_TAG, getSiteConfig } from "@/lib/site-content";
+import { missingFields } from "@/lib/property-completeness";
+import { sendEmail } from "@/lib/email";
+import { absoluteUrl } from "@/lib/seo";
 import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
 import { currentBroker } from "@/lib/realestate-auth";
@@ -15,6 +18,7 @@ import {
   addProperty,
   updatePropertyStatus,
   setPropertyExclusive,
+  updateProperty,
   deleteProperty,
   listProviders,
   addProvider,
@@ -29,6 +33,7 @@ import {
   renderContract,
   DEFAULT_CHECKLIST_ITEMS,
   type Broker,
+  type REProperty,
 } from "@/lib/realestate-store";
 import { instagramConfigured } from "@/lib/instagram";
 
@@ -55,6 +60,23 @@ function refreshPublicPages() {
 function refreshTeam() {
   revalidateTag(SITE_CONTENT_TAG);
   revalidatePath("/", "layout");
+}
+
+async function notifyIncompleteProperty(property: REProperty, brokerName: string) {
+  const faltan = missingFields(property);
+  if (!faltan.length) return;
+  const site = await getSiteConfig();
+  if (!site.contact.email) return;
+  await sendEmail({
+    to: site.contact.email,
+    subject: `Propiedad publicada con información pendiente: ${property.title}`,
+    text: [
+      `${brokerName} publicó "${property.title}" y a la ficha le falta:`,
+      ...faltan.map((f) => `  • ${f}`),
+      "",
+      `Complétala en el panel: ${absoluteUrl("/admin")} → Propiedades → Editar.`,
+    ].join("\n"),
+  });
 }
 
 // Ficha pública que ve el propio asesor ("Mi ficha") y la administradora.
@@ -283,6 +305,8 @@ export async function POST(req: Request) {
       exclusive: data.exclusive ?? false,
     });
     refreshPublicPages();
+    // Ficha incompleta: correo a la administración con lo que falta.
+    await notifyIncompleteProperty(property, broker.name);
     return Response.json({ ok: true, property });
   }
 
@@ -338,6 +362,22 @@ const patchSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("broker-order"), ids: z.array(z.string()).max(100) }),
   z.object({ kind: z.literal("property-status"), id: z.string(), status: z.enum(["activa", "reservada", "vendida", "arrendada"]) }),
   z.object({ kind: z.literal("property-exclusive"), id: z.string(), exclusive: z.boolean() }),
+  // Edición completa (mismos campos que el alta). null = borrar un dato opcional.
+  propertySchema
+    .omit({ kind: true, instagramMediaId: true, instagramUrl: true, video: true })
+    .partial()
+    .extend({
+      kind: z.literal("property-update"),
+      id: z.string(),
+      price: z.number().positive().max(999_999_999_999).nullable().optional(),
+      bedrooms: z.number().int().min(0).max(50).nullable().optional(),
+      bathrooms: z.number().int().min(0).max(50).nullable().optional(),
+      coveredArea: z.number().positive().max(1_000_000).nullable().optional(),
+      totalArea: z.number().positive().max(1_000_000).nullable().optional(),
+      parkingSpots: z.number().int().min(0).max(500).nullable().optional(),
+      storageUnits: z.number().int().min(0).max(500).nullable().optional(),
+      maintenanceFee: z.number().min(0).max(999_999_999).nullable().optional(),
+    }),
 ]);
 
 export async function PATCH(req: Request) {
@@ -395,7 +435,10 @@ export async function PATCH(req: Request) {
   if (!property) return Response.json({ error: "Propiedad no encontrada" }, { status: 404 });
   if (!isAdmin(broker) && property.brokerId !== broker.id) return Response.json({ error: "No autorizado" }, { status: 403 });
   if (data.kind === "property-exclusive") await setPropertyExclusive(data.id, data.exclusive);
-  else await updatePropertyStatus(data.id, data.status);
+  else if (data.kind === "property-update") {
+    const { kind: _kind, id: _id, ...fields } = data;
+    await updateProperty(data.id, fields);
+  } else await updatePropertyStatus(data.id, data.status);
   refreshPublicPages();
   return Response.json({ ok: true });
 }
