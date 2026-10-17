@@ -1,4 +1,6 @@
 import { put } from "@vercel/blob";
+import { waitUntil } from "@vercel/functions";
+import { warmVariants } from "@/lib/image-variants";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
@@ -107,6 +109,8 @@ export async function POST(req: Request) {
       photos.push(blob.url);
     }
     if (photos.length === 0) return Response.json({ error: "No se pudieron descargar las fotos de la publicación" }, { status: 502 });
+    // Variantes AVIF/WebP en segundo plano: el primer visitante no espera.
+    waitUntil(warmVariants(photos));
 
     return Response.json({
       ok: true,

@@ -1,4 +1,6 @@
 import { put } from "@vercel/blob";
+import { waitUntil } from "@vercel/functions";
+import { warmVariants } from "@/lib/image-variants";
 import { clientConfig } from "@/config/client.config";
 import { currentBroker } from "@/lib/realestate-auth";
 
@@ -34,5 +36,7 @@ export async function POST(req: Request) {
   const pathname = `inmobiliaria/${clientConfig.meta.slug}/${broker.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
   const blob = await put(pathname, file, { access: "public", contentType: file.type });
+  // Variantes AVIF/WebP en segundo plano: el primer visitante no espera.
+  waitUntil(warmVariants([blob.url]));
   return Response.json({ ok: true, url: blob.url });
 }
