@@ -10,9 +10,27 @@ const nextConfig = {
     deviceSizes: DEVICE_SIZES,
     imageSizes: IMAGE_SIZES,
   },
-  // Variantes locales: el nombre lleva el hash del original, nunca cambian.
+  // Variantes locales (/img/<archivo> → public/_opt/<archivo>.avif|.webp):
+  // AVIF a quien lo acepta, WebP al resto. Es una regla estática, sin
+  // función. El nombre lleva el hash del original: nunca cambian.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/img/:file", has: [{ type: "header", key: "accept", value: ".*image/avif.*" }], destination: "/_opt/:file.avif" },
+        { source: "/img/:file", destination: "/_opt/:file.webp" },
+      ],
+    };
+  },
   async headers() {
-    return [{ source: "/_opt/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] }];
+    return [
+      {
+        source: "/img/:file",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "Vary", value: "Accept" },
+        ],
+      },
+    ];
   },
 };
 
