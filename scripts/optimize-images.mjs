@@ -2,9 +2,12 @@
 // en cada ancho que usa next/image, y escribe lib/image-manifest.json. El
 // loader (lib/image-loader.ts) sirve esas variantes directo desde la CDN, sin
 // el optimizador de Vercel. Corre antes de cada build (npm "prebuild") y solo
-// procesa lo nuevo o cambiado; los archivos generados se versionan.
+// procesa lo nuevo o cambiado; los archivos generados se versionan. El nombre
+// lleva un hash del original: si la imagen cambia, cambia la URL, así que se
+// pueden cachear un año (next.config.mjs → headers de /_opt).
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import sharp from "sharp";
 import { ALL_WIDTHS } from "../lib/image-sizes.mjs";
 
@@ -22,6 +25,7 @@ function walk(dir) {
 }
 
 const manifest = {};
+const keep = new Set();
 let made = 0;
 for (const file of walk(SRC)) {
   const rel = "/" + path.relative(path.join(ROOT, "public"), file).split(path.sep).join("/");
@@ -31,16 +35,20 @@ for (const file of walk(SRC)) {
   const widths = ALL_WIDTHS.filter((w) => w < original);
   if (original < Math.max(...ALL_WIDTHS) && !widths.includes(original)) widths.push(original);
   widths.sort((a, b) => a - b);
-  const base = rel.replace(/^\/clients\//, "").replace(/\.[^.]+$/, "");
-  const srcTime = fs.statSync(file).mtimeMs;
+  const hash = crypto.createHash("sha1").update(fs.readFileSync(file)).digest("hex").slice(0, 8);
+  const base = `${rel.replace(/^\/clients\//, "").replace(/\.[^.]+$/, "")}-${hash}`;
   for (const w of widths) {
     const out = path.join(OUT, `${base}-${w}.webp`);
-    if (fs.existsSync(out) && fs.statSync(out).mtimeMs >= srcTime) continue;
+    keep.add(out);
+    if (fs.existsSync(out)) continue;
     fs.mkdirSync(path.dirname(out), { recursive: true });
     await sharp(file).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: QUALITY }).toFile(out);
     made++;
   }
   manifest[rel] = { base: `/_opt/${base}`, widths };
 }
+// Variantes de versiones anteriores (otro hash) o de imágenes borradas.
+let removed = 0;
+for (const f of fs.existsSync(OUT) ? walk(OUT) : []) if (!keep.has(f)) (fs.unlinkSync(f), removed++);
 fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 1) + "\n");
-console.log(`imágenes locales: ${Object.keys(manifest).length} archivos, ${made} variantes nuevas`);
+console.log(`imágenes locales: ${Object.keys(manifest).length} archivos, ${made} variantes nuevas, ${removed} borradas`);
