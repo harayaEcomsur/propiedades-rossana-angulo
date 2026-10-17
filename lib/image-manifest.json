@@ -1,0 +1,184 @@
+{
+ "/clients/propiedades-rossana-angulo/galeria-1.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/galeria-1",
+  "widths": [
+   128,
+   256,
+   384,
+   640,
+   828,
+   1080,
+   1280,
+   1600
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/galeria-2.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/galeria-2",
+  "widths": [
+   128,
+   256,
+   384,
+   640,
+   828,
+   1080,
+   1280,
+   1600
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/galeria-3.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/galeria-3",
+  "widths": [
+   128,
+   256,
+   384,
+   640,
+   828,
+   1080,
+   1280,
+   1600
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/galeria-4.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/galeria-4",
+  "widths": [
+   128,
+   256,
+   384,
+   640,
+   828,
+   1080,
+   1280,
+   1600
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/hero-concon-vina.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/hero-concon-vina",
+  "widths": [
+   128,
+   256,
+   384,
+   640,
+   828,
+   1080,
+   1280,
+   1920
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/hero.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/hero",
+  "widths": [
+   128,
+   256,
+   384,
+   640,
+   828,
+   1080,
+   1280
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/logo.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/logo",
+  "widths": [
+   128,
+   256,
+   320
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/nosotros.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/nosotros",
+  "widths": [
+   128,
+   256,
+   384,
+   640,
+   828,
+   1080,
+   1280,
+   1600
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/og.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/og",
+  "widths": [
+   128,
+   256,
+   384,
+   640,
+   828,
+   1080,
+   1200
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/casa-bosque-de-montemar.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/casa-bosque-de-montemar",
+  "widths": [
+   128,
+   256,
+   361
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/casa-condominio-piscina-quincho.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/casa-condominio-piscina-quincho",
+  "widths": [
+   128,
+   256,
+   361
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/depto-av-antofagasta.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/depto-av-antofagasta",
+  "widths": [
+   128,
+   256,
+   360
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/depto-el-encanto-las-agatas.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/depto-el-encanto-las-agatas",
+  "widths": [
+   128,
+   256,
+   360
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/depto-mariposa-piso-18.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/depto-mariposa-piso-18",
+  "widths": [
+   128,
+   256,
+   360
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/depto-meseta-coraceros.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/depto-meseta-coraceros",
+  "widths": [
+   128,
+   256,
+   360
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/depto-providencia-carlos-antunez.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/depto-providencia-carlos-antunez",
+  "widths": [
+   128,
+   256,
+   361
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/depto-rotonda-santa-julia.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/depto-rotonda-santa-julia",
+  "widths": [
+   128,
+   256,
+   360
+  ]
+ },
+ "/clients/propiedades-rossana-angulo/propiedades/loft-arriendo.jpg": {
+  "base": "/_opt/propiedades-rossana-angulo/propiedades/loft-arriendo",
+  "widths": [
+   128,
+   256,
+   360
+  ]
+ }
+}

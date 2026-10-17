@@ -1,10 +1,14 @@
+import { DEVICE_SIZES, IMAGE_SIZES } from "./lib/image-sizes.mjs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "**" }],
-    // AVIF pesa bastante menos que WebP con la misma calidad: baja el tiempo
-    // de carga de la imagen principal (LCP) en celular. WebP queda de respaldo.
-    formats: ["image/avif", "image/webp"],
+    // La optimización de imágenes es nuestra, no del optimizador de Vercel:
+    // ver lib/image-loader.ts (locales pre-generadas + /api/img con sharp).
+    loader: "custom",
+    loaderFile: "./lib/image-loader.ts",
+    deviceSizes: DEVICE_SIZES,
+    imageSizes: IMAGE_SIZES,
   },
 };
 
