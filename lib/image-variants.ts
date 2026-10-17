@@ -55,7 +55,7 @@ export async function getVariant(src: URL, width: number, quality: number, fmt: 
 
 // Anchos que de verdad piden las tarjetas y fichas (celular y escritorio, con
 // pantallas de alta densidad).
-const WARM_WIDTHS = [384, 640, 828, 1080];
+const WARM_WIDTHS = [384, 640, 750, 828, 1080];
 
 // Genera de antemano las variantes de fotos recién subidas, para que el primer
 // visitante no espere la codificación. Corre en segundo plano.
