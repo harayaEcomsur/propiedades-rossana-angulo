@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Star } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 // Formulario de testimonio para clientes (página /opina, se comparte por QR o
 // link). Pensado para celular: campos grandes, estrellas de 44px.
@@ -37,6 +38,7 @@ export function TestimonialForm({ businessName }: { businessName: string }) {
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "No se pudo enviar");
       setStatus("ok");
+      track("testimonial_submit", { rating });
     } catch (err) {
       setStatus("error");
       setError(err instanceof Error ? err.message : "No se pudo enviar. Revisa tu conexión.");

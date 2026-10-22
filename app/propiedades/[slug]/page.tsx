@@ -14,6 +14,7 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { getPublicProperties } from "@/lib/public-properties";
 import { videoEmbed } from "@/lib/video";
 import { PropertyVideo } from "@/components/properties/PropertyVideo";
+import { TrackPropertyView } from "@/components/analytics/GoogleAnalytics";
 import { propertyJsonLd } from "@/lib/property-schema";
 import { jsonLdString } from "@/lib/seo";
 import { shortText } from "@/lib/text";
@@ -102,7 +103,16 @@ export default async function PropiedadPage({ params }: { params: { slug: string
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(propertyJsonLd(property)) }} />
       <Header config={clientConfig} />
-      <main className="py-10 sm:py-16">
+      <main className="py-10 sm:py-16" data-property-id={property.slug} data-property-title={property.title}>
+        <TrackPropertyView
+          item={{
+            item_id: property.slug,
+            item_name: property.title,
+            item_category: OPERATION_LABEL[property.operation],
+            item_category2: property.type,
+            item_category3: property.comuna || undefined,
+          }}
+        />
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <Link href="/propiedades" className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground/60 hover:text-primary">
             <ArrowLeft size={15} /> Todas las propiedades
@@ -176,7 +186,7 @@ export default async function PropiedadPage({ params }: { params: { slug: string
             </div>
             <div className={`flex flex-col gap-6 ${sideVideo ? "order-first lg:order-none" : ""}`}>
               {sideVideo && <PropertyVideo video={sideVideo} title={property.title} poster={`/api/img?url=${encodeURIComponent(property.images[0])}&w=640&q=75`} />}
-              <aside className="h-fit border border-foreground/15 p-6">
+              <aside className="h-fit border border-foreground/15 p-6" data-track-location="ficha">
                 <p className="font-heading text-base font-semibold text-foreground">¿Te interesa esta propiedad?</p>
                 <p className="mt-2 text-sm text-foreground/70">
                   Coordina una visita o pregunta lo que quieras — respondemos al tiro.

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ConsentCheckbox } from "@/components/privacy/ConsentCheckbox";
+import { track } from "@/lib/analytics";
 
 // `squared`: bordes rectos, para el layout inmobiliaria (mismo lenguaje que sus botones).
 // `advisors`: nombres del equipo; si viene, se muestra un selector opcional y el
@@ -38,6 +39,7 @@ export function ContactForm({ squared = false, advisors = [] }: { squared?: bool
       }
 
       setStatus("ok");
+      track("generate_lead", { form_name: "contacto", page_path: window.location.pathname });
       form.reset();
     } catch {
       setStatus("error");

@@ -2,6 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PropertyCard, OPERATION_LABEL, type Property } from "@/components/properties/PropertyCard";
+import { track } from "@/lib/analytics";
+
+const trackFilter = (filter_name: string, filter_value: string | number | boolean) =>
+  track("filter_properties", { filter_name, filter_value: String(filter_value) });
 
 // Búsqueda y filtrado client-side sobre el inventario. Con inventarios de pyme
 // (decenas de propiedades) no se necesita backend: filtra al instante.
@@ -35,21 +39,21 @@ export function PropertyExplorer({ properties }: { properties: Property[] }) {
     "border border-foreground/20 bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary";
 
   return (
-    <div>
+    <div data-item-list="listado">
       <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-        <select value={operation} onChange={(e) => setOperation(e.target.value)} className={selectCls} aria-label="Operación">
+        <select value={operation} onChange={(e) => { setOperation(e.target.value); trackFilter("operacion", e.target.value); }} className={selectCls} aria-label="Operación">
           <option value="todas">Comprar o arrendar</option>
           {Object.entries(OPERATION_LABEL).map(([value, label]) => (
             <option key={value} value={value}>{label}</option>
           ))}
         </select>
-        <select value={type} onChange={(e) => setType(e.target.value)} className={selectCls} aria-label="Tipo de propiedad">
+        <select value={type} onChange={(e) => { setType(e.target.value); trackFilter("tipo", e.target.value); }} className={selectCls} aria-label="Tipo de propiedad">
           <option value="todos">Todos los tipos</option>
           {types.map((t) => (
             <option key={t} value={t}>{t[0].toUpperCase() + t.slice(1)}</option>
           ))}
         </select>
-        <select value={comuna} onChange={(e) => setComuna(e.target.value)} className={selectCls} aria-label="Comuna">
+        <select value={comuna} onChange={(e) => { setComuna(e.target.value); trackFilter("comuna", e.target.value); }} className={selectCls} aria-label="Comuna">
           <option value="todas">Todas las comunas</option>
           {comunas.map((c) => (
             <option key={c} value={c}>{c}</option>
@@ -57,7 +61,7 @@ export function PropertyExplorer({ properties }: { properties: Property[] }) {
         </select>
         <select
           value={minBedrooms}
-          onChange={(e) => setMinBedrooms(Number(e.target.value))}
+          onChange={(e) => { setMinBedrooms(Number(e.target.value)); trackFilter("dormitorios", e.target.value); }}
           className={selectCls}
           aria-label="Dormitorios mínimos"
         >
@@ -68,7 +72,7 @@ export function PropertyExplorer({ properties }: { properties: Property[] }) {
         </select>
         {hasExclusives && (
           <label className="col-span-2 flex min-h-11 cursor-pointer items-center gap-2 border border-foreground/20 px-3 text-sm text-foreground sm:col-span-1">
-            <input type="checkbox" checked={onlyExclusive} onChange={(e) => setOnlyExclusive(e.target.checked)} className="accent-[var(--color-primary)]" />
+            <input type="checkbox" checked={onlyExclusive} onChange={(e) => { setOnlyExclusive(e.target.checked); trackFilter("exclusiva", e.target.checked); }} className="accent-[var(--color-primary)]" />
             Solo en exclusiva
           </label>
         )}

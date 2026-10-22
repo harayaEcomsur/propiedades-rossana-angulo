@@ -44,6 +44,7 @@ export function buildPrivacySections(): PrivacySection[] {
 
   const destinatarios = ["No vendemos ni compartimos tus datos con terceros para fines de marketing."];
   destinatarios.push("Usamos proveedores de infraestructura para operar el sitio (hosting y base de datos en Vercel/Neon, envío de correos en Resend) — actúan como encargados de tratamiento, con las mismas obligaciones de seguridad.");
+  if (process.env.NEXT_PUBLIC_GA_ID) destinatarios.push("Medimos de forma agregada cómo se usa el sitio (páginas visitadas, clics en contacto) con Google Analytics, que usa cookies propias. No le enviamos tu nombre, correo ni teléfono.");
   if (c.modules.tienda) destinatarios.push("El pago lo procesa directamente Transbank (Webpay) — no almacenamos el número completo de tu tarjeta.");
   if (c.modules.agenda && c.booking?.depositAmount) destinatarios.push("El abono de tu reserva, si aplica, también lo procesa Transbank (Webpay).");
   destinatarios.push("Algunos de estos proveedores procesan datos en servidores fuera de Chile (EE.UU., típicamente) — cuentan con estándares de seguridad reconocidos internacionalmente (cifrado en tránsito y en reposo).");

@@ -3,6 +3,7 @@ import { getSiteConfig } from "@/lib/site-content";
 import { getFontVariables } from "@/lib/fonts";
 import { paletteToCssVars } from "@/lib/theme";
 import { buildMetadata, buildLocalBusinessJsonLd, jsonLdString } from "@/lib/seo";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import "./globals.css";
 
 // Metadatos y JSON-LD salen del config con lo editado en el panel (CMS).
@@ -23,6 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <body>
         {children}
+        <GoogleAnalytics />
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger

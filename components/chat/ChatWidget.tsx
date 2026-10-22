@@ -5,6 +5,7 @@ import { DefaultChatTransport } from "ai";
 import { useState } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 import { ChatMarkdown } from "./ChatMarkdown";
+import { track } from "@/lib/analytics";
 
 function messageText(parts: { type: string; text?: string }[]): string {
   return parts
@@ -70,7 +71,10 @@ export function ChatWidget({ businessName, stacked }: { businessName: string; st
         </div>
       )}
       <button
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (!open) track("chat_open", { page_path: window.location.pathname });
+          setOpen((v) => !v);
+        }}
         aria-label={open ? "Cerrar chat" : "Abrir chat"}
         className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform active:scale-95"
       >

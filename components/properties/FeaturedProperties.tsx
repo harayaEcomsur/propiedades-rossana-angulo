@@ -15,7 +15,7 @@ export function FeaturedProperties({ properties, copy = DEFAULT_SECTIONS.propert
   const featured = [...(pool.length ? pool : properties)].sort((a, b) => Number(b.featured) - Number(a.featured)).slice(0, 6);
 
   return (
-    <section id="propiedades" className="py-20 sm:py-28">
+    <section id="propiedades" data-item-list="destacadas" className="py-20 sm:py-28">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
