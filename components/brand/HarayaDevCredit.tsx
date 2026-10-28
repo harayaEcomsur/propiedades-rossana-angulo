@@ -6,7 +6,7 @@ export function HarayaDevCredit({ tone = "dark" }: { tone?: "dark" | "light" }) 
   const word = tone === "dark" ? "text-white" : "text-[#111]";
   return (
     <a
-      href="https://haraya.dev/como-lo-hicimos"
+      href="https://www.haraya.dev/como-lo-hicimos"
       target="_blank"
       rel="noopener"
       className="group inline-flex items-center gap-2.5"
