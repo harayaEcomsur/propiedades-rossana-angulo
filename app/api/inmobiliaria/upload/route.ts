@@ -3,6 +3,7 @@ import { waitUntil } from "@vercel/functions";
 import { warmVariants } from "@/lib/image-variants";
 import { clientConfig } from "@/config/client.config";
 import { currentBroker } from "@/lib/realestate-auth";
+import { ipDe } from "@/lib/ip";
 
 export const runtime = "nodejs";
 
@@ -19,7 +20,7 @@ function claveFromRequest(req: Request): string | null {
 
 export async function POST(req: Request) {
   if (!clientConfig.modules.inmobiliariaAdmin) return Response.json({ error: "No habilitado" }, { status: 404 });
-  const broker = await currentBroker(claveFromRequest(req));
+  const broker = await currentBroker(claveFromRequest(req), ipDe(req));
   if (!broker) return Response.json({ error: "No autorizado" }, { status: 401 });
 
   if (!process.env.BLOB_READ_WRITE_TOKEN) {

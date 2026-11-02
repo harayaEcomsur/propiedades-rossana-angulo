@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { currentAdminUser, googleLoginEnabled, claveLoginEnabled } from "@/lib/auth";
+import { ipDeServerComponent } from "@/lib/ip";
 import { listOrders } from "@/lib/order-store";
 import { formatCLP } from "@/lib/clp";
 
@@ -30,7 +31,7 @@ export default async function PedidosAdminPage({ searchParams }: { searchParams:
   const { modules } = clientConfig;
   if (!modules.tienda) notFound();
 
-  const authorized = Boolean(await currentAdminUser(searchParams.clave ?? null));
+  const authorized = Boolean(await currentAdminUser(searchParams.clave ?? null, ipDeServerComponent()));
   const googleEnabled = googleLoginEnabled();
   const claveEnabled = claveLoginEnabled();
 

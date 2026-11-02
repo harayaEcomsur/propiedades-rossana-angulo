@@ -1,5 +1,6 @@
 import { clientConfig } from "@/config/client.config";
 import { currentBroker } from "@/lib/realestate-auth";
+import { ipDe } from "@/lib/ip";
 import { listContracts, listContractTemplates, renderContract } from "@/lib/realestate-store";
 import { buildContractPdf } from "@/lib/pdf-contrato";
 
@@ -11,7 +12,7 @@ function claveFromRequest(req: Request): string | null {
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   if (!clientConfig.modules.inmobiliariaAdmin) return new Response("No habilitado", { status: 404 });
-  const broker = await currentBroker(claveFromRequest(req));
+  const broker = await currentBroker(claveFromRequest(req), ipDe(req));
   if (!broker) return new Response("No autorizado", { status: 401 });
 
   const contracts = await listContracts();

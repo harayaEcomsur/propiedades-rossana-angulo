@@ -38,6 +38,7 @@ import {
   defaultOwnerWhatsapp,
 } from "@/lib/booking-actions";
 import { currentAgendaUser, currentAdminUser, type SessionUser } from "@/lib/auth";
+import { ipDe } from "@/lib/ip";
 
 // API del módulo agenda. GET público entrega disponibilidad (de un
 // profesional, o la unión de todos si no se pide uno); con sesión (Google o
@@ -67,7 +68,7 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const date = url.searchParams.get("date");
 
-  const user = await currentAgendaUser(claveFromRequest(req));
+  const user = await currentAgendaUser(claveFromRequest(req), ipDe(req));
   if (user) {
     const [mine, allBookings, enabled] = await Promise.all([
       myProfessionalId(user),
@@ -199,11 +200,12 @@ export async function PATCH(req: Request) {
   if (!parsed.success) return Response.json({ error: "Datos inválidos" }, { status: 400 });
 
   const clave = claveFromRequest(req);
+  const ip = ipDe(req);
   let user: SessionUser | null;
   if (STAFF_ALLOWED_ACTIONS.has(parsed.data.action)) {
-    user = await currentAgendaUser(clave);
+    user = await currentAgendaUser(clave, ip);
   } else {
-    user = await currentAdminUser(clave);
+    user = await currentAdminUser(clave, ip);
   }
   if (!user) return Response.json({ error: "No autorizado" }, { status: 401 });
   const mine = await myProfessionalId(user);
