@@ -24,8 +24,9 @@ async function find(slug: string) {
   return (await getComunaPages()).find((c) => c.slug === slug);
 }
 
-export async function generateMetadata({ params }: { params: { comuna: string } }): Promise<Metadata> {
-  const c = await find(params.comuna);
+export async function generateMetadata({ params }: { params: Promise<{ comuna: string }> }): Promise<Metadata> {
+  const { comuna } = await params;
+  const c = await find(comuna);
   if (!c) return {};
   const ventas = c.properties.filter((p) => p.operation === "venta").length;
   const arriendos = c.properties.length - ventas;
@@ -35,8 +36,9 @@ export async function generateMetadata({ params }: { params: { comuna: string } 
   return { title, description, alternates: { canonical: path }, openGraph: { title, description, url: path, type: "website" } };
 }
 
-export default async function ComunaPage({ params }: { params: { comuna: string } }) {
-  const c = await find(params.comuna);
+export default async function ComunaPage({ params }: { params: Promise<{ comuna: string }> }) {
+  const { comuna } = await params;
+  const c = await find(comuna);
   if (!c) notFound();
   const site = await getSiteConfig();
   const { modules, contact } = site;

@@ -15,8 +15,9 @@ export function generateStaticParams() {
   return (clientConfig.themeVariants ?? []).map((v) => ({ id: v.id }));
 }
 
-export default function VariantePage({ params }: { params: { id: string } }) {
-  const variant = clientConfig.themeVariants?.find((v) => v.id === params.id);
+export default async function VariantePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const variant = clientConfig.themeVariants?.find((v) => v.id === id);
   if (!variant) notFound();
 
   return (

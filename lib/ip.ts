@@ -14,6 +14,6 @@ function ipFromHeaders(h: Headers): string {
 
 // Mismo cálculo, pero para Server Components (app/*/admin/page.tsx), que no
 // reciben un Request — solo next/headers().
-export function ipDeServerComponent(): string {
-  return ipFromHeaders(nextHeaders());
+export async function ipDeServerComponent(): Promise<string> {
+  return ipFromHeaders(await nextHeaders());
 }

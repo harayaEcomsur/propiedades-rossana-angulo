@@ -16,8 +16,9 @@ export function generateStaticParams() {
   return GUIDES.map((g) => ({ slug: g.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const g = getGuide(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const g = getGuide(slug);
   if (!g) return {};
   const path = `/guias/${g.slug}`;
   return {
@@ -32,8 +33,9 @@ function formatDate(iso: string) {
   return new Date(`${iso}T12:00:00`).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" });
 }
 
-export default async function GuidePage({ params }: { params: { slug: string } }) {
-  const g = getGuide(params.slug);
+export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const g = getGuide(slug);
   if (!g) notFound();
   const site = await getSiteConfig();
   const { modules, contact } = site;

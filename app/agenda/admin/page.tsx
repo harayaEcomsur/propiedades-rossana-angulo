@@ -19,12 +19,13 @@ export const metadata: Metadata = {
 // autorizada contra config.admin.users; (2) el link con clave heredado
 // (?clave=…, siempre admin), mientras AGENDA_ADMIN_KEY exista. Qué puede tocar
 // cada rol se resuelve adentro de AdminAgenda según lo que devuelva la API.
-export default async function AgendaAdminPage({ searchParams }: { searchParams: { clave?: string } }) {
+export default async function AgendaAdminPage({ searchParams }: { searchParams: Promise<{ clave?: string }> }) {
+  const { clave } = await searchParams;
   if (!clientConfig.modules.agenda) notFound();
   const adminKey = process.env.AGENDA_ADMIN_KEY;
-  const user = await currentAgendaUser(searchParams.clave ?? null, ipDeServerComponent());
+  const user = await currentAgendaUser(clave ?? null, await ipDeServerComponent());
   const authorized = Boolean(user);
-  const claveMatched = Boolean(adminKey && searchParams.clave === adminKey);
+  const claveMatched = Boolean(adminKey && clave === adminKey);
   const googleEnabled = googleLoginEnabled();
   const claveEnabled = claveLoginEnabled();
 

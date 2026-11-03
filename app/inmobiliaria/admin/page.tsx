@@ -20,11 +20,12 @@ export const metadata: Metadata = {
 // cuenta de Google (autorizada contra re_brokers, que Rossana administra desde
 // este mismo panel) o el link con clave (?clave=..., siempre admin, para
 // entrar la primera vez antes de que exista ningún corredor en la base).
-export default async function InmobiliariaAdminPage({ searchParams }: { searchParams: { clave?: string } }) {
+export default async function InmobiliariaAdminPage({ searchParams }: { searchParams: Promise<{ clave?: string }> }) {
+  const { clave } = await searchParams;
   if (!clientConfig.modules.inmobiliariaAdmin) notFound();
   const adminKey = process.env.REALESTATE_ADMIN_KEY;
-  const broker = await currentBroker(searchParams.clave ?? null, ipDeServerComponent());
-  const claveMatched = Boolean(adminKey && searchParams.clave === adminKey);
+  const broker = await currentBroker(clave ?? null, await ipDeServerComponent());
+  const claveMatched = Boolean(adminKey && clave === adminKey);
   const googleEnabled = googleLoginEnabledRE();
   const claveEnabled = claveLoginEnabledRE();
 

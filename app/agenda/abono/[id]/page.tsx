@@ -37,20 +37,22 @@ export default async function AbonoPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { estado?: string; monto?: string; auth?: string; card?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ estado?: string; monto?: string; auth?: string; card?: string }>;
 }) {
+  const { id } = await params;
+  const { estado: estadoParam, monto: montoParam, auth, card } = await searchParams;
   const { modules, meta, contact } = clientConfig;
   if (!modules.agenda) notFound();
 
-  const estado = searchParams.estado ?? "error";
+  const estado = estadoParam ?? "error";
   const copy = COPY[estado] ?? COPY.error;
   const paid = estado === "pagada";
-  const booking = await getBooking(params.id);
-  const monto = searchParams.monto ? Number(searchParams.monto) : booking?.payment?.amount;
+  const booking = await getBooking(id);
+  const monto = montoParam ? Number(montoParam) : booking?.payment?.amount;
 
   const wspMessage = encodeURIComponent(
-    `Hola! Soy ${booking?.name ?? "cliente"} — sobre mi reserva ${params.id}${paid ? " (abono pagado)" : " (abono pendiente)"}.`
+    `Hola! Soy ${booking?.name ?? "cliente"} — sobre mi reserva ${id}${paid ? " (abono pagado)" : " (abono pendiente)"}.`
   );
 
   return (
@@ -72,7 +74,7 @@ export default async function AbonoPage({
             <dl className="mt-6 space-y-1 rounded-xl bg-black/[0.03] p-4 text-left text-sm">
               <div className="flex justify-between">
                 <dt className="text-foreground/60">Reserva</dt>
-                <dd className="font-semibold text-foreground">{params.id}</dd>
+                <dd className="font-semibold text-foreground">{id}</dd>
               </div>
               {booking ? (
                 <div className="flex justify-between">
@@ -88,16 +90,16 @@ export default async function AbonoPage({
                   <dd className="font-semibold text-foreground">{formatCLP(monto)}</dd>
                 </div>
               ) : null}
-              {paid && searchParams.auth ? (
+              {paid && auth ? (
                 <div className="flex justify-between">
                   <dt className="text-foreground/60">Código de autorización</dt>
-                  <dd className="font-semibold text-foreground">{searchParams.auth}</dd>
+                  <dd className="font-semibold text-foreground">{auth}</dd>
                 </div>
               ) : null}
-              {paid && searchParams.card ? (
+              {paid && card ? (
                 <div className="flex justify-between">
                   <dt className="text-foreground/60">Tarjeta</dt>
-                  <dd className="font-semibold text-foreground">**** {searchParams.card}</dd>
+                  <dd className="font-semibold text-foreground">**** {card}</dd>
                 </div>
               ) : null}
             </dl>

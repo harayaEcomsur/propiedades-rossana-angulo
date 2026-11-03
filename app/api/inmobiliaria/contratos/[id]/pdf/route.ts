@@ -10,13 +10,14 @@ function claveFromRequest(req: Request): string | null {
   return req.headers.get("x-re-key") ?? new URL(req.url).searchParams.get("clave");
 }
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!clientConfig.modules.inmobiliariaAdmin) return new Response("No habilitado", { status: 404 });
   const broker = await currentBroker(claveFromRequest(req), ipDe(req));
   if (!broker) return new Response("No autorizado", { status: 401 });
 
+  const { id } = await params;
   const contracts = await listContracts();
-  const contract = contracts.find((c) => c.id === params.id);
+  const contract = contracts.find((c) => c.id === id);
   if (!contract) return new Response("No encontrado", { status: 404 });
   if (broker.role !== "admin" && contract.brokerId !== broker.id) return new Response("No autorizado", { status: 403 });
 

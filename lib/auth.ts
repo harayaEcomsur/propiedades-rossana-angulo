@@ -79,7 +79,7 @@ export async function createSessionCookie(email: string): Promise<void> {
     .setExpirationTime(`${SESSION_DURATION_SECONDS}s`)
     .sign(secret);
 
-  cookies().set(SESSION_COOKIE, jwt, {
+  (await cookies()).set(SESSION_COOKIE, jwt, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -88,14 +88,14 @@ export async function createSessionCookie(email: string): Promise<void> {
   });
 }
 
-export function clearSessionCookie(): void {
-  cookies().delete(SESSION_COOKIE);
+export async function clearSessionCookie(): Promise<void> {
+  (await cookies()).delete(SESSION_COOKIE);
 }
 
 async function sessionUserFromCookie(): Promise<SessionUser | null> {
   const secret = sessionSecret();
   if (!secret) return null;
-  const jwt = cookies().get(SESSION_COOKIE)?.value;
+  const jwt = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!jwt) return null;
   try {
     const { payload } = await jwtVerify(jwt, secret);

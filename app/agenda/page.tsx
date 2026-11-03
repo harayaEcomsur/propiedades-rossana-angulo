@@ -15,7 +15,8 @@ export const metadata: Metadata = {
   description: `Reserva online en ${clientConfig.meta.businessName}: elige servicio, día y hora.`,
 };
 
-export default async function AgendaPage({ searchParams }: { searchParams: { servicio?: string } }) {
+export default async function AgendaPage({ searchParams }: { searchParams: Promise<{ servicio?: string }> }) {
+  const { servicio } = await searchParams;
   const { modules, services, booking } = clientConfig;
   if (!modules.agenda) notFound();
 
@@ -38,7 +39,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: { ser
                 services={services.map((s) => ({ title: s.title, price: priceOverrides[s.title] ?? s.price }))}
                 daysAhead={booking?.daysAhead ?? 14}
                 depositNote={booking?.depositNote ?? "Para confirmar tu hora se solicita un abono."}
-                initialService={searchParams.servicio}
+                initialService={servicio}
                 depositAmount={booking?.depositAmount}
               />
             </Suspense>

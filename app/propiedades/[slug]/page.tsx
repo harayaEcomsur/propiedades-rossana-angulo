@@ -34,8 +34,9 @@ async function findProperty(slug: string) {
   return (await getPublicProperties()).find((p) => p.slug === slug);
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const property = await findProperty(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const property = await findProperty(slug);
   if (!property) return {};
   // Título corto con lo que se busca (tipo + sector + operación + precio); la
   // marca solo si cabe en los ~60 caracteres que muestra Google.
@@ -68,14 +69,15 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function PropiedadPage({ params }: { params: { slug: string } }) {
+export default async function PropiedadPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const clientConfig = await getSiteConfig();
   const { modules, contact, syndication } = clientConfig;
-  const property = await findProperty(params.slug);
+  const property = await findProperty(slug);
   if (!modules.propiedades) notFound();
   if (!property) {
     // Dirección antigua de una ficha que se movió: 301 a la nueva.
-    const moved = baseConfig.propertyRedirects?.[params.slug];
+    const moved = baseConfig.propertyRedirects?.[slug];
     if (moved) permanentRedirect(`/propiedades/${moved}`);
     notFound();
   }

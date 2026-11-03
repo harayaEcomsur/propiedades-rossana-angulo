@@ -17,12 +17,13 @@ export const metadata: Metadata = {
 export default async function EmbedPanelPage({
   searchParams,
 }: {
-  searchParams: { t?: string; clave?: string };
+  searchParams: Promise<{ t?: string; clave?: string }>;
 }) {
-  const tenant = getEmbedTenant(searchParams.t);
+  const { t, clave } = await searchParams;
+  const tenant = getEmbedTenant(t);
   if (!tenant) notFound();
 
-  const authorized = adminKeyMatches(searchParams.clave, tenant.id);
+  const authorized = adminKeyMatches(clave, tenant.id);
 
   if (!authorized) {
     return (
@@ -50,7 +51,7 @@ export default async function EmbedPanelPage({
 
       <PanelClient
         tenantId={tenant.id}
-        clave={searchParams.clave ?? ""}
+        clave={clave ?? ""}
         bookings={bookings}
         orders={orders}
         hasAgenda={!!tenant.agenda}
