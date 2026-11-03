@@ -2,6 +2,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
 import { currentAdminBroker } from "@/lib/realestate-auth";
+import { ipDe } from "@/lib/ip";
 import {
   EDITABLE_SECTIONS,
   SITE_CONTENT_TAG,
@@ -24,7 +25,7 @@ function claveFromRequest(req: Request): string | null {
 
 async function authorize(req: Request) {
   if (!clientConfig.modules.inmobiliariaAdmin) return Response.json({ error: "No habilitado" }, { status: 404 });
-  const admin = await currentAdminBroker(claveFromRequest(req));
+  const admin = await currentAdminBroker(claveFromRequest(req), ipDe(req));
   if (!admin) return Response.json({ error: "Solo la administradora puede editar el sitio" }, { status: 403 });
   return null;
 }

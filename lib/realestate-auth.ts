@@ -1,7 +1,9 @@
+import { createHash, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { OAuth2Client } from "google-auth-library";
 import { SignJWT, jwtVerify } from "jose";
 import { brokerByEmail, type Broker } from "@/lib/realestate-store";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Acceso al panel /inmobiliaria/admin. Mismo esquema de dos métodos que
 // lib/auth.ts (Agenda), pero la allowlist NO es config estática: vive en
@@ -108,9 +110,24 @@ async function sessionBrokerFromCookie(): Promise<Broker | null> {
   }
 }
 
-function claveBroker(claveCandidate: string | null | undefined): Broker | null {
+// Comparación en tiempo constante (evita que un atacante infiera la clave
+// midiendo cuánto tarda la respuesta según cuántos caracteres acertó).
+function igualSeguro(a: string, b: string): boolean {
+  const x = createHash("sha256").update(a).digest();
+  const y = createHash("sha256").update(b).digest();
+  return timingSafeEqual(x, y);
+}
+
+// La clave compartida da rol admin completo sobre contratos, clientes y
+// propiedades reales: sin límite de intentos se podía probar por fuerza
+// bruta (brecha de la misma clase reportada en otro sitio el 2026-11-02).
+// Tope por IP, independiente del límite del resto del sitio.
+function claveBroker(claveCandidate: string | null | undefined, ip: string): Broker | null {
   const key = process.env.REALESTATE_ADMIN_KEY;
-  if (!key || claveCandidate !== key) return null;
+  if (!key || !claveCandidate) return null;
+  const limite = checkRateLimit(`auth-clave-re:ip:${ip}`);
+  if (!limite.allowed) return null;
+  if (!igualSeguro(claveCandidate, key)) return null;
   return {
     id: "_clave",
     email: CLAVE_COMPARTIDA_EMAIL,
@@ -123,12 +140,12 @@ function claveBroker(claveCandidate: string | null | undefined): Broker | null {
   };
 }
 
-export async function currentBroker(claveCandidate?: string | null): Promise<Broker | null> {
-  return (await sessionBrokerFromCookie()) ?? claveBroker(claveCandidate);
+export async function currentBroker(claveCandidate: string | null | undefined, ip: string): Promise<Broker | null> {
+  return (await sessionBrokerFromCookie()) ?? claveBroker(claveCandidate, ip);
 }
 
-export async function currentAdminBroker(claveCandidate?: string | null): Promise<Broker | null> {
-  const broker = await currentBroker(claveCandidate);
+export async function currentAdminBroker(claveCandidate: string | null | undefined, ip: string): Promise<Broker | null> {
+  const broker = await currentBroker(claveCandidate, ip);
   return broker?.role === "admin" ? broker : null;
 }
 

@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { AdminAgenda } from "@/components/agenda/AdminAgenda";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { currentAgendaUser, googleLoginEnabled, claveLoginEnabled } from "@/lib/auth";
+import { ipDeServerComponent } from "@/lib/ip";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 export default async function AgendaAdminPage({ searchParams }: { searchParams: { clave?: string } }) {
   if (!clientConfig.modules.agenda) notFound();
   const adminKey = process.env.AGENDA_ADMIN_KEY;
-  const user = await currentAgendaUser(searchParams.clave ?? null);
+  const user = await currentAgendaUser(searchParams.clave ?? null, ipDeServerComponent());
   const authorized = Boolean(user);
   const claveMatched = Boolean(adminKey && searchParams.clave === adminKey);
   const googleEnabled = googleLoginEnabled();

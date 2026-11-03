@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
 import { currentBroker } from "@/lib/realestate-auth";
+import { ipDe } from "@/lib/ip";
 import { listProperties, setPropertyInstagram } from "@/lib/realestate-store";
 import { getInstagramMedia, instagramConfigured, listInstagramMedia, publishToInstagram } from "@/lib/instagram";
 import { captionForProperty, draftFromCaption } from "@/lib/instagram-property";
@@ -52,7 +53,7 @@ function claveFromRequest(req: Request): string | null {
 
 async function authorize(req: Request) {
   if (!clientConfig.modules.inmobiliariaAdmin) return { error: Response.json({ error: "No habilitado" }, { status: 404 }) };
-  const broker = await currentBroker(claveFromRequest(req));
+  const broker = await currentBroker(claveFromRequest(req), ipDe(req));
   if (!broker) return { error: Response.json({ error: "No autorizado" }, { status: 401 }) };
   if (!instagramConfigured()) {
     return { error: Response.json({ error: "Instagram no está conectado en este sitio (faltan INSTAGRAM_ACCESS_TOKEN e INSTAGRAM_USER_ID)." }, { status: 503 }) };

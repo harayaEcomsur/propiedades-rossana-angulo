@@ -6,6 +6,7 @@ import { AdminInmobiliaria } from "@/components/inmobiliaria/AdminInmobiliaria";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { currentBroker, googleLoginEnabledRE, claveLoginEnabledRE } from "@/lib/realestate-auth";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { ipDeServerComponent } from "@/lib/ip";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 export default async function InmobiliariaAdminPage({ searchParams }: { searchParams: { clave?: string } }) {
   if (!clientConfig.modules.inmobiliariaAdmin) notFound();
   const adminKey = process.env.REALESTATE_ADMIN_KEY;
-  const broker = await currentBroker(searchParams.clave ?? null);
+  const broker = await currentBroker(searchParams.clave ?? null, ipDeServerComponent());
   const claveMatched = Boolean(adminKey && searchParams.clave === adminKey);
   const googleEnabled = googleLoginEnabledRE();
   const claveEnabled = claveLoginEnabledRE();

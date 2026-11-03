@@ -2,6 +2,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
 import { currentAdminBroker } from "@/lib/realestate-auth";
+import { ipDe } from "@/lib/ip";
 import { deleteTestimonial, listTestimonials, reviewTestimonial } from "@/lib/testimonial-store";
 import { SITE_CONTENT_TAG } from "@/lib/site-content";
 
@@ -14,7 +15,7 @@ function claveFromRequest(req: Request): string | null {
 
 async function authorize(req: Request) {
   if (!clientConfig.modules.inmobiliariaAdmin) return Response.json({ error: "No habilitado" }, { status: 404 });
-  if (!(await currentAdminBroker(claveFromRequest(req)))) return Response.json({ error: "Solo un administrador modera testimonios" }, { status: 403 });
+  if (!(await currentAdminBroker(claveFromRequest(req), ipDe(req)))) return Response.json({ error: "Solo un administrador modera testimonios" }, { status: 403 });
   return null;
 }
 

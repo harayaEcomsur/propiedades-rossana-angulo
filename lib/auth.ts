@@ -1,7 +1,9 @@
+import { createHash, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { OAuth2Client } from "google-auth-library";
 import { SignJWT, jwtVerify } from "jose";
 import { clientConfig } from "@/config/client.config";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Acceso a los paneles de admin (/agenda/admin, /tienda/admin). Dos métodos,
 // ambos opcionales y compatibles entre sí durante la transición:
@@ -104,21 +106,35 @@ async function sessionUserFromCookie(): Promise<SessionUser | null> {
   }
 }
 
-function claveUser(claveCandidate: string | null | undefined): SessionUser | null {
+// Comparación en tiempo constante (evita que un atacante infiera la clave
+// midiendo cuánto tarda la respuesta según cuántos caracteres acertó).
+function igualSeguro(a: string, b: string): boolean {
+  const x = createHash("sha256").update(a).digest();
+  const y = createHash("sha256").update(b).digest();
+  return timingSafeEqual(x, y);
+}
+
+// La clave compartida da rol admin completo: sin límite de intentos se podía
+// probar por fuerza bruta (brecha de la misma clase reportada en otro sitio
+// el 2026-11-02). Tope por IP, independiente del límite del resto del sitio.
+function claveUser(claveCandidate: string | null | undefined, ip: string): SessionUser | null {
   const key = process.env.AGENDA_ADMIN_KEY;
-  return key && claveCandidate === key ? { email: CLAVE_COMPARTIDA_EMAIL, role: "admin" } : null;
+  if (!key || !claveCandidate) return null;
+  const limite = checkRateLimit(`auth-clave-agenda:ip:${ip}`);
+  if (!limite.allowed) return null;
+  return igualSeguro(claveCandidate, key) ? { email: CLAVE_COMPARTIDA_EMAIL, role: "admin" } : null;
 }
 
 // Cualquier persona autorizada — admin o staff — para /agenda/admin: ambos
 // gestionan reservas y bloqueos, ver route.ts para qué le vetamos al staff.
-export async function currentAgendaUser(claveCandidate?: string | null): Promise<SessionUser | null> {
-  return (await sessionUserFromCookie()) ?? claveUser(claveCandidate);
+export async function currentAgendaUser(claveCandidate: string | null | undefined, ip: string): Promise<SessionUser | null> {
+  return (await sessionUserFromCookie()) ?? claveUser(claveCandidate, ip);
 }
 
 // Solo admin — para /tienda/admin y cualquier acción de configuración del
 // negocio dentro de la agenda (avisos, precios, tope diario, anticipación).
-export async function currentAdminUser(claveCandidate?: string | null): Promise<SessionUser | null> {
-  const user = await currentAgendaUser(claveCandidate);
+export async function currentAdminUser(claveCandidate: string | null | undefined, ip: string): Promise<SessionUser | null> {
+  const user = await currentAgendaUser(claveCandidate, ip);
   return user?.role === "admin" ? user : null;
 }
 

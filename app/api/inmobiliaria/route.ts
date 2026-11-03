@@ -6,6 +6,7 @@ import { absoluteUrl } from "@/lib/seo";
 import { z } from "zod";
 import { clientConfig } from "@/config/client.config";
 import { currentBroker } from "@/lib/realestate-auth";
+import { ipDe } from "@/lib/ip";
 import {
   listBrokers,
   addBroker,
@@ -105,7 +106,7 @@ function isAdmin(broker: Broker): boolean {
 
 export async function GET(req: Request) {
   if (!clientConfig.modules.inmobiliariaAdmin) return Response.json({ error: "Panel inmobiliario no habilitado" }, { status: 404 });
-  const broker = await currentBroker(claveFromRequest(req));
+  const broker = await currentBroker(claveFromRequest(req), ipDe(req));
   if (!broker) return Response.json({ error: "No autorizado" }, { status: 401 });
 
   const admin = isAdmin(broker);
@@ -237,7 +238,7 @@ const postSchema = z.discriminatedUnion("kind", [brokerSchema, clientSchema, pro
 
 export async function POST(req: Request) {
   if (!clientConfig.modules.inmobiliariaAdmin) return Response.json({ error: "Panel inmobiliario no habilitado" }, { status: 404 });
-  const broker = await currentBroker(claveFromRequest(req));
+  const broker = await currentBroker(claveFromRequest(req), ipDe(req));
   if (!broker) return Response.json({ error: "No autorizado" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
@@ -382,7 +383,7 @@ const patchSchema = z.discriminatedUnion("kind", [
 
 export async function PATCH(req: Request) {
   if (!clientConfig.modules.inmobiliariaAdmin) return Response.json({ error: "Panel inmobiliario no habilitado" }, { status: 404 });
-  const broker = await currentBroker(claveFromRequest(req));
+  const broker = await currentBroker(claveFromRequest(req), ipDe(req));
   if (!broker) return Response.json({ error: "No autorizado" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
@@ -447,7 +448,7 @@ const deleteSchema = z.object({ kind: z.enum(["client", "property", "provider", 
 
 export async function DELETE(req: Request) {
   if (!clientConfig.modules.inmobiliariaAdmin) return Response.json({ error: "Panel inmobiliario no habilitado" }, { status: 404 });
-  const broker = await currentBroker(claveFromRequest(req));
+  const broker = await currentBroker(claveFromRequest(req), ipDe(req));
   if (!broker) return Response.json({ error: "No autorizado" }, { status: 401 });
 
   const body = await req.json().catch(() => null);

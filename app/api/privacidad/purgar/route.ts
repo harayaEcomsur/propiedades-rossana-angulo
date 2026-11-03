@@ -1,17 +1,14 @@
 import { purgeExpiredData } from "@/lib/privacy-store";
+import { esCronAutorizado } from "@/lib/cron-auth";
 
 export const runtime = "nodejs";
 
 // Purga diaria de datos que ya superaron su plazo de retención (Ley 21.719 —
-// ver lib/privacy.ts). La dispara Vercel Cron (vercel.json); también acepta
-// la clave de admin de la agenda por query para poder probarla a mano, mismo
-// criterio que /api/resumen.
+// ver lib/privacy.ts). La dispara Vercel Cron (vercel.json), autenticada con
+// CRON_SECRET — ver lib/cron-auth.ts. Hasta 2026-11-02 también aceptaba la
+// clave de admin por query sin límite de intentos (oráculo).
 function isAuthorized(req: Request): boolean {
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && req.headers.get("authorization") === `Bearer ${cronSecret}`) return true;
-  const adminKey = process.env.AGENDA_ADMIN_KEY ?? process.env.REALESTATE_ADMIN_KEY;
-  if (adminKey && new URL(req.url).searchParams.get("clave") === adminKey) return true;
-  return false;
+  return esCronAutorizado(req);
 }
 
 export async function GET(req: Request) {

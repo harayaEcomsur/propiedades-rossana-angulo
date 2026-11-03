@@ -3,20 +3,18 @@ import { generateTextWithFallback } from "@/lib/gemini";
 import { recentChats } from "@/lib/chat-log";
 import { listBookings } from "@/lib/booking-store";
 import { notifyByEmail, notifyByWhatsApp, defaultOwnerWhatsapp } from "@/lib/booking-actions";
+import { esCronAutorizado } from "@/lib/cron-auth";
 
 // Resumen diario para el DUEÑO: un cron llama este endpoint una vez al día y
 // le llega por email/WhatsApp qué hizo el asistente en las últimas 24h
 // (conversaciones atendidas, quiénes quieren cotizar, reservas nuevas).
 export const runtime = "nodejs";
 
-// Acepta el formato de Vercel Cron (Authorization: Bearer CRON_SECRET) o la
-// clave de admin de la agenda por query, para probarlo a mano desde el browser.
+// Solo Vercel Cron (Authorization: Bearer CRON_SECRET) — ver lib/cron-auth.ts.
+// Hasta 2026-11-02 también aceptaba la clave de admin por query sin límite de
+// intentos: servía de oráculo para adivinarla (401 vs 200).
 function isAuthorized(req: Request): boolean {
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && req.headers.get("authorization") === `Bearer ${cronSecret}`) return true;
-  const adminKey = process.env.AGENDA_ADMIN_KEY;
-  if (adminKey && new URL(req.url).searchParams.get("clave") === adminKey) return true;
-  return false;
+  return esCronAutorizado(req);
 }
 
 const MAX_CHATS = 40; // interacciones que van al modelo
