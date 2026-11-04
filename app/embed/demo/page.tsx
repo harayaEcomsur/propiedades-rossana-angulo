@@ -19,17 +19,19 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { t?: string };
+  searchParams: Promise<{ t?: string }>;
 }): Promise<Metadata> {
-  const tenant = getEmbedTenant(searchParams.t);
+  const { t } = await searchParams;
+  const tenant = getEmbedTenant(t);
   return {
     title: tenant ? `Demo — Asistente de ${tenant.businessName}` : "Demo del asistente",
     robots: { index: false, follow: false },
   };
 }
 
-export default function EmbedDemoPage({ searchParams }: { searchParams: { t?: string } }) {
-  const tenant = getEmbedTenant(searchParams.t);
+export default async function EmbedDemoPage({ searchParams }: { searchParams: Promise<{ t?: string }> }) {
+  const { t } = await searchParams;
+  const tenant = getEmbedTenant(t);
   if (!tenant) notFound();
 
   const branding = tenant.demoBranding;

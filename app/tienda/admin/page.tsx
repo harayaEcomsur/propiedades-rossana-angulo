@@ -27,11 +27,12 @@ const STATUS_STYLE: Record<string, string> = {
 // teléfono, correo y dirección de cada comprador. Ahora usa el mismo gate
 // (Google o clave heredada) que /agenda/admin — ver lib/auth.ts. Solo admin,
 // a diferencia de la agenda: el staff no administra pedidos de la tienda.
-export default async function PedidosAdminPage({ searchParams }: { searchParams: { clave?: string } }) {
+export default async function PedidosAdminPage({ searchParams }: { searchParams: Promise<{ clave?: string }> }) {
+  const { clave } = await searchParams;
   const { modules } = clientConfig;
   if (!modules.tienda) notFound();
 
-  const authorized = Boolean(await currentAdminUser(searchParams.clave ?? null, ipDeServerComponent()));
+  const authorized = Boolean(await currentAdminUser(clave ?? null, await ipDeServerComponent()));
   const googleEnabled = googleLoginEnabled();
   const claveEnabled = claveLoginEnabled();
 
