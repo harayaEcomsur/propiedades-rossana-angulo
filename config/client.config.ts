@@ -121,7 +121,7 @@ export const clientConfig = defineClientConfig({
     phone: "+56 9 8207 9214",
     whatsapp: "56982079214",
     whatsappPrefilledMessage: "Hola Rossanna! Vi tu sitio web y quiero consultar por una propiedad",
-    email: "rossanna@propiedadesrossannaangulo.cl",
+    email: "contacto@propiedadesrossannaangulo.cl",
     address: "Viña del Mar, Región de Valparaíso",
     mapQuery: "Viña del Mar, Chile",
     hours: [
@@ -130,7 +130,7 @@ export const clientConfig = defineClientConfig({
       { day: "Domingo", closed: true },
     ],
     socials: [
-      { platform: "instagram", url: "https://instagram.com/propiedadesrossanna" },
+      { platform: "instagram", url: "https://instagram.com/propiedadesrossannaangulo" },
     ],
   },
 
@@ -159,7 +159,7 @@ export const clientConfig = defineClientConfig({
     otherPortals: true,
   },
 
-  // Inventario inicial tomado de las publicaciones de @propiedadesrossanna
+  // Inventario inicial tomado de las publicaciones de @propiedadesrossannaangulo
   // (septiembre 2026). Apenas se cargue la primera propiedad en el panel
   // /inmobiliaria/admin, el sitio pasa a mostrar las del panel (ver
   // lib/public-properties.ts) y esta lista queda solo como respaldo.
@@ -173,7 +173,7 @@ export const clientConfig = defineClientConfig({
       price: "UF 8.500",
       description: "Departamento en piso 28, en el bello entorno de Meseta Coraceros, Viña del Mar. Vista privilegiada y excelente conectividad, a pasos del mall, supermercados y centros médicos. Fue refaccionado: líneas modernas, ventanas termopanel y malla de seguridad en todas sus ventanas.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/depto-meseta-coraceros.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/Dd2V3F9M93G/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/Dd2V3F9M93G/",
       featured: true,
     },
     {
@@ -188,7 +188,7 @@ export const clientConfig = defineClientConfig({
       parking: 1,
       description: "Departamento con muy buena ubicación en calle Carlos Antúnez, Providencia. 1 dormitorio, 1 baño, estar con cocina integrada y equipada. Incluye estacionamiento y bodega.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/depto-providencia-carlos-antunez.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/DdmfwrZB1K5/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/DdmfwrZB1K5/",
       featured: true,
     },
     {
@@ -203,7 +203,7 @@ export const clientConfig = defineClientConfig({
       parking: 2,
       description: "Excelente casa en el exclusivo y residencial sector de Bosque de Montemar, con gran conectividad, excelente terreno y muy buena distribución. Recibe muy buena luz natural por su orientación poniente. 5 dormitorios, 4 baños, sala de estar y quincho cerrado con vista libre. Estacionamiento para 2 a 3 vehículos.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/casa-bosque-de-montemar.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/DdHCS0UB_SK/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/DdHCS0UB_SK/",
       featured: true,
     },
     {
@@ -219,7 +219,7 @@ export const clientConfig = defineClientConfig({
       parking: 3,
       description: "Casa en condominio con piscina, quincho y acceso controlado. 5 dormitorios, 4 baños completos y estacionamiento para 3 vehículos. 265 m² de terreno y 164 m² construidos. Excelente conectividad a Av. Príncipe de Gales, Tobalaba y Echeñique, cercana a comercio y locomoción.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/casa-condominio-piscina-quincho.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/Dc8qhwrhKJp/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/Dc8qhwrhKJp/",
       featured: true,
     },
     {
@@ -233,7 +233,7 @@ export const clientConfig = defineClientConfig({
       parking: 1,
       description: "Departamento de 70 m² en Av. Antofagasta, con excelente conectividad: a pasos del strip center con supermercado Unimarc, cercano a Clínica Reñaca y con locomoción en la puerta. Dormitorio principal con una hermosa vista. Estacionamiento y bodega. El edificio cuenta con piscina exterior, áreas verdes, lavandería, estacionamientos de visitas y acceso controlado.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/depto-av-antofagasta.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/DdWOizJhbmb/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/DdWOizJhbmb/",
     },
     {
       slug: "depto-el-encanto-las-agatas",
@@ -244,7 +244,7 @@ export const clientConfig = defineClientConfig({
       price: "$2.100.000/mes (GC incluido)",
       description: "Exclusivo departamento en el sector de El Encanto, en calle Las Ágatas, a pasos de Av. Edmundo Eluchans. Muy buena conectividad. Detalles en su construcción que le otorgan elegancia, y una vista privilegiada a toda la bahía.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/depto-el-encanto-las-agatas.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/DdH8C7pBm7i/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/DdH8C7pBm7i/",
       featured: true,
     },
     {
@@ -259,7 +259,7 @@ export const clientConfig = defineClientConfig({
       parking: 1,
       description: "Departamento mariposa en piso 18, calle Escrivá de Balaguer, Concón, con una maravillosa vista. Terraza amplia con malla de seguridad. 2 dormitorios, 2 baños, estacionamiento y bodega.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/depto-mariposa-piso-18.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/DdMDRI2BZ93/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/DdMDRI2BZ93/",
     },
     {
       slug: "loft-renaca",
@@ -272,7 +272,7 @@ export const clientConfig = defineClientConfig({
       parking: 1,
       description: "Loft en condominio pequeño con piscina y excelente conectividad, a dos cuadras del McDonald's. Cada loft cuenta con su estacionamiento. El gasto común incluye el agua.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/loft-arriendo.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/DdkWW5HNDdH/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/DdkWW5HNDdH/",
     },
     {
       slug: "depto-rotonda-santa-julia",
@@ -286,14 +286,14 @@ export const clientConfig = defineClientConfig({
       parking: 1,
       description: "Departamento en condominio cerrado junto a Rotonda Santa Julia, con excelente conectividad y a pasos del centro comercial con Tottus y Homecenter. 3 dormitorios, 1 baño y estacionamiento en box cerrado.",
       images: ["/clients/propiedades-rossana-angulo/propiedades/depto-rotonda-santa-julia.jpg"],
-      video: "https://www.instagram.com/propiedadesrossanna/reel/DdG0H1ehNG-/",
+      video: "https://www.instagram.com/propiedadesrossannaangulo/reel/DdG0H1ehNG-/",
     },
   ],
 
   // Textos de encabezados propios de este sitio (el resto, por defecto en
   // lib/section-copy.ts). Todo editable en el panel → Sitio → Títulos y menú.
   sections: {
-    instagram: { subtitle: "Propiedades nuevas, ventas y arriendos en @propiedadesrossanna." },
+    instagram: { subtitle: "Propiedades nuevas, ventas y arriendos en @propiedadesrossannaangulo." },
   },
 
   // Fichas que antes vivían en el config: su dirección antigua redirige (301)
