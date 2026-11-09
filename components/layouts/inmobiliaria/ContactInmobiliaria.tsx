@@ -1,4 +1,4 @@
-import { Clock, Instagram, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Clock, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/layouts/inmobiliaria/SectionHeading";
 import { ContactForm } from "@/components/sections/ContactForm";
@@ -33,6 +33,7 @@ export function ContactInmobiliaria({
       external: true,
     },
     contact.phone && { icon: Phone, label: "Teléfono", value: contact.phone, href: `tel:${contact.phone.replace(/\s/g, "")}` },
+    contact.email && { icon: Mail, label: "Correo", value: contact.email, href: `mailto:${contact.email}` },
     hours && { icon: Clock, label: "Horario", value: hours },
     contact.address && { icon: MapPin, label: "Ubicación", value: contact.address },
     instagram && { icon: Instagram, label: "Instagram", value: instagramHandle(instagram), href: instagram, external: true },

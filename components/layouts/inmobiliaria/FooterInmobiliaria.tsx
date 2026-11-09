@@ -1,4 +1,4 @@
-import { Instagram, MessageCircle, Phone } from "lucide-react";
+import { Instagram, Mail, MessageCircle, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { slugify } from "@/lib/text";
@@ -63,6 +63,13 @@ export function FooterInmobiliaria({ config, showCredit }: { config: ClientConfi
               <li>
                 <a href={`tel:${contact.phone.replace(/\s/g, "")}`} className={`inline-flex items-center gap-2 ${linkCls}`}>
                   <Phone size={15} aria-hidden /> {contact.phone}
+                </a>
+              </li>
+            )}
+            {contact.email && (
+              <li>
+                <a href={`mailto:${contact.email}`} className={`inline-flex items-center gap-2 break-all ${linkCls}`}>
+                  <Mail size={15} aria-hidden /> {contact.email}
                 </a>
               </li>
             )}
